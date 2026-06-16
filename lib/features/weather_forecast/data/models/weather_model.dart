@@ -21,6 +21,18 @@ class WeatherModel extends Equatable {
         daily: daily.map((d) => d.toEntity()).toList(),
       );
 
+  WeatherModel copyWith({
+    CurrentWeatherModel? current,
+    List<HourlyWeatherModel>? hourly,
+    List<DailyWeatherModel>? daily,
+  }) {
+    return WeatherModel(
+      current: current ?? this.current,
+      hourly: hourly ?? this.hourly,
+      daily: daily ?? this.daily,
+    );
+  }
+
   @override
   List<Object?> get props => [current, hourly, daily];
 }
