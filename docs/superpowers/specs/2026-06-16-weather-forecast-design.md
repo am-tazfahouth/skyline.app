@@ -165,9 +165,6 @@ Delegates to repository. `Failure` exceptions propagate up to BLoC.
 
 ## 7. BLoC (Presentation State Management)
 
-### Init
-- Single `BlocProvider` wrapping `MyApp` in lib/main.dart
-
 ### Event
 - `FetchWeatherEvent` — triggers fetch (no payload, location is hardcoded)
 
@@ -203,6 +200,7 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
 ## 8. Screen & Widgets
 
 ### `WeatherScreen`
+- Single `BlocProvider` wrapping `WeatherForecastBloc`
 - `BlocBuilder` switching on state:
   - `Initial` → empty
   - `Loading` → shimmer placeholder
