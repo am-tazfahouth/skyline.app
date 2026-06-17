@@ -1,32 +1,30 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/config/app_theme.dart';
 import 'package:sky_line/core/enums/setting_theme.dart';
 import 'package:sky_line/core/utils/platform_utils.dart';
-import 'package:sky_line/features/weather_forecast/data/repositories/weather_repository_impl.dart';
-import 'package:sky_line/features/weather_forecast/data/sources/weather_remote_source.dart';
-import 'package:sky_line/features/weather_forecast/domain/usecases/fetch_weather_usecase.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_event.dart';
 import 'package:sky_line/features/weather_forecast/presentation/screens/weather_screen.dart';
+import 'package:sky_line/injection_container.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  await InjectionContainer.init();
 
   runApp(
     MultiBlocProvider(
       providers: [
         BlocProvider(
           create: (_) => WeatherForecastBloc(
-            FetchWeatherUseCase(
-              WeatherRepositoryImpl(WeatherRemoteSource(Dio())),
-            ),
+            InjectionContainer.fetchWeatherUseCase,
           )..add(FetchWeatherEvent()),
         ),
-      ], child: MyApp())
+      ],
+      child: MyApp(),
+    ),
   );
 }
 
