@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:sky_line/core/errors/failure.dart';
-import 'package:sky_line/features/weather_forecast/domain/entities/weather_entity.dart';
+import 'package:sky_line/features/weather_forecast/domain/entities/weather_result.dart';
 
 abstract class WeatherForecastState extends Equatable {
   const WeatherForecastState();
@@ -18,12 +18,13 @@ class WeatherLoading extends WeatherForecastState {
 }
 
 class WeatherLoaded extends WeatherForecastState {
-  final WeatherEntity weather;
+  final WeatherResult result;
+  bool get isCached => result.isCached;
 
-  const WeatherLoaded(this.weather);
+  const WeatherLoaded(this.result);
 
   @override
-  List<Object?> get props => [weather];
+  List<Object?> get props => [result];
 }
 
 class WeatherError extends WeatherForecastState {
