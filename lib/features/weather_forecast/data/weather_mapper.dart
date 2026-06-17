@@ -2,12 +2,10 @@ import 'package:sky_line/features/weather_forecast/data/models/current_weather_m
 import 'package:sky_line/features/weather_forecast/data/models/daily_weather_model.dart';
 import 'package:sky_line/features/weather_forecast/data/models/hourly_weather_model.dart';
 import 'package:sky_line/features/weather_forecast/data/models/weather_model.dart';
-import 'package:sky_line/features/weather_forecast/domain/entities/weather_entity.dart';
-
 class WeatherMapper {
   WeatherMapper._();
 
-  static WeatherEntity fromJson(Map<String, dynamic> json) {
+  static WeatherModel fromJson(Map<String, dynamic> json) {
     final currentJson = json['current'] as Map<String, dynamic>;
     final hourlyJson = json['hourly'] as Map<String, dynamic>;
     final dailyJson = json['daily'] as Map<String, dynamic>;
@@ -52,6 +50,6 @@ class WeatherMapper {
       current: current,
       hourly: hourlyList,
       daily: dailyList,
-    ).toEntity();
+    );
   }
 }
