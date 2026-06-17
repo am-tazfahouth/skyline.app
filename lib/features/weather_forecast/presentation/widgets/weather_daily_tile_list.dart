@@ -20,7 +20,7 @@ class WeatherDailyTileList extends StatelessWidget {
         final primaryText = surface.onColor;
         final secondaryText = surface.onColorContainer;
 
-        final items = state.weather.daily.take(7).toList();
+        final items = state.result.weather.daily.take(7).toList();
         if (items.isEmpty) return const SizedBox.shrink();
 
         return SingleChildScrollView(

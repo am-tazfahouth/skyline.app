@@ -22,7 +22,7 @@ class WeatherMainCard extends StatelessWidget {
         final primaryText = surface.onColor;
         final secondaryText = surface.onColorContainer;
 
-        final current = state.weather.current;
+        final current = state.result.weather.current;
         final date = WeatherFormat.date(DateTime.now());
         final condition = WeatherFormat.condition(current.weatherCode);
         final temperature = WeatherFormat.temperature(current.temperature);

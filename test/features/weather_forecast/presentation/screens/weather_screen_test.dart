@@ -9,6 +9,7 @@ import 'package:sky_line/features/weather_forecast/domain/entities/current_weath
 import 'package:sky_line/features/weather_forecast/domain/entities/daily_weather_entity.dart';
 import 'package:sky_line/features/weather_forecast/domain/entities/hourly_weather_entity.dart';
 import 'package:sky_line/features/weather_forecast/domain/entities/weather_entity.dart';
+import 'package:sky_line/features/weather_forecast/domain/entities/weather_result.dart';
 import 'package:sky_line/features/weather_forecast/domain/usecases/fetch_weather_usecase.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_event.dart';
@@ -33,22 +34,26 @@ void main() {
   });
 
   testWidgets('shows loading indicator while loading', (tester) async {
-    final completer = Completer<WeatherEntity>();
+    final completer = Completer<WeatherResult>();
     when(() => mockUseCase()).thenAnswer((_) => completer.future);
 
     final bloc = WeatherForecastBloc(mockUseCase);
+    bloc.add(const FetchWeatherEvent());
     await tester.pumpWidget(createTestScreen(bloc));
     await tester.pump();
 
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
-    completer.complete(WeatherEntity(
-      current: const CurrentWeatherEntity(
-        temperature: 0, humidity: 0, isDay: true,
-        windSpeed: 0, precipitation: 0, weatherCode: 0,
+    completer.complete(WeatherResult(
+      weather: WeatherEntity(
+        current: const CurrentWeatherEntity(
+          temperature: 0, humidity: 0, isDay: true,
+          windSpeed: 0, precipitation: 0, weatherCode: 0,
+        ),
+        hourly: [],
+        daily: [],
       ),
-      hourly: [],
-      daily: [],
+      isCached: false,
     ));
     await tester.pumpAndSettle();
   });
@@ -83,7 +88,7 @@ void main() {
       ],
     );
 
-    when(() => mockUseCase()).thenAnswer((_) async => weather);
+    when(() => mockUseCase()).thenAnswer((_) async => WeatherResult(weather: weather, isCached: false));
 
     final bloc = WeatherForecastBloc(mockUseCase);
     bloc.add(const FetchWeatherEvent());
@@ -91,7 +96,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('28°C'), findsOneWidget);
-    expect(find.text('3 m/s'), findsOneWidget);
+    expect(find.text('12 m/s'), findsOneWidget);
     expect(find.text('65%'), findsOneWidget);
     expect(find.text('Moroni, Comoros'), findsOneWidget);
   });

@@ -3,6 +3,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:sky_line/core/errors/failure.dart';
 import 'package:sky_line/features/weather_forecast/domain/entities/current_weather_entity.dart';
 import 'package:sky_line/features/weather_forecast/domain/entities/weather_entity.dart';
+import 'package:sky_line/features/weather_forecast/domain/entities/weather_result.dart';
 import 'package:sky_line/features/weather_forecast/domain/repositories/weather_repository.dart';
 import 'package:sky_line/features/weather_forecast/domain/usecases/fetch_weather_usecase.dart';
 
@@ -17,7 +18,7 @@ void main() {
     useCase = FetchWeatherUseCase(mockRepository);
   });
 
-  test('returns WeatherEntity on success', () async {
+  test('returns WeatherResult on success', () async {
     final weather = WeatherEntity(
       current: const CurrentWeatherEntity(
         temperature: 26.5,
@@ -30,14 +31,16 @@ void main() {
       hourly: [],
       daily: [],
     );
+    final result = WeatherResult(weather: weather, isCached: false);
 
     when(() => mockRepository.fetchWeather()).thenAnswer(
-      (_) async => weather,
+      (_) async => result,
     );
 
-    final result = await useCase();
-    expect(result, isA<WeatherEntity>());
-    expect(result.current.temperature, 26.5);
+    final response = await useCase();
+    expect(response, isA<WeatherResult>());
+    expect(response.isCached, false);
+    expect(response.weather.current.temperature, 26.5);
   });
 
   test('throws Failure on error', () async {

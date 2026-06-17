@@ -28,18 +28,18 @@ class WeatherSunTimes extends StatelessWidget {
     return BlocBuilder<WeatherForecastBloc, WeatherForecastState>(
       builder: (context, state) {
         // Show nothing while weather data is loading or absent.
-        if (state is! WeatherLoaded || state.weather.daily.isEmpty) {
+        if (state is! WeatherLoaded || state.result.weather.daily.isEmpty) {
           return const SizedBox.shrink();
         }
 
-        final today = state.weather.daily.first;
+        final today = state.result.weather.daily.first;
         final now = DateTime.now();
 
         // Compute labels, icons and chart range for the current time of day.
         final config = PeriodConfig.compute(
           today: today,
-          nextSunrise: state.weather.daily.length > 1
-            ? state.weather.daily[1].sunrise
+          nextSunrise: state.result.weather.daily.length > 1
+            ? state.result.weather.daily[1].sunrise
             : today.sunrise.add(const Duration(hours: 24)),
           now: now,
           colorScheme: colorScheme,

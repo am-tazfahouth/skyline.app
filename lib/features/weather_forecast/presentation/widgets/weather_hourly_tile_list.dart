@@ -21,7 +21,7 @@ class WeatherHourlyTileList extends StatelessWidget {
         final secondaryText = surface.onColorContainer;
 
         final now = DateTime.now();
-        final filtered = state.weather.hourly.where((h) =>
+        final filtered = state.result.weather.hourly.where((h) =>
           h.time.isAfter(now) && h.time.isBefore(now.add(const Duration(hours: 12)))
         ).toList();
 

@@ -21,7 +21,7 @@ class WeatherStatsCard extends StatelessWidget {
         final primaryText = surface.onColor;
         final secondaryText = surface.onColorContainer;
 
-        final current = state.weather.current;
+        final current = state.result.weather.current;
         final wind = WeatherFormat.wind(current.windSpeed);
         final rain = WeatherFormat.percent(current.precipitation);
         final humidity = WeatherFormat.percentInt(current.humidity);
