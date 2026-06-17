@@ -1,4 +1,4 @@
-import 'package:sky_line/features/weather_forecast/domain/entities/weather_entity.dart';
+import 'package:sky_line/features/weather_forecast/domain/entities/weather_result.dart';
 import 'package:sky_line/features/weather_forecast/domain/repositories/weather_repository.dart';
 
 class FetchWeatherUseCase {
@@ -6,7 +6,7 @@ class FetchWeatherUseCase {
 
   FetchWeatherUseCase(this._repository);
 
-  Future<WeatherEntity> call() {
+  Future<WeatherResult> call() {
     return _repository.fetchWeather();
   }
 }
