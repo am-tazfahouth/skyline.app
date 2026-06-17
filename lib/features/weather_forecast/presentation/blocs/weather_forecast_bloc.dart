@@ -8,15 +8,11 @@ class WeatherForecastBloc
     extends Bloc<WeatherForecastEvent, WeatherForecastState> {
   final FetchWeatherUseCase _fetchWeatherUseCase;
 
-  WeatherForecastBloc(this._fetchWeatherUseCase)
-      : super(const WeatherInitial()) {
+  WeatherForecastBloc(this._fetchWeatherUseCase) : super(const WeatherInitial()) {
     on<FetchWeatherEvent>(_onFetchWeather);
   }
 
-  Future<void> _onFetchWeather(
-    FetchWeatherEvent event,
-    Emitter<WeatherForecastState> emit,
-  ) async {
+  Future<void> _onFetchWeather(FetchWeatherEvent event, Emitter<WeatherForecastState> emit) async {
     emit(const WeatherLoading());
     try {
       final weather = await _fetchWeatherUseCase();

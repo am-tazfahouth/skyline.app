@@ -1,36 +1,52 @@
 import 'package:flutter/material.dart';
 
-class WeatherHeader extends StatelessWidget {
+class WeatherHeader extends StatefulWidget implements PreferredSizeWidget {
   const WeatherHeader({super.key});
 
   @override
+  State<WeatherHeader> createState() => _WeatherHeaderState();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class _WeatherHeaderState extends State<WeatherHeader> {
+  String _selectedLocation = 'Moroni, Comoros';
+
+  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      leading: IconButton(
+        icon: const Icon(Icons.grid_view_rounded),
+        onPressed: () {},
+      ),
+      centerTitle: true,
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.dashboard, color: theme.colorScheme.onSurface),
-          Row(
-            children: [
-              Icon(Icons.pin_drop,
-                  size: 16, color: theme.colorScheme.onSurface),
-              const SizedBox(width: 4),
-              Text(
-                'Moroni, Comoros',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(width: 4),
-              Icon(Icons.arrow_drop_down,
-                  color: theme.colorScheme.onSurface),
+          const Icon(Icons.location_on_rounded, size: 18),
+          const SizedBox(width: 4),
+          DropdownButton<String>(
+            value: _selectedLocation,
+            underline: const SizedBox(),
+            isDense: true,
+            items: const [
+              DropdownMenuItem(value: 'Moroni, Comoros', child: Text('Moroni, Comoros')),
             ],
+            onChanged: (v) {
+              if (v != null) setState(() => _selectedLocation = v);
+            },
           ),
-          Icon(Icons.settings, color: theme.colorScheme.onSurface),
         ],
       ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.settings_rounded),
+          onPressed: () {},
+        ),
+      ],
     );
   }
 }

@@ -84,19 +84,4 @@ class PlatformUtils {
     final FlutterView view = PlatformDispatcher.instance.views.first;
     return view.viewPadding.bottom / view.devicePixelRatio;
   }
-
-  /* static SettingLang getDeviceLanguage() {
-    final deviceLocale = WidgetsBinding.instance.platformDispatcher.locale;
-
-    final isSupported = AppLocalizations.supportedLocales.any(
-      (locale) => locale.languageCode == deviceLocale.languageCode,
-    );
-
-    if (isSupported) {
-      return getLangFromString(deviceLocale.languageCode);
-    }
-
-    return SettingLang.en; // fallback
-  } */
-
 }
