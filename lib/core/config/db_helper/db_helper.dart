@@ -21,13 +21,24 @@ class DbHelper {
   void saveWeather(WeatherModel model) {
     _box.removeAll();
     final jsonStr = jsonEncode(model.toJson());
-    _box.put(WeatherCacheEntity(id: 0, jsonData: jsonStr));
+    _box.put(WeatherCacheEntity(
+      id: 0,
+      jsonData: jsonStr,
+      savedAt: DateTime.now().millisecondsSinceEpoch,
+    ));
   }
 
-  WeatherModel? loadWeather() {
+  WeatherModel? loadWeather({int? maxAgeMillis}) {
     final entities = _box.getAll();
     if (entities.isEmpty) return null;
-    final json = jsonDecode(entities.first.jsonData) as Map<String, dynamic>;
+
+    final entity = entities.first;
+    if (maxAgeMillis != null) {
+      final age = DateTime.now().millisecondsSinceEpoch - entity.savedAt;
+      if (age >= maxAgeMillis) return null;
+    }
+
+    final json = jsonDecode(entity.jsonData) as Map<String, dynamic>;
     return WeatherModel.fromCacheJson(json);
   }
 

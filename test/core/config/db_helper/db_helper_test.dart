@@ -65,5 +65,25 @@ void main() {
       final loaded = dbHelper.loadWeather();
       expect(loaded, isNull);
     });
+
+    test('loadWeather respects maxAgeMillis', () {
+      final model = WeatherModel(
+        current: CurrentWeatherModel(
+          temperature: 22.5, humidity: 65, isDay: true,
+          windSpeed: 12.0, precipitation: 0.0, weatherCode: 0,
+        ),
+        hourly: [],
+        daily: [],
+      );
+
+      dbHelper.saveWeather(model);
+      // 0ms TTL should expire immediately
+      final expired = dbHelper.loadWeather(maxAgeMillis: 0);
+      expect(expired, isNull);
+
+      // no TTL should return data
+      final fresh = dbHelper.loadWeather();
+      expect(fresh, isNotNull);
+    });
   });
 }

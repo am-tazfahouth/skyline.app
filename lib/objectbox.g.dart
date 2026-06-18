@@ -22,7 +22,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(1, 3995559510625536069),
     name: 'WeatherCacheEntity',
-    lastPropertyId: const obx_int.IdUid(2, 6081764304953554478),
+    lastPropertyId: const obx_int.IdUid(3, 4929592294852577480),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -35,6 +35,12 @@ final _entities = <obx_int.ModelEntity>[
         id: const obx_int.IdUid(2, 6081764304953554478),
         name: 'jsonData',
         type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(3, 4929592294852577480),
+        name: 'savedAt',
+        type: 6,
         flags: 0,
       ),
     ],
@@ -105,9 +111,10 @@ obx_int.ModelDefinition getObjectBoxModel() {
       },
       objectToFB: (WeatherCacheEntity object, fb.Builder fbb) {
         final jsonDataOffset = fbb.writeString(object.jsonData);
-        fbb.startTable(3);
+        fbb.startTable(4);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, jsonDataOffset);
+        fbb.addInt64(2, object.savedAt);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -123,7 +130,17 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final jsonDataParam = const fb.StringReader(
           asciiOptimization: true,
         ).vTableGet(buffer, rootOffset, 6, '');
-        final object = WeatherCacheEntity(id: idParam, jsonData: jsonDataParam);
+        final savedAtParam = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          8,
+          0,
+        );
+        final object = WeatherCacheEntity(
+          id: idParam,
+          jsonData: jsonDataParam,
+          savedAt: savedAtParam,
+        );
 
         return object;
       },
@@ -143,5 +160,10 @@ class WeatherCacheEntity_ {
   /// See [WeatherCacheEntity.jsonData].
   static final jsonData = obx.QueryStringProperty<WeatherCacheEntity>(
     _entities[0].properties[1],
+  );
+
+  /// See [WeatherCacheEntity.savedAt].
+  static final savedAt = obx.QueryIntegerProperty<WeatherCacheEntity>(
+    _entities[0].properties[2],
   );
 }
