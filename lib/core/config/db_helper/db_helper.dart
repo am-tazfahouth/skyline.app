@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:sky_line/core/config/db_helper/weather_cache_entity.dart';
 import 'package:sky_line/features/weather_forecast/data/models/weather_model.dart';
-import 'package:sky_line/objectbox.g.dart';
+import 'package:sky_line/core/config/db_helper/objectbox.g.dart';
 
 class DbHelper {
   static DbHelper? _instance;

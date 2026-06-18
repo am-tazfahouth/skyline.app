@@ -14,7 +14,7 @@ import 'package:objectbox/internal.dart'
 import 'package:objectbox/objectbox.dart' as obx;
 import 'package:objectbox_flutter_libs/objectbox_flutter_libs.dart';
 
-import 'core/config/db_helper/weather_cache_entity.dart';
+import 'weather_cache_entity.dart';
 
 export 'package:objectbox/objectbox.dart'; // so that callers only have to import this file
 

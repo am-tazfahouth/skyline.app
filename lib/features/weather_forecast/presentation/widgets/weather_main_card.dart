@@ -13,19 +13,28 @@ class WeatherMainCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<WeatherForecastBloc, WeatherForecastState>(
       builder: (context, state) {
-        if (state is! WeatherLoaded) {
-          return const SizedBox.shrink();
-        }
-
         final surface = AppTheme.surfaceFor(Theme.of(context).brightness);
         final cardColor = surface.colorContainer;
         final primaryText = surface.onColor;
         final secondaryText = surface.onColorContainer;
 
-        final current = state.result.weather.current;
-        final date = WeatherFormat.date(DateTime.now());
-        final condition = WeatherFormat.condition(current.weatherCode);
-        final temperature = WeatherFormat.temperature(current.temperature);
+        final weather = state.weatherOrNull;
+        final date = weather != null
+            ? WeatherFormat.date(DateTime.now())
+            : '--';
+        final condition = weather != null
+            ? WeatherFormat.condition(weather.current.weatherCode)
+            : '--';
+        final temperature = weather != null
+            ? WeatherFormat.temperature(weather.current.temperature)
+            : '--°C';
+        final iconData = weather != null
+            ? WeatherIconMapper.fromWeatherCode(
+                weather.current.weatherCode,
+                isDay: weather.current.isDay,
+              )
+            : Icons.cloud_rounded;
+        final iconSize = 72.0;
 
         return Container(
           width: double.infinity,
@@ -41,7 +50,9 @@ class WeatherMainCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(date, style: TextStyle(fontSize: 12, color: secondaryText)),
+                    Text(date,
+                        style:
+                            TextStyle(fontSize: 12, color: secondaryText)),
                     const SizedBox(height: 6),
                     Text(
                       condition,
@@ -64,11 +75,7 @@ class WeatherMainCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(
-                WeatherIconMapper.fromWeatherCode(current.weatherCode, isDay: current.isDay),
-                color: primaryText,
-                size: 72,
-              ),
+              Icon(iconData, color: primaryText, size: iconSize),
             ],
           ),
         );

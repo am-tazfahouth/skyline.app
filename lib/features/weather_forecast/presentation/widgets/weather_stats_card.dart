@@ -12,19 +12,21 @@ class WeatherStatsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<WeatherForecastBloc, WeatherForecastState>(
       builder: (context, state) {
-        if (state is! WeatherLoaded) {
-          return const SizedBox.shrink();
-        }
-
         final surface = AppTheme.surfaceFor(Theme.of(context).brightness);
         final cardColor = surface.colorContainer;
         final primaryText = surface.onColor;
         final secondaryText = surface.onColorContainer;
 
-        final current = state.result.weather.current;
-        final wind = WeatherFormat.wind(current.windSpeed);
-        final rain = WeatherFormat.percent(current.precipitation);
-        final humidity = WeatherFormat.percentInt(current.humidity);
+        final weather = state.weatherOrNull;
+        final wind = weather != null
+            ? WeatherFormat.wind(weather.current.windSpeed)
+            : '-- m/s';
+        final rain = weather != null
+            ? WeatherFormat.percent(weather.current.precipitation)
+            : '--%';
+        final humidity = weather != null
+            ? WeatherFormat.percentInt(weather.current.humidity)
+            : '--%';
 
         return Container(
           padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 10),
@@ -37,11 +39,29 @@ class WeatherStatsCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildStatItem(icon: Icons.air_rounded, value: wind, label: 'Wind', primaryText: primaryText, secondaryText: secondaryText),
+                  _buildStatItem(
+                    icon: Icons.air_rounded,
+                    value: wind,
+                    label: 'Wind',
+                    primaryText: primaryText,
+                    secondaryText: secondaryText,
+                  ),
                   _buildVerticalDivider(secondaryText: secondaryText),
-                  _buildStatItem(icon: Icons.umbrella_rounded, value: rain, label: 'Chance of rain', primaryText: primaryText, secondaryText: secondaryText),
+                  _buildStatItem(
+                    icon: Icons.umbrella_rounded,
+                    value: rain,
+                    label: 'Chance of rain',
+                    primaryText: primaryText,
+                    secondaryText: secondaryText,
+                  ),
                   _buildVerticalDivider(secondaryText: secondaryText),
-                  _buildStatItem(icon: Icons.water_drop_outlined, value: humidity, label: 'Humidity', primaryText: primaryText, secondaryText: secondaryText),
+                  _buildStatItem(
+                    icon: Icons.water_drop_outlined,
+                    value: humidity,
+                    label: 'Humidity',
+                    primaryText: primaryText,
+                    secondaryText: secondaryText,
+                  ),
                 ],
               ),
             ],
@@ -78,6 +98,7 @@ class WeatherStatsCard extends StatelessWidget {
   }
 
   Widget _buildVerticalDivider({required Color secondaryText}) {
-    return Container(height: 36, width: 1, color: secondaryText.withValues(alpha: 0.3));
+    return Container(
+        height: 36, width: 1, color: secondaryText.withValues(alpha: 0.3));
   }
 }

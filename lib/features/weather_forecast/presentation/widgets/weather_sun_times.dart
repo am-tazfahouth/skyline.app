@@ -8,12 +8,6 @@ import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_fo
 import 'package:sky_line/features/weather_forecast/presentation/widgets/sun_time/sun_times_ui_model.dart';
 import 'package:sky_line/features/weather_forecast/presentation/widgets/sun_time/time_row.dart';
 
-/// Card widget that shows sunrise/sunset times and a trajectory chart.
-///
-/// Adapts automatically to the current time of day:
-///   - **Day mode**: sun icon / sunrise label first, moon icon / sunset label last
-///   - **Night mode**: moon icon / sunset label first, sun icon / next sunrise last
-///   - The chart arc fills from the start of the period toward the end.
 class WeatherSunTimes extends StatelessWidget {
   const WeatherSunTimes({super.key});
 
@@ -27,20 +21,25 @@ class WeatherSunTimes extends StatelessWidget {
 
     return BlocBuilder<WeatherForecastBloc, WeatherForecastState>(
       builder: (context, state) {
-        // Show nothing while weather data is loading or absent.
-        if (state is! WeatherLoaded || state.result.weather.daily.isEmpty) {
-          return const SizedBox.shrink();
+        final weather = state.weatherOrNull;
+        final daily = weather?.daily ?? [];
+        if (daily.isEmpty) {
+          return _buildPlaceholder(
+            cardColor: cardColor,
+            primaryText: primaryText,
+            secondaryText: secondaryText,
+          );
         }
 
-        final today = state.result.weather.daily.first;
+        final today = daily.first;
         final now = DateTime.now();
+        final nextSunrise = daily.length > 1
+            ? daily[1].sunrise
+            : today.sunrise.add(const Duration(hours: 24));
 
-        // Compute labels, icons and chart range for the current time of day.
         final config = PeriodConfig.compute(
           today: today,
-          nextSunrise: state.result.weather.daily.length > 1
-            ? state.result.weather.daily[1].sunrise
-            : today.sunrise.add(const Duration(hours: 24)),
+          nextSunrise: nextSunrise,
           now: now,
           colorScheme: colorScheme,
         );
@@ -103,12 +102,56 @@ class WeatherSunTimes extends StatelessWidget {
       },
     );
   }
+
+  Widget _buildPlaceholder({
+    required Color cardColor,
+    required Color primaryText,
+    required Color secondaryText,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(16.0),
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 120,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TimeRow(
+                  icon: Icons.wb_sunny_rounded,
+                  iconColor: secondaryText,
+                  label: 'Sunrise',
+                  time: '--:--',
+                  primaryText: primaryText,
+                  secondaryText: secondaryText,
+                ),
+                const SizedBox(height: 16),
+                TimeRow(
+                  icon: Icons.nightlight_round,
+                  iconColor: secondaryText,
+                  label: 'Sunset',
+                  time: '--:--',
+                  primaryText: primaryText,
+                  secondaryText: secondaryText,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Container(height: 100),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-/// Renders a sine-wave arc representing the sun / moon trajectory.
-///
-/// The solid portion is the elapsed time, the dashed portion is the
-/// remaining time, and the glowing dot marks the current position.
 class _SunPathChart extends StatelessWidget {
   final double width;
   final double height;
@@ -128,7 +171,6 @@ class _SunPathChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // How far through the period we are (0.0 at start, 1.0 at end).
     final total = chartEnd.difference(chartStart).inSeconds;
     final elapsed = currentTime.difference(chartStart).inSeconds;
     final progress = total > 0 ? (elapsed / total).clamp(0.0, 1.0) : 0.0;
@@ -170,7 +212,6 @@ class _SunPathChart extends StatelessWidget {
             ],
           ),
         ),
-        // The glowing dot that represents the current sun / moon position.
         Positioned(
           left: progress * width - 3,
           top: (1.0 - sin(progress * pi)) * (height - 10) + 4.5,
@@ -195,11 +236,6 @@ class _SunPathChart extends StatelessWidget {
   }
 }
 
-/// Generates two sets of [FlSpot]s — past and future — split at the
-/// given [progress] (0.0 → 1.0) along a normalised sine curve.
-///
-/// The past list is a solid line, the future list a dashed line.
-/// Both lists share the point at [progress] so there is no visible gap.
 ({List<FlSpot> past, List<FlSpot> future}) _buildSpots(double progress) {
   final fullSpots = List.generate(51, (i) {
     final x = i / 50;
@@ -214,8 +250,6 @@ class _SunPathChart extends StatelessWidget {
     if (spot.x >= progress) future.add(spot);
   }
 
-  // Insert the exact progress point if not already present,
-  // to avoid a gap between the solid and dashed segments.
   final currentY = sin(progress * pi);
   if (past.isNotEmpty && past.last.x != progress) {
     past.add(FlSpot(progress, currentY));

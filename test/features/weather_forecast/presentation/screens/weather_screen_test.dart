@@ -31,13 +31,19 @@ void main() {
 
   setUp(() {
     mockRepository = MockWeatherRepository();
+    when(() => mockRepository.loadCachedWeather())
+        .thenAnswer((_) async => null);
   });
 
-  testWidgets('shows loading indicator while loading', (tester) async {
+  testWidgets('shows loading overlay when fetching', (tester) async {
     final completer = Completer<WeatherResult>();
-    when(() => mockRepository.fetchWeather()).thenAnswer((_) => completer.future);
+    when(() => mockRepository.fetchWeather())
+        .thenAnswer((_) => completer.future);
 
-    final bloc = WeatherForecastBloc(mockRepository);
+    final bloc = WeatherForecastBloc(
+      mockRepository,
+      isConnected: () async => true,
+    );
     bloc.add(const FetchWeatherEvent());
     await tester.pumpWidget(createTestScreen(bloc));
     await tester.pump();
@@ -47,8 +53,12 @@ void main() {
     completer.complete(WeatherResult(
       weather: WeatherEntity(
         current: const CurrentWeatherEntity(
-          temperature: 0, humidity: 0, isDay: true,
-          windSpeed: 0, precipitation: 0, weatherCode: 0,
+          temperature: 0,
+          humidity: 0,
+          isDay: true,
+          windSpeed: 0,
+          precipitation: 0,
+          weatherCode: 0,
         ),
         hourly: [],
         daily: [],
@@ -88,9 +98,13 @@ void main() {
       ],
     );
 
-    when(() => mockRepository.fetchWeather()).thenAnswer((_) async => WeatherResult(weather: weather, isCached: false));
+    when(() => mockRepository.fetchWeather())
+        .thenAnswer((_) async => WeatherResult(weather: weather, isCached: false));
 
-    final bloc = WeatherForecastBloc(mockRepository);
+    final bloc = WeatherForecastBloc(
+      mockRepository,
+      isConnected: () async => true,
+    );
     bloc.add(const FetchWeatherEvent());
     await tester.pumpWidget(createTestScreen(bloc));
     await tester.pumpAndSettle();
@@ -102,9 +116,13 @@ void main() {
   });
 
   testWidgets('shows error view on error state', (tester) async {
-    when(() => mockRepository.fetchWeather()).thenThrow(const NetworkFailure('No internet'));
+    when(() => mockRepository.fetchWeather())
+        .thenThrow(const NetworkFailure('No internet'));
 
-    final bloc = WeatherForecastBloc(mockRepository);
+    final bloc = WeatherForecastBloc(
+      mockRepository,
+      isConnected: () async => true,
+    );
     bloc.add(const FetchWeatherEvent());
     await tester.pumpWidget(createTestScreen(bloc));
     await tester.pumpAndSettle();

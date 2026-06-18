@@ -8,12 +8,16 @@ import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_fo
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_event.dart';
 import 'package:sky_line/features/weather_forecast/presentation/screens/weather_screen.dart';
 import 'package:sky_line/injection_container.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  await InjectionContainer.init();
 
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  await InjectionContainer.init();
+  FlutterNativeSplash.remove();
+  
   runApp(
     MultiBlocProvider(
       providers: [

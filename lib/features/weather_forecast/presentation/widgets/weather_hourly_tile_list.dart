@@ -13,16 +13,20 @@ class WeatherHourlyTileList extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<WeatherForecastBloc, WeatherForecastState>(
       builder: (context, state) {
-        if (state is! WeatherLoaded) return const SizedBox.shrink();
-
         final surface = AppTheme.surfaceFor(Theme.of(context).brightness);
         final cardColor = surface.colorContainer;
         final primaryText = surface.onColor;
         final secondaryText = surface.onColorContainer;
 
+        final weather = state.weatherOrNull;
+        if (weather == null) {
+          return _buildPlaceholder(cardColor, primaryText, secondaryText);
+        }
+
         final now = DateTime.now();
-        final filtered = state.result.weather.hourly.where((h) =>
-          h.time.isAfter(now) && h.time.isBefore(now.add(const Duration(hours: 12)))
+        final filtered = weather.hourly.where((h) =>
+          h.time.isAfter(now) &&
+          h.time.isBefore(now.add(const Duration(hours: 12))),
         ).toList();
 
         if (filtered.isEmpty) return const SizedBox.shrink();
@@ -35,34 +39,74 @@ class WeatherHourlyTileList extends StatelessWidget {
               final time = DateFormat('HH:mm').format(item.time);
               final temp = '${item.temperature.toStringAsFixed(0)}°';
               final isDay = item.time.hour >= 6 && item.time.hour < 18;
-              return Container(
-                margin: const EdgeInsets.only(right: 14),
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
-                decoration: BoxDecoration(
-                  color: cardColor,
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: Column(
-                  children: [
-                    Text(time, style: TextStyle(color: secondaryText, fontSize: 12)),
-                    const SizedBox(height: 10),
-                    Icon(WeatherIconMapper.fromWeatherCode(item.weatherCode, isDay: isDay), color: secondaryText, size: 22),
-                    const SizedBox(height: 10),
-                    Text(
-                      temp,
-                      style: TextStyle(
-                        color: primaryText,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
+              return _buildTile(
+                time: time,
+                icon: WeatherIconMapper.fromWeatherCode(
+                    item.weatherCode, isDay: isDay),
+                temp: temp,
+                cardColor: cardColor,
+                primaryText: primaryText,
+                secondaryText: secondaryText,
               );
             }).toList(),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildPlaceholder(
+      Color cardColor, Color primaryText, Color secondaryText) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      clipBehavior: Clip.none,
+      child: Row(
+        children: List.generate(
+          5,
+          (_) => _buildTile(
+            time: '--:--',
+            icon: Icons.cloud_rounded,
+            temp: '--°',
+            cardColor: cardColor,
+            primaryText: primaryText,
+            secondaryText: secondaryText,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTile({
+    required String time,
+    required IconData icon,
+    required String temp,
+    required Color cardColor,
+    required Color primaryText,
+    required Color secondaryText,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(right: 14),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        children: [
+          Text(time, style: TextStyle(color: secondaryText, fontSize: 12)),
+          const SizedBox(height: 10),
+          Icon(icon, color: secondaryText, size: 22),
+          const SizedBox(height: 10),
+          Text(
+            temp,
+            style: TextStyle(
+              color: primaryText,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

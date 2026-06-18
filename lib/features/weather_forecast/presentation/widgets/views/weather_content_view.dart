@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/config/app_theme.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_event.dart';
-import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_state.dart';
 import 'package:sky_line/features/weather_forecast/presentation/widgets/weather_forecast_section.dart';
 import 'package:sky_line/features/weather_forecast/presentation/widgets/weather_header.dart';
 import 'package:sky_line/features/weather_forecast/presentation/widgets/weather_main_card.dart';
@@ -22,8 +21,8 @@ class WeatherContentView extends StatelessWidget {
       appBar: const WeatherHeader(),
       body: RefreshIndicator(
         onRefresh: () async {
-          context.read<WeatherForecastBloc>().add(const FetchWeatherEvent());
-          await context.read<WeatherForecastBloc>().stream.firstWhere((s) => s is WeatherLoaded || s is WeatherError);
+          context.read<WeatherForecastBloc>().add(const RefreshWeatherEvent());
+          await context.read<WeatherForecastBloc>().stream.firstWhere((s) => !s.isFetching);
         },
         child: SafeArea(
           child: SingleChildScrollView(
