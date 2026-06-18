@@ -7,18 +7,18 @@ import 'package:sky_line/features/weather_forecast/domain/entities/daily_weather
 import 'package:sky_line/features/weather_forecast/domain/entities/hourly_weather_entity.dart';
 import 'package:sky_line/features/weather_forecast/domain/entities/weather_entity.dart';
 import 'package:sky_line/features/weather_forecast/domain/entities/weather_result.dart';
-import 'package:sky_line/features/weather_forecast/domain/usecases/fetch_weather_usecase.dart';
+import 'package:sky_line/features/weather_forecast/domain/repositories/weather_repository.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_event.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_state.dart';
 
-class MockFetchWeatherUseCase extends Mock implements FetchWeatherUseCase {}
+class MockWeatherRepository extends Mock implements WeatherRepository {}
 
 void main() {
-  late MockFetchWeatherUseCase mockUseCase;
+  late MockWeatherRepository mockRepository;
 
   setUp(() {
-    mockUseCase = MockFetchWeatherUseCase();
+    mockRepository = MockWeatherRepository();
   });
 
   group('WeatherForecastBloc', () {
@@ -57,8 +57,8 @@ void main() {
     blocTest<WeatherForecastBloc, WeatherForecastState>(
       'emits [Loading, Loaded] on success',
       build: () {
-        when(() => mockUseCase()).thenAnswer((_) async => testResult);
-        return WeatherForecastBloc(mockUseCase);
+        when(() => mockRepository.fetchWeather()).thenAnswer((_) async => testResult);
+        return WeatherForecastBloc(mockRepository);
       },
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
       expect: () => [
@@ -74,8 +74,8 @@ void main() {
     blocTest<WeatherForecastBloc, WeatherForecastState>(
       'emits [Loading, Error] on failure',
       build: () {
-        when(() => mockUseCase()).thenThrow(const ServerFailure('API down'));
-        return WeatherForecastBloc(mockUseCase);
+        when(() => mockRepository.fetchWeather()).thenThrow(const ServerFailure('API down'));
+        return WeatherForecastBloc(mockRepository);
       },
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
       expect: () => [
@@ -87,8 +87,8 @@ void main() {
     blocTest<WeatherForecastBloc, WeatherForecastState>(
       'emits [Loading, Error] on unexpected error',
       build: () {
-        when(() => mockUseCase()).thenThrow(Exception('unknown'));
-        return WeatherForecastBloc(mockUseCase);
+        when(() => mockRepository.fetchWeather()).thenThrow(Exception('unknown'));
+        return WeatherForecastBloc(mockRepository);
       },
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
       expect: () => [

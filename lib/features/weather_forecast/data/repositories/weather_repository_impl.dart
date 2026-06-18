@@ -8,8 +8,18 @@ import 'package:sky_line/features/weather_forecast/domain/repositories/weather_r
 class WeatherRepositoryImpl implements WeatherRepository {
   final WeatherRemoteSource _remoteSource;
   final DbHelper _dbHelper;
+  final int _cacheMaxAgeDays;
 
-  WeatherRepositoryImpl(this._remoteSource, this._dbHelper);
+  WeatherRepositoryImpl(this._remoteSource, this._dbHelper, [this._cacheMaxAgeDays = 6]);
+
+  @override
+  Future<WeatherResult?> loadCachedWeather() async {
+    final cached = _dbHelper.loadWeather(
+      maxAgeMillis: _cacheMaxAgeDays * 24 * 60 * 60 * 1000,
+    );
+    if (cached == null) return null;
+    return WeatherResult(weather: cached.toEntity(), isCached: true);
+  }
 
   @override
   Future<WeatherResult> fetchWeather() async {
@@ -18,12 +28,6 @@ class WeatherRepositoryImpl implements WeatherRepository {
       final model = WeatherMapper.fromJson(json);
       _dbHelper.saveWeather(model);
       return WeatherResult(weather: model.toEntity(), isCached: false);
-    } on NetworkFailure {
-      final cached = _dbHelper.loadWeather();
-      if (cached != null) {
-        return WeatherResult(weather: cached.toEntity(), isCached: true);
-      }
-      rethrow;
     } on Failure {
       rethrow;
     } catch (e, s) {

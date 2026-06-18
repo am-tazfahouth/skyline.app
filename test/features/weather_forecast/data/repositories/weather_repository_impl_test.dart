@@ -3,8 +3,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:sky_line/core/config/db_helper/db_helper.dart';
 import 'package:sky_line/core/errors/failure.dart';
 import 'package:sky_line/features/weather_forecast/data/models/current_weather_model.dart';
-import 'package:sky_line/features/weather_forecast/data/models/daily_weather_model.dart';
-import 'package:sky_line/features/weather_forecast/data/models/hourly_weather_model.dart';
 import 'package:sky_line/features/weather_forecast/data/models/weather_model.dart';
 import 'package:sky_line/features/weather_forecast/data/repositories/weather_repository_impl.dart';
 import 'package:sky_line/features/weather_forecast/data/sources/weather_remote_source.dart';
@@ -63,46 +61,6 @@ void main() {
       expect(result.weather.daily.length, 1);
     });
 
-    test('returns cached data on NetworkFailure', () async {
-      when(() => mockRemoteSource.fetchWeather()).thenThrow(
-        const NetworkFailure('No internet'),
-      );
-      when(() => mockDbHelper.loadWeather()).thenReturn(
-        WeatherModel(
-          current: CurrentWeatherModel(
-            temperature: 26.5, humidity: 80, isDay: true,
-            windSpeed: 12.0, precipitation: 0.0, weatherCode: 0,
-          ),
-          hourly: [HourlyWeatherModel(
-            time: DateTime(2026, 5, 16, 12, 0), temperature: 26.5,
-            precipitationProbability: 10, weatherCode: 0,
-          )],
-          daily: [DailyWeatherModel(
-            date: DateTime(2026, 5, 16), tempMax: 28.0, tempMin: 22.0,
-            weatherCode: 0, sunrise: DateTime(2026, 5, 16, 3, 16),
-            sunset: DateTime(2026, 5, 16, 14, 50),
-          )],
-        ),
-      );
-
-      final result = await repository.fetchWeather();
-      expect(result, isA<WeatherResult>());
-      expect(result.isCached, true);
-      expect(result.weather.current.temperature, 26.5);
-    });
-
-    test('throws NetworkFailure when cache is empty', () async {
-      when(() => mockRemoteSource.fetchWeather()).thenThrow(
-        const NetworkFailure('No internet'),
-      );
-      when(() => mockDbHelper.loadWeather()).thenReturn(null);
-
-      expect(
-        () => repository.fetchWeather(),
-        throwsA(isA<NetworkFailure>()),
-      );
-    });
-
     test('throws ParsingFailure on unexpected error', () async {
       when(() => mockRemoteSource.fetchWeather()).thenThrow(
         FormatException('Bad JSON'),
@@ -112,6 +70,38 @@ void main() {
         () => repository.fetchWeather(),
         throwsA(isA<ParsingFailure>()),
       );
+    });
+  });
+
+  group('loadCachedWeather', () {
+    test('returns WeatherResult when cache is fresh', () async {
+      when(() => mockDbHelper.loadWeather(
+        maxAgeMillis: any(named: 'maxAgeMillis'),
+      )).thenReturn(
+        WeatherModel(
+          current: CurrentWeatherModel(
+            temperature: 26.5, humidity: 80, isDay: true,
+            windSpeed: 12.0, precipitation: 0.0, weatherCode: 0,
+          ),
+          hourly: [],
+          daily: [],
+        ),
+      );
+
+      final result = await repository.loadCachedWeather();
+
+      expect(result, isA<WeatherResult>());
+      expect(result!.isCached, true);
+      expect(result.weather.current.temperature, 26.5);
+    });
+
+    test('returns null when cache is empty', () async {
+      when(() => mockDbHelper.loadWeather(
+        maxAgeMillis: any(named: 'maxAgeMillis'),
+      )).thenReturn(null);
+
+      final result = await repository.loadCachedWeather();
+      expect(result, isNull);
     });
   });
 }

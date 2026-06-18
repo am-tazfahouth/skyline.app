@@ -19,7 +19,7 @@ void main() async {
       providers: [
         BlocProvider(
           create: (_) => WeatherForecastBloc(
-            InjectionContainer.fetchWeatherUseCase,
+            InjectionContainer.weatherRepository,
           )..add(FetchWeatherEvent()),
         ),
       ],

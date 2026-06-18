@@ -10,12 +10,12 @@ import 'package:sky_line/features/weather_forecast/domain/entities/daily_weather
 import 'package:sky_line/features/weather_forecast/domain/entities/hourly_weather_entity.dart';
 import 'package:sky_line/features/weather_forecast/domain/entities/weather_entity.dart';
 import 'package:sky_line/features/weather_forecast/domain/entities/weather_result.dart';
-import 'package:sky_line/features/weather_forecast/domain/usecases/fetch_weather_usecase.dart';
+import 'package:sky_line/features/weather_forecast/domain/repositories/weather_repository.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_event.dart';
 import 'package:sky_line/features/weather_forecast/presentation/screens/weather_screen.dart';
 
-class MockFetchWeatherUseCase extends Mock implements FetchWeatherUseCase {}
+class MockWeatherRepository extends Mock implements WeatherRepository {}
 
 Widget createTestScreen(WeatherForecastBloc bloc) {
   return MaterialApp(
@@ -27,17 +27,17 @@ Widget createTestScreen(WeatherForecastBloc bloc) {
 }
 
 void main() {
-  late MockFetchWeatherUseCase mockUseCase;
+  late MockWeatherRepository mockRepository;
 
   setUp(() {
-    mockUseCase = MockFetchWeatherUseCase();
+    mockRepository = MockWeatherRepository();
   });
 
   testWidgets('shows loading indicator while loading', (tester) async {
     final completer = Completer<WeatherResult>();
-    when(() => mockUseCase()).thenAnswer((_) => completer.future);
+    when(() => mockRepository.fetchWeather()).thenAnswer((_) => completer.future);
 
-    final bloc = WeatherForecastBloc(mockUseCase);
+    final bloc = WeatherForecastBloc(mockRepository);
     bloc.add(const FetchWeatherEvent());
     await tester.pumpWidget(createTestScreen(bloc));
     await tester.pump();
@@ -88,9 +88,9 @@ void main() {
       ],
     );
 
-    when(() => mockUseCase()).thenAnswer((_) async => WeatherResult(weather: weather, isCached: false));
+    when(() => mockRepository.fetchWeather()).thenAnswer((_) async => WeatherResult(weather: weather, isCached: false));
 
-    final bloc = WeatherForecastBloc(mockUseCase);
+    final bloc = WeatherForecastBloc(mockRepository);
     bloc.add(const FetchWeatherEvent());
     await tester.pumpWidget(createTestScreen(bloc));
     await tester.pumpAndSettle();
@@ -102,9 +102,9 @@ void main() {
   });
 
   testWidgets('shows error view on error state', (tester) async {
-    when(() => mockUseCase()).thenThrow(const NetworkFailure('No internet'));
+    when(() => mockRepository.fetchWeather()).thenThrow(const NetworkFailure('No internet'));
 
-    final bloc = WeatherForecastBloc(mockUseCase);
+    final bloc = WeatherForecastBloc(mockRepository);
     bloc.add(const FetchWeatherEvent());
     await tester.pumpWidget(createTestScreen(bloc));
     await tester.pumpAndSettle();
