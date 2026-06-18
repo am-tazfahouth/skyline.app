@@ -15,7 +15,7 @@ class WeatherScreen extends StatelessWidget {
     return BlocBuilder<WeatherForecastBloc, WeatherForecastState>(
       builder: (context, state) => switch (state) {
         WeatherInitial() => const WeatherInitialView(),
-        WeatherLoading() => const WeatherLoadingView(),
+        WeatherEmpty() => const WeatherLoadingView(),
         WeatherLoaded() => const WeatherContentView(),
         WeatherError(failure: final f) => WeatherErrorView(message: f.message),
         _ => const WeatherInitialView(),

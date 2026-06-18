@@ -10,3 +10,7 @@ abstract class WeatherForecastEvent extends Equatable {
 class FetchWeatherEvent extends WeatherForecastEvent {
   const FetchWeatherEvent();
 }
+
+class RefreshWeatherEvent extends WeatherForecastEvent {
+  const RefreshWeatherEvent();
+}

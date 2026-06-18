@@ -13,7 +13,7 @@ class WeatherForecastBloc
   }
 
   Future<void> _onFetchWeather(FetchWeatherEvent event, Emitter<WeatherForecastState> emit) async {
-    emit(const WeatherLoading());
+    emit(const WeatherEmpty(isFetching: true));
     try {
       final weather = await _weatherRepository.fetchWeather();
       emit(WeatherLoaded(weather));

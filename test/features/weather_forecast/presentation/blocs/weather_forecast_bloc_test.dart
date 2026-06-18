@@ -62,7 +62,7 @@ void main() {
       },
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
       expect: () => [
-        isA<WeatherLoading>(),
+        isA<WeatherEmpty>(),
         isA<WeatherLoaded>().having(
           (s) => s.result.weather.current.temperature,
           'temperature',
@@ -72,27 +72,27 @@ void main() {
     );
 
     blocTest<WeatherForecastBloc, WeatherForecastState>(
-      'emits [Loading, Error] on failure',
+      'emits [Empty, Error] on failure',
       build: () {
         when(() => mockRepository.fetchWeather()).thenThrow(const ServerFailure('API down'));
         return WeatherForecastBloc(mockRepository);
       },
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
       expect: () => [
-        isA<WeatherLoading>(),
+        isA<WeatherEmpty>(),
         isA<WeatherError>(),
       ],
     );
 
     blocTest<WeatherForecastBloc, WeatherForecastState>(
-      'emits [Loading, Error] on unexpected error',
+      'emits [Empty, Error] on unexpected error',
       build: () {
         when(() => mockRepository.fetchWeather()).thenThrow(Exception('unknown'));
         return WeatherForecastBloc(mockRepository);
       },
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
       expect: () => [
-        isA<WeatherLoading>(),
+        isA<WeatherEmpty>(),
         isA<WeatherError>(),
       ],
     );
