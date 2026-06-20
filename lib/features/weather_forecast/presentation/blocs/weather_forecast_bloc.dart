@@ -26,7 +26,10 @@ class WeatherForecastBloc
     final cached = await _weatherRepository.loadCachedWeather();
     if (cached != null) {
       emit(WeatherLoaded(cached, isFetching: true));
-      if (!await _isConnected()) return;
+      if (!await _isConnected()) {
+        emit(WeatherLoaded(cached));
+        return;
+      }
       try {
         final fresh = await _weatherRepository.fetchWeather();
         emit(WeatherLoaded(fresh));

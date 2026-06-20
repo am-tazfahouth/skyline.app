@@ -57,7 +57,7 @@ void main() {
 
   group('FetchWeatherEvent', () {
     blocTest<WeatherForecastBloc, WeatherForecastState>(
-      'emits [Loaded(cached)] when cache valid + offline',
+      'emits [Loaded(fetching), Loaded(done)] when cache valid + offline',
       setUp: () {
         when(() => mockRepository.loadCachedWeather())
             .thenAnswer((_) async => _result(cached: true));
@@ -69,7 +69,10 @@ void main() {
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
       expect: () => [
         isA<WeatherLoaded>()
-            .having((s) => s.result.isCached, 'cached', true),
+            .having((s) => s.result.isCached, 'cached', true)
+            .having((s) => s.isFetching, 'fetching', true),
+        isA<WeatherLoaded>()
+            .having((s) => s.isFetching, 'done', false),
       ],
     );
 
