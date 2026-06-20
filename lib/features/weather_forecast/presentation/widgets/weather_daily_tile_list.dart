@@ -14,88 +14,77 @@ class WeatherDailyTileList extends StatelessWidget {
     return BlocBuilder<WeatherForecastBloc, WeatherForecastState>(
       builder: (context, state) {
         final surface = AppTheme.surfaceFor(Theme.of(context).brightness);
-        final cardColor = surface.colorContainer;
         final primaryText = surface.onColor;
         final secondaryText = surface.onColorContainer;
 
         final weather = state.weatherOrNull;
         if (weather == null) {
-          return _buildPlaceholder(cardColor, primaryText, secondaryText);
+          return _buildPlaceholder(primaryText, secondaryText);
         }
 
         final items = weather.daily.take(7).toList();
         if (items.isEmpty) return const SizedBox.shrink();
 
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          clipBehavior: Clip.none,
-          child: Row(
-            children: items.map((item) {
-              final day = DateFormat('E').format(item.date);
-              final temp =
-                  '${item.tempMax.toStringAsFixed(0)}° / ${item.tempMin.toStringAsFixed(0)}°';
-              return _buildTile(
-                day: day,
-                icon: WeatherIconMapper.fromWeatherCode(item.weatherCode),
-                temp: temp,
-                cardColor: cardColor,
-                primaryText: primaryText,
-                secondaryText: secondaryText,
-              );
-            }).toList(),
-          ),
+        return Column(
+          children: items.map((item) {
+            final day = DateFormat('E').format(item.date);
+            final temp =
+                '${item.tempMax.toStringAsFixed(0)}° / ${item.tempMin.toStringAsFixed(0)}°';
+            return _buildRowTile(
+              day: day,
+              icon: WeatherIconMapper.fromWeatherCode(item.weatherCode),
+              temp: temp,
+              primaryText: primaryText,
+              secondaryText: secondaryText,
+            );
+          }).toList(),
         );
       },
     );
   }
 
   Widget _buildPlaceholder(
-      Color cardColor, Color primaryText, Color secondaryText) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      clipBehavior: Clip.none,
-      child: Row(
-        children: List.generate(
-          5,
-          (_) => _buildTile(
-            day: '--',
-            icon: Icons.cloud_rounded,
-            temp: '--° / --°',
-            cardColor: cardColor,
-            primaryText: primaryText,
-            secondaryText: secondaryText,
-          ),
+      Color primaryText, Color secondaryText) {
+    return Column(
+      children: List.generate(
+        5,
+        (_) => _buildRowTile(
+          day: '--',
+          icon: Icons.cloud_rounded,
+          temp: '--° / --°',
+          primaryText: primaryText,
+          secondaryText: secondaryText,
         ),
       ),
     );
   }
 
-  Widget _buildTile({
+  Widget _buildRowTile({
     required String day,
     required IconData icon,
     required String temp,
-    required Color cardColor,
     required Color primaryText,
     required Color secondaryText,
   }) {
-    return Container(
-      margin: const EdgeInsets.only(right: 14),
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Column(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
         children: [
-          Text(day, style: TextStyle(color: secondaryText, fontSize: 12)),
-          const SizedBox(height: 10),
+          SizedBox(
+            width: 48,
+            child: Text(
+              day,
+              style: TextStyle(color: secondaryText, fontSize: 13),
+            ),
+          ),
+          const SizedBox(width: 8),
           Icon(icon, color: secondaryText, size: 22),
-          const SizedBox(height: 10),
+          const Spacer(),
           Text(
             temp,
             style: TextStyle(
               color: primaryText,
-              fontSize: 13,
+              fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
           ),

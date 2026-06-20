@@ -3,66 +3,57 @@ import 'package:sky_line/core/config/app_theme.dart';
 import 'package:sky_line/features/weather_forecast/presentation/widgets/weather_daily_tile_list.dart';
 import 'package:sky_line/features/weather_forecast/presentation/widgets/weather_hourly_tile_list.dart';
 
-class WeatherForecastSection extends StatefulWidget {
+class WeatherForecastSection extends StatelessWidget {
   const WeatherForecastSection({super.key});
-
-  @override
-  State<WeatherForecastSection> createState() => _WeatherForecastSectionState();
-}
-
-class _WeatherForecastSectionState extends State<WeatherForecastSection> {
-  int _selectedTab = 0;
-  final _tabs = const ['Today', 'Next 7 Day'];
 
   @override
   Widget build(BuildContext context) {
     final surface = AppTheme.surfaceFor(Theme.of(context).brightness);
+    final cardColor = surface.colorContainer;
     final primaryText = surface.onColor;
-    final secondaryText = surface.onColorContainer;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: List.generate(_tabs.length, (i) {
-            final selected = _selectedTab == i;
-            return GestureDetector(
-              onTap: () => setState(() => _selectedTab = i),
-              behavior: HitTestBehavior.opaque,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _tabs[i],
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
-                        color: selected ? primaryText : secondaryText,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      height: 2.5,
-                      width: selected ? 24 : 0,
-                      decoration: BoxDecoration(
-                        color: primaryText,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }),
+        // --- Hourly Forecast ---
+        Text(
+          'Hourly Forecast',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: primaryText,
+          ),
         ),
-        const SizedBox(height: 18),
-        if (_selectedTab == 0)
-          const WeatherHourlyTileList()
-        else
-          const WeatherDailyTileList(),
+        const SizedBox(height: 12),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: const WeatherHourlyTileList(),
+        ),
+        const SizedBox(height: 28),
+        // --- Next 7 Days ---
+        Text(
+          'Next 7 Days',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: primaryText,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: const WeatherDailyTileList(),
+        ),
       ],
     );
   }
