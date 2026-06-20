@@ -28,77 +28,71 @@ class WeatherStatsCard extends StatelessWidget {
             ? WeatherFormat.percentInt(weather.current.humidity)
             : '--%';
 
-        return Container(
-          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 10),
-          decoration: BoxDecoration(
-            color: cardColor,
-            borderRadius: BorderRadius.circular(22),
-          ),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildStatItem(
-                    icon: Icons.air_rounded,
-                    value: wind,
-                    label: 'Wind',
-                    primaryText: primaryText,
-                    secondaryText: secondaryText,
-                  ),
-                  _buildVerticalDivider(secondaryText: secondaryText),
-                  _buildStatItem(
-                    icon: Icons.umbrella_rounded,
-                    value: rain,
-                    label: 'Chance of rain',
-                    primaryText: primaryText,
-                    secondaryText: secondaryText,
-                  ),
-                  _buildVerticalDivider(secondaryText: secondaryText),
-                  _buildStatItem(
-                    icon: Icons.water_drop_outlined,
-                    value: humidity,
-                    label: 'Humidity',
-                    primaryText: primaryText,
-                    secondaryText: secondaryText,
-                  ),
-                ],
-              ),
-            ],
-          ),
+        return Row(
+          children: [
+            Expanded(child: _buildStatCard(
+              icon: Icons.air_rounded,
+              value: wind,
+              label: 'Wind',
+              cardColor: cardColor,
+              primaryText: primaryText,
+              secondaryText: secondaryText,
+            )),
+            const SizedBox(width: 10),
+            Expanded(child: _buildStatCard(
+              icon: Icons.umbrella_rounded,
+              value: rain,
+              label: 'Chance of rain',
+              cardColor: cardColor,
+              primaryText: primaryText,
+              secondaryText: secondaryText,
+            )),
+            const SizedBox(width: 10),
+            Expanded(child: _buildStatCard(
+              icon: Icons.water_drop_outlined,
+              value: humidity,
+              label: 'Humidity',
+              cardColor: cardColor,
+              primaryText: primaryText,
+              secondaryText: secondaryText,
+            )),
+          ],
         );
       },
     );
   }
 
-  Widget _buildStatItem({
+  Widget _buildStatCard({
     required IconData icon,
     required String value,
     required String label,
+    required Color cardColor,
     required Color primaryText,
     required Color secondaryText,
   }) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: secondaryText, size: 20),
-        const SizedBox(height: 8),
-        Text(
-          value,
-          style: TextStyle(
-            color: primaryText,
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 3),
-        Text(label, style: TextStyle(color: secondaryText, fontSize: 11)),
-      ],
-    );
-  }
-
-  Widget _buildVerticalDivider({required Color secondaryText}) {
     return Container(
-        height: 36, width: 1, color: secondaryText.withValues(alpha: 0.3));
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: secondaryText, size: 20),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: TextStyle(
+              color: primaryText,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 3),
+          Text(label, style: TextStyle(color: secondaryText, fontSize: 11)),
+        ],
+      ),
+    );
   }
 }
