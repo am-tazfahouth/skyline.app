@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:sky_line/features/weather_forecast/domain/entities/daily_weather_entity.dart';
@@ -36,6 +37,24 @@ class ChartStyle {
   }
 }
 
+/// Display data for a single time point (icon, label, formatted time).
+class TimePointData extends Equatable {
+  final IconData icon;
+  final Color iconColor;
+  final String label;
+  final String time;
+
+  const TimePointData({
+    required this.icon,
+    required this.iconColor,
+    required this.label,
+    required this.time,
+  });
+
+  @override
+  List<Object?> get props => [icon, iconColor, label, time];
+}
+
 /// Encapsulates all display values (icons, labels, times, chart range)
 /// for the sun / moon times card.
 ///
@@ -55,6 +74,8 @@ class PeriodConfig {
   final DateTime chartStart;
   final DateTime chartEnd;
   final bool isDay;
+  final String title;
+  final IconData titleIcon;
 
   const PeriodConfig({
     required this.firstIcon,
@@ -68,7 +89,44 @@ class PeriodConfig {
     required this.chartStart,
     required this.chartEnd,
     required this.isDay,
+    required this.title,
+    required this.titleIcon,
   });
+
+  TimePointData get start => TimePointData(
+        icon: firstIcon,
+        iconColor: firstColor,
+        label: firstLabel,
+        time: firstTime,
+      );
+
+  TimePointData get end => TimePointData(
+        icon: secondIcon,
+        iconColor: secondColor,
+        label: secondLabel,
+        time: secondTime,
+      );
+
+  TimePointData get middle {
+    final midpoint = DateTime.fromMillisecondsSinceEpoch(
+      (chartStart.millisecondsSinceEpoch + chartEnd.millisecondsSinceEpoch) ~/ 2,
+    );
+    final time = DateFormat('hh:mm a').format(midpoint);
+    if (isDay) {
+      return TimePointData(
+        icon: Icons.wb_sunny,
+        iconColor: firstColor,
+        label: 'Zenith',
+        time: time,
+      );
+    }
+    return TimePointData(
+      icon: Icons.nights_stay,
+      iconColor: secondColor,
+      label: 'Midnight',
+      time: time,
+    );
+  }
 
   /// Determines the current period (day, evening-night, or dawn)
   /// and builds the full configuration from it.
@@ -94,6 +152,8 @@ class PeriodConfig {
         chartStart: today.sunrise,
         chartEnd: today.sunset,
         isDay: true,
+        title: 'Sun Time',
+        titleIcon: Icons.wb_sunny_outlined,
       );
     }
 
@@ -111,6 +171,8 @@ class PeriodConfig {
         chartStart: today.sunset,
         chartEnd: nextSunrise,
         isDay: false,
+        title: 'Night Time',
+        titleIcon: Icons.nightlight_round_outlined,
       );
     }
 
@@ -130,6 +192,8 @@ class PeriodConfig {
       chartStart: proxySunset,
       chartEnd: today.sunrise,
       isDay: false,
+      title: 'Night Time',
+      titleIcon: Icons.nightlight_round_outlined,
     );
   }
 }

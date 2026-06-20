@@ -10,47 +10,27 @@ class WeatherForecastSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final surface = AppTheme.surfaceFor(Theme.of(context).brightness);
     final cardColor = surface.colorContainer;
-    final primaryText = surface.onColor;
-
+/*     final primaryText = surface.onColor;
+ */
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // --- Hourly Forecast ---
-        Text(
-          'Hourly Forecast',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-            color: primaryText,
-          ),
-        ),
-        const SizedBox(height: 12),
+      children: [        
         Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
           decoration: BoxDecoration(
             color: cardColor,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(14),
           ),
           child: const WeatherHourlyTileList(),
         ),
-        const SizedBox(height: 28),
-        // --- Next 7 Days ---
-        Text(
-          'Next 7 Days',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-            color: primaryText,
-          ),
-        ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 20),
         Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
           decoration: BoxDecoration(
             color: cardColor,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(14),
           ),
           child: const WeatherDailyTileList(),
         ),

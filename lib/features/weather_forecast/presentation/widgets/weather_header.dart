@@ -1,21 +1,12 @@
 import 'package:flutter/material.dart';
 
-class WeatherHeader extends StatefulWidget implements PreferredSizeWidget {
+class WeatherHeader extends StatelessWidget implements PreferredSizeWidget {
   const WeatherHeader({super.key});
-
-  @override
-  State<WeatherHeader> createState() => _WeatherHeaderState();
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-}
-
-class _WeatherHeaderState extends State<WeatherHeader> {
-  String _selectedLocation = 'Moroni, Comoros';
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      notificationPredicate: (_) => false,
       backgroundColor: Colors.transparent,
       elevation: 0,
       leading: IconButton(
@@ -23,23 +14,12 @@ class _WeatherHeaderState extends State<WeatherHeader> {
         onPressed: () {},
       ),
       centerTitle: true,
-      title: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.location_on_rounded, size: 18),
-          const SizedBox(width: 4),
-          DropdownButton<String>(
-            value: _selectedLocation,
-            underline: const SizedBox(),
-            isDense: true,
-            items: const [
-              DropdownMenuItem(value: 'Moroni, Comoros', child: Text('Moroni, Comoros')),
-            ],
-            onChanged: (v) {
-              if (v != null) setState(() => _selectedLocation = v);
-            },
-          ),
-        ],
+      title: Text(
+        'Moroni, Comoros',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w800,
+        ),
       ),
       actions: [
         IconButton(
@@ -49,4 +29,7 @@ class _WeatherHeaderState extends State<WeatherHeader> {
       ],
     );
   }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

@@ -1,12 +1,9 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/config/app_theme.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_state.dart';
 import 'package:sky_line/features/weather_forecast/presentation/widgets/sun_time/sun_times_ui_model.dart';
-import 'package:sky_line/features/weather_forecast/presentation/widgets/sun_time/time_row.dart';
 
 class WeatherSunTimes extends StatelessWidget {
   const WeatherSunTimes({super.key});
@@ -45,56 +42,67 @@ class WeatherSunTimes extends StatelessWidget {
         );
 
         return Container(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: cardColor,
-            borderRadius: BorderRadius.circular(16.0),
+            borderRadius: BorderRadius.circular(14),
           ),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                width: 120,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TimeRow(
-                      icon: config.firstIcon,
-                      iconColor: config.firstColor,
-                      label: config.firstLabel,
-                      time: config.firstTime,
-                      primaryText: primaryText,
-                      secondaryText: secondaryText,
-                    ),
-                    const SizedBox(height: 16),
-                    TimeRow(
-                      icon: config.secondIcon,
-                      iconColor: config.secondColor,
-                      label: config.secondLabel,
-                      time: config.secondTime,
-                      primaryText: primaryText,
-                      secondaryText: secondaryText,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: SizedBox(
-                  height: 100,
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      return _SunPathChart(
-                        width: constraints.maxWidth,
-                        height: constraints.maxHeight,
-                        chartStart: config.chartStart,
-                        chartEnd: config.chartEnd,
-                        currentTime: now,
-                        style: ChartStyle.forPeriod(config.isDay, colorScheme),
-                      );
-                    },
+              Row(
+                children: [
+                  Icon(
+                    size: 18,
+                    color: primaryText,
+                    config.titleIcon,
                   ),
-                ),
+                  const SizedBox(width: 4),
+                  Text(
+                    config.title,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: primaryText,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  _TimePoint(
+                    data: config.start,
+                    primaryText: primaryText,
+                    secondaryText: secondaryText,
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        '—',
+                        style: TextStyle(color: secondaryText, fontSize: 20),
+                      ),
+                    ),
+                  ),
+                  _TimePoint(
+                    data: config.middle,
+                    primaryText: primaryText,
+                    secondaryText: secondaryText,
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        '—',
+                        style: TextStyle(color: secondaryText, fontSize: 20),
+                      ),
+                    ),
+                  ),
+                  _TimePoint(
+                    data: config.end,
+                    primaryText: primaryText,
+                    secondaryText: secondaryText,
+                  ),
+                ],
               ),
             ],
           ),
@@ -109,42 +117,74 @@ class WeatherSunTimes extends StatelessWidget {
     required Color secondaryText,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(16.0),
+        borderRadius: BorderRadius.circular(14),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 120,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TimeRow(
-                  icon: Icons.wb_sunny_rounded,
-                  iconColor: secondaryText,
+          Row(
+            children: [
+              Icon(
+                size: 18,
+                color: primaryText,
+                Icons.wb_sunny_outlined,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                'Sun Time',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: primaryText,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              _TimePoint(
+                data: const TimePointData(
+                  icon: Icons.wb_sunny_outlined,
+                  iconColor: Colors.grey,
                   label: 'Sunrise',
                   time: '--:--',
-                  primaryText: primaryText,
-                  secondaryText: secondaryText,
                 ),
-                const SizedBox(height: 16),
-                TimeRow(
-                  icon: Icons.nightlight_round,
-                  iconColor: secondaryText,
+                primaryText: primaryText,
+                secondaryText: secondaryText,
+              ),
+              Text(
+                '—',
+                style: TextStyle(color: secondaryText, fontSize: 20),
+              ),
+              _TimePoint(
+                data: const TimePointData(
+                  icon: Icons.wb_sunny,
+                  iconColor: Colors.grey,
+                  label: 'Zenith',
+                  time: '--:--',
+                ),
+                primaryText: primaryText,
+                secondaryText: secondaryText,
+              ),
+              Text(
+                '—',
+                style: TextStyle(color: secondaryText, fontSize: 20),
+              ),
+              _TimePoint(
+                data: const TimePointData(
+                  icon: Icons.nightlight_round_outlined,
+                  iconColor: Colors.grey,
                   label: 'Sunset',
                   time: '--:--',
-                  primaryText: primaryText,
-                  secondaryText: secondaryText,
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Container(height: 100),
+                primaryText: primaryText,
+                secondaryText: secondaryText,
+              ),
+            ],
           ),
         ],
       ),
@@ -152,111 +192,38 @@ class WeatherSunTimes extends StatelessWidget {
   }
 }
 
-class _SunPathChart extends StatelessWidget {
-  final double width;
-  final double height;
-  final DateTime chartStart;
-  final DateTime chartEnd;
-  final DateTime currentTime;
-  final ChartStyle style;
+class _TimePoint extends StatelessWidget {
+  final TimePointData data;
+  final Color primaryText;
+  final Color secondaryText;
 
-  const _SunPathChart({
-    required this.width,
-    required this.height,
-    required this.chartStart,
-    required this.chartEnd,
-    required this.currentTime,
-    required this.style,
+  const _TimePoint({
+    required this.data,
+    required this.primaryText,
+    required this.secondaryText,
   });
 
   @override
   Widget build(BuildContext context) {
-    final total = chartEnd.difference(chartStart).inSeconds;
-    final elapsed = currentTime.difference(chartStart).inSeconds;
-    final progress = total > 0 ? (elapsed / total).clamp(0.0, 1.0) : 0.0;
-
-    final spots = _buildSpots(progress);
-
-    return Stack(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        LineChart(
-          LineChartData(
-            minY: 0,
-            maxY: 1.2,
-            minX: 0,
-            maxX: 1,
-            titlesData: const FlTitlesData(show: false),
-            gridData: const FlGridData(show: false),
-            lineTouchData: const LineTouchData(enabled: false),
-            borderData: FlBorderData(show: false),
-            lineBarsData: [
-              LineChartBarData(
-                spots: spots.past,
-                isCurved: true,
-                curveSmoothness: 0.35,
-                color: style.past,
-                barWidth: 2.5,
-                dotData: const FlDotData(show: false),
-                belowBarData: BarAreaData(show: false),
-              ),
-              LineChartBarData(
-                spots: spots.future,
-                isCurved: true,
-                curveSmoothness: 0.35,
-                color: style.future,
-                barWidth: 2,
-                dashArray: [5, 5],
-                dotData: const FlDotData(show: false),
-                belowBarData: BarAreaData(show: false),
-              ),
-            ],
-          ),
+        Icon(data.icon, color: data.iconColor, size: 20),
+        const SizedBox(height: 4),
+        Text(
+          data.label,
+          style: TextStyle(color: secondaryText, fontSize: 11),
         ),
-        Positioned(
-          left: progress * width - 3,
-          top: (1.0 - sin(progress * pi)) * (height - 10) + 4.5,
-          child: Container(
-            width: 16,
-            height: 16,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: style.dot,
-              boxShadow: [
-                BoxShadow(
-                  color: style.dotShadow,
-                  blurRadius: 8,
-                  spreadRadius: 2,
-                ),
-              ],
-            ),
+        const SizedBox(height: 2),
+        Text(
+          data.time,
+          style: TextStyle(
+            color: primaryText,
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ],
     );
   }
-}
-
-({List<FlSpot> past, List<FlSpot> future}) _buildSpots(double progress) {
-  final fullSpots = List.generate(51, (i) {
-    final x = i / 50;
-    return FlSpot(x, sin(x * pi));
-  });
-
-  final past = <FlSpot>[];
-  final future = <FlSpot>[];
-
-  for (final spot in fullSpots) {
-    if (spot.x <= progress) past.add(spot);
-    if (spot.x >= progress) future.add(spot);
-  }
-
-  final currentY = sin(progress * pi);
-  if (past.isNotEmpty && past.last.x != progress) {
-    past.add(FlSpot(progress, currentY));
-  }
-  if (future.isNotEmpty && future.first.x != progress) {
-    future.insert(0, FlSpot(progress, currentY));
-  }
-
-  return (past: past, future: future);
 }

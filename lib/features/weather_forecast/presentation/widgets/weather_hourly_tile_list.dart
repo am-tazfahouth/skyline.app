@@ -31,32 +31,54 @@ class WeatherHourlyTileList extends StatelessWidget {
 
         if (filtered.isEmpty) return const SizedBox.shrink();
 
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          clipBehavior: Clip.none,
-          child: Row(
-            children: filtered.map((item) {
-              final time = DateFormat('HH:mm').format(item.time);
-              final temp = '${item.temperature.toStringAsFixed(0)}°';
-              final isDay = item.time.hour >= 6 && item.time.hour < 18;
-              return _buildTile(
-                time: time,
-                icon: WeatherIconMapper.fromWeatherCode(
+        return Column(
+          children: [
+            Row(
+              children: [
+                Icon(
+                  size: 18,
+                  color: primaryText,
+                  Icons.access_time_filled_outlined,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  'Hourly Forecast',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: primaryText,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 5),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              clipBehavior: Clip.antiAlias,
+              child: Row(
+                children: filtered.map((item) {
+                  final time = DateFormat('HH:mm').format(item.time);
+                  final temp = '${item.temperature.toStringAsFixed(0)}°';
+                  final isDay = item.time.hour >= 6 && item.time.hour < 18;
+                  return _buildTile(
+                    time: time,
+                    icon: WeatherIconMapper.fromWeatherCode(
                     item.weatherCode, isDay: isDay),
-                temp: temp,
-                cardColor: cardColor,
-                primaryText: primaryText,
-                secondaryText: secondaryText,
-              );
-            }).toList(),
-          ),
+                    temp: temp,
+                    cardColor: cardColor,
+                    primaryText: primaryText,
+                    secondaryText: secondaryText,
+                  );
+                }).toList(),
+              ),
+            ),
+          ],
         );
       },
     );
   }
 
-  Widget _buildPlaceholder(
-      Color cardColor, Color primaryText, Color secondaryText) {
+  Widget _buildPlaceholder(Color cardColor, Color primaryText, Color secondaryText) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       clipBehavior: Clip.none,
@@ -86,7 +108,7 @@ class WeatherHourlyTileList extends StatelessWidget {
   }) {
     return Container(
       margin: const EdgeInsets.only(right: 14),
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(18),

@@ -37,10 +37,10 @@ class WeatherContentView extends StatelessWidget {
                 const SizedBox(height: 14),
                 const WeatherStatsCard(),
                 // End - States of current day
-                const SizedBox(height: 28),
+                const SizedBox(height: 20),
                 const WeatherForecastSection(),
                 // End - Forecast section
-                const SizedBox(height: 28),
+                const SizedBox(height: 20),
                 const WeatherSunTimes(),
                 // End - SunCard
               ],
