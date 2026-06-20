@@ -14,7 +14,6 @@ class WeatherMainCard extends StatelessWidget {
     return BlocBuilder<WeatherForecastBloc, WeatherForecastState>(
       builder: (context, state) {
         final surface = AppTheme.surfaceFor(Theme.of(context).brightness);
-        final cardColor = surface.colorContainer;
         final primaryText = surface.onColor;
         final secondaryText = surface.onColorContainer;
 
@@ -39,45 +38,34 @@ class WeatherMainCard extends StatelessWidget {
         return Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 22),
-          decoration: BoxDecoration(
-            color: cardColor,
-            borderRadius: BorderRadius.circular(22),
-          ),
-          child: Row(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(date,
-                        style:
-                            TextStyle(fontSize: 12, color: secondaryText)),
-                    const SizedBox(height: 6),
-                    Text(
-                      condition,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: primaryText,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      temperature,
-                      style: TextStyle(
-                        fontSize: 52,
-                        fontWeight: FontWeight.bold,
-                        color: primaryText,
-                        height: 1,
-                      ),
-                    ),
-                  ],
-                ),
+          children: [
+            Icon(iconData, color: primaryText, size: iconSize),
+            const SizedBox(height: 12),
+            Text(
+              temperature,
+              style: TextStyle(
+                fontSize: 52,
+                fontWeight: FontWeight.bold,
+                color: primaryText,
+                height: 1,
               ),
-              Icon(iconData, color: primaryText, size: iconSize),
-            ],
-          ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              condition,
+              style: TextStyle(
+                fontSize: 15,
+                color: primaryText,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(date,
+                style: TextStyle(fontSize: 12, color: secondaryText)),
+          ],
+        ),
         );
       },
     );
