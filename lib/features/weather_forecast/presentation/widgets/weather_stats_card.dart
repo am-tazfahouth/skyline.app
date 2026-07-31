@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/config/app_theme.dart';
+import 'package:sky_line/core/enums/setting_wind_unit.dart';
 import 'package:sky_line/core/utils/weather_format.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_state.dart';
@@ -18,8 +19,9 @@ class WeatherStatsCard extends StatelessWidget {
         final secondaryText = surface.onColorContainer;
 
         final weather = state.weatherOrNull;
+        final settings = state.settingsOrNull;
         final wind = weather != null
-            ? WeatherFormat.wind(weather.current.windSpeed)
+            ? WeatherFormat.wind(weather.current.windSpeed, unit: settings?.windUnit ?? SettingWindUnit.ms)
             : '-- m/s';
         final rain = weather != null
             ? WeatherFormat.percent(weather.current.precipitation)

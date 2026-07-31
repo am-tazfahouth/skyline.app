@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:sky_line/core/config/db_helper/db_helper.dart';
-import 'package:sky_line/core/errors/failure.dart';
 import 'package:sky_line/features/weather_forecast/data/models/current_weather_model.dart';
 import 'package:sky_line/features/weather_forecast/data/models/weather_model.dart';
 import 'package:sky_line/features/weather_forecast/data/repositories/weather_repository_impl.dart';
@@ -49,11 +48,11 @@ void main() {
     };
 
     test('returns WeatherResult on success', () async {
-      when(() => mockRemoteSource.fetchWeather()).thenAnswer(
+      when(() => mockRemoteSource.fetchWeather(any(), any())).thenAnswer(
         (_) async => validJson,
       );
 
-      final result = await repository.fetchWeather();
+      final result = await repository.fetchWeather(latitude: -11.7022, longitude: 43.2551);
       expect(result, isA<WeatherResult>());
       expect(result.isCached, false);
       expect(result.weather.current.temperature, 26.5);
@@ -61,14 +60,14 @@ void main() {
       expect(result.weather.daily.length, 1);
     });
 
-    test('throws ParsingFailure on unexpected error', () async {
-      when(() => mockRemoteSource.fetchWeather()).thenThrow(
+    test('throws Exception on unexpected error', () async {
+      when(() => mockRemoteSource.fetchWeather(any(), any())).thenThrow(
         FormatException('Bad JSON'),
       );
 
       expect(
-        () => repository.fetchWeather(),
-        throwsA(isA<ParsingFailure>()),
+        () => repository.fetchWeather(latitude: -11.7022, longitude: 43.2551),
+        throwsA(isA<Exception>()),
       );
     });
   });

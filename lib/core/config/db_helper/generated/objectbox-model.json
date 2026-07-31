@@ -1,0 +1,169 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:2210911012725832288",
+      "lastPropertyId": "7:3809650991414477489",
+      "name": "LastLocationEntity",
+      "properties": [
+        {
+          "id": "1:5858362324054218998",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:4218569162717331224",
+          "name": "latitude",
+          "type": 8
+        },
+        {
+          "id": "3:2225309091416150941",
+          "name": "longitude",
+          "type": 8
+        },
+        {
+          "id": "4:820977847518650588",
+          "name": "cityName",
+          "type": 9
+        },
+        {
+          "id": "5:2662017563845466764",
+          "name": "country",
+          "type": 9
+        },
+        {
+          "id": "6:7946716057072048432",
+          "name": "admin1",
+          "type": 9
+        },
+        {
+          "id": "7:3809650991414477489",
+          "name": "isGpsLocation",
+          "type": 1
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "2:1247622828995764717",
+      "lastPropertyId": "8:8608895443694872268",
+      "name": "LocationCacheEntity",
+      "properties": [
+        {
+          "id": "1:6420739671653827961",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:7843060827342845661",
+          "name": "latitude",
+          "type": 8
+        },
+        {
+          "id": "3:4940350899013971600",
+          "name": "longitude",
+          "type": 8
+        },
+        {
+          "id": "4:687330500354480327",
+          "name": "cityName",
+          "type": 9
+        },
+        {
+          "id": "5:6760593344529832668",
+          "name": "country",
+          "type": 9
+        },
+        {
+          "id": "6:2988180066741866240",
+          "name": "admin1",
+          "type": 9
+        },
+        {
+          "id": "7:7175317387238771371",
+          "name": "isGpsLocation",
+          "type": 1
+        },
+        {
+          "id": "8:8608895443694872268",
+          "name": "sortOrder",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:6025317900576132359",
+      "lastPropertyId": "5:6673446789472780211",
+      "name": "SettingCacheEntity",
+      "properties": [
+        {
+          "id": "1:8022934055168767075",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:4003411768916748251",
+          "name": "themeValue",
+          "type": 9
+        },
+        {
+          "id": "3:1285901567842024797",
+          "name": "langValue",
+          "type": 9
+        },
+        {
+          "id": "4:6836021433993279305",
+          "name": "windUnitValue",
+          "type": 9
+        },
+        {
+          "id": "5:6673446789472780211",
+          "name": "heatUnitValue",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "4:4340715015938654862",
+      "lastPropertyId": "3:6441129740558671251",
+      "name": "WeatherCacheEntity",
+      "properties": [
+        {
+          "id": "1:3979075591160232825",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:1458159690928429679",
+          "name": "jsonData",
+          "type": 9
+        },
+        {
+          "id": "3:6441129740558671251",
+          "name": "savedAt",
+          "type": 6
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "4:4340715015938654862",
+  "lastIndexId": "0:0",
+  "lastRelationId": "0:0",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [],
+  "retiredRelationUids": [],
+  "version": 1
+}

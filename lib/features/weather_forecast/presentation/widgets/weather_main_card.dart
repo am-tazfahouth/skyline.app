@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/config/app_theme.dart';
+import 'package:sky_line/core/enums/setting_heat_unit.dart';
 import 'package:sky_line/core/utils/weather_format.dart';
 import 'package:sky_line/core/utils/weather_icon_mapper.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
@@ -18,6 +19,7 @@ class WeatherMainCard extends StatelessWidget {
         final secondaryText = surface.onColorContainer;
 
         final weather = state.weatherOrNull;
+        final settings = state.settingsOrNull;
         final date = weather != null
             ? WeatherFormat.date(DateTime.now())
             : '--';
@@ -25,7 +27,7 @@ class WeatherMainCard extends StatelessWidget {
             ? WeatherFormat.condition(weather.current.weatherCode)
             : '--';
         final temperature = weather != null
-            ? WeatherFormat.temperature(weather.current.temperature)
+            ? WeatherFormat.temperature(weather.current.temperature, unit: settings?.heatUnit ?? SettingHeatUnit.celsius)
             : '--°C';
         final iconData = weather != null
             ? WeatherIconMapper.fromWeatherCode(

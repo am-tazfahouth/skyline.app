@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sky_line/core/errors/app_error.dart';
+import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
+import 'package:sky_line/features/location/presentation/blocs/location_state.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
+import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_event.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_state.dart';
 import 'package:sky_line/features/weather_forecast/presentation/widgets/views/weather_content_view.dart';
 import 'package:sky_line/features/weather_forecast/presentation/widgets/views/weather_error_view.dart';
@@ -12,43 +16,56 @@ class WeatherScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<WeatherForecastBloc, WeatherForecastState>(
-      builder: (context, state) {
-        final content = _contentFor(state);
-        if (state.hasData && state.isFetching) {
-          final theme = Theme.of(context);
-          final primary = theme.colorScheme.primary;
-          return Stack(
-            children: [
-              content,
-              Positioned.fill(
-                child: Container(
-                  color: theme.colorScheme.surface.withValues(alpha: 0.7),
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        LoadingAnimationWidget.staggeredDotsWave(
-                          size: 25,
-                          color: primary,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Refreshing...',
-                          style: theme.textTheme.bodyLarge?.copyWith(
+    return BlocListener<LocationBloc, LocationState>(
+      listener: (context, state) {
+        if (state is LocationSelected) {
+          context.read<WeatherForecastBloc>().add(
+            FetchWeatherEvent(
+              latitude: state.location.latitude,
+              longitude: state.location.longitude,
+            ),
+          );
+        }
+      },
+      child: BlocBuilder<WeatherForecastBloc, WeatherForecastState>(
+        builder: (context, state) {
+          final content = _contentFor(state);
+          if (state.hasData && state.isFetching) {
+            final theme = Theme.of(context);
+            final primary = theme.colorScheme.primary;
+            return Stack(
+              children: [
+                content,
+                Positioned.fill(
+                  child: Container(
+                    color: theme.colorScheme.surface.withValues(alpha: 0.7),
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          LoadingAnimationWidget.staggeredDotsWave(
+                            key: const Key('loading_indicator'),
+                            size: 25,
                             color: primary,
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 16),
+                          Text(
+                            'Refreshing...',
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: primary,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          );
-        }
-        return content;
-      },
+              ],
+            );
+          }
+          return content;
+        },
+      ),
     );
   }
 
@@ -57,7 +74,8 @@ class WeatherScreen extends StatelessWidget {
       WeatherInitial() => const WeatherInitialView(),
       WeatherEmpty() => const WeatherContentView(),
       WeatherLoaded() => const WeatherContentView(),
-      WeatherError(failure: final f) => WeatherErrorView(message: f.message),
+      WeatherError(errorCode: final code) =>
+        WeatherErrorView(message: AppError.getUserErrorMessage(code)),
       _ => const WeatherInitialView(),
     };
   }

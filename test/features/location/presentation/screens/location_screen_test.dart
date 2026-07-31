@@ -1,0 +1,171 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:sky_line/core/services/logger_sevices.dart';
+import 'package:sky_line/features/location/domain/entities/location_entity.dart';
+import 'package:sky_line/features/location/domain/repositories/location_repository.dart';
+import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
+import 'package:sky_line/features/location/presentation/blocs/location_event.dart';
+import 'package:sky_line/features/location/presentation/screens/location_screen.dart';
+
+class MockRepository extends Mock implements LocationRepository {}
+
+class MockLogger extends Mock implements AppLogger {}
+
+const paris = LocationEntity(
+  latitude: 48.85,
+  longitude: 2.35,
+  cityName: 'Paris',
+  country: 'France',
+);
+
+const gps = LocationEntity(
+  latitude: -11.7,
+  longitude: 43.25,
+  cityName: 'Current Location',
+  isGpsLocation: true,
+);
+
+void main() {
+  late MockRepository repo;
+  late LocationBloc bloc;
+
+  setUpAll(() {
+    registerFallbackValue(const LocationEntity(latitude: 0, longitude: 0, cityName: ''));
+  });
+
+  setUp(() {
+    repo = MockRepository();
+  });
+
+  LocationBloc createBloc() {
+    final bloc = LocationBloc(logger: MockLogger(), repository: repo);
+    addTearDown(bloc.close);
+    return bloc;
+  }
+
+  Future<void> pumpLocationScreen(WidgetTester tester) async {
+    await tester.pumpWidget(
+      BlocProvider<LocationBloc>.value(
+        value: bloc,
+        child: MaterialApp(
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: Center(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const LocationScreen()),
+                  ),
+                  child: const Text('open'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('renders title and empty favorites state', (tester) async {
+    bloc = createBloc();
+    await pumpLocationScreen(tester);
+
+    expect(find.text('Location'), findsOneWidget);
+    expect(find.text('No favorites yet'), findsOneWidget);
+  });
+
+  testWidgets('renders favorite locations', (tester) async {
+    bloc = createBloc();
+    when(() => repo.loadFavorites()).thenReturn([paris]);
+    when(() => repo.loadLastLocation()).thenReturn(null);
+    bloc.add(const LoadFavoritesEvent());
+
+    await pumpLocationScreen(tester);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Paris'), findsOneWidget);
+  });
+
+  testWidgets('FAB navigates to LocationSearchScreen', (tester) async {
+    bloc = createBloc();
+    await pumpLocationScreen(tester);
+
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Search City'), findsOneWidget);
+  });
+
+  testWidgets('GPS action dispatches DetectCurrentLocationEvent', (tester) async {
+    bloc = createBloc();
+    when(() => repo.loadFavorites()).thenReturn([]);
+    when(() => repo.detectCurrentLocation()).thenAnswer((_) async => gps);
+    when(() => repo.saveLastLocation(any())).thenAnswer((_) async {});
+    when(() => repo.saveFavorite(any())).thenAnswer((_) async {});
+
+    await pumpLocationScreen(tester);
+    await tester.tap(find.byIcon(Icons.my_location_rounded));
+    await tester.pumpAndSettle();
+
+    verify(() => repo.detectCurrentLocation()).called(1);
+  });
+
+  testWidgets('GPS selection adds favorite and pops', (tester) async {
+    bloc = createBloc();
+    when(() => repo.loadFavorites()).thenReturn([]);
+    when(() => repo.detectCurrentLocation()).thenAnswer((_) async => gps);
+    when(() => repo.saveLastLocation(any())).thenAnswer((_) async {});
+    when(() => repo.saveFavorite(any())).thenAnswer((_) async {});
+
+    await pumpLocationScreen(tester);
+    await tester.tap(find.byIcon(Icons.my_location_rounded));
+    await tester.pumpAndSettle();
+
+    verify(() => repo.saveFavorite(gps)).called(1);
+    expect(find.text('open'), findsOneWidget);
+  });
+
+  testWidgets('non-GPS selection pops without adding favorite', (tester) async {
+    bloc = createBloc();
+    when(() => repo.loadFavorites()).thenReturn([]);
+    when(() => repo.saveLastLocation(any())).thenAnswer((_) async {});
+
+    await pumpLocationScreen(tester);
+    bloc.add(const SelectLocationEvent(location: paris));
+    await tester.pumpAndSettle();
+
+    verifyNever(() => repo.saveFavorite(any()));
+    expect(find.text('open'), findsOneWidget);
+  });
+
+  testWidgets('favorite tap dispatches SelectLocationEvent', (tester) async {
+    bloc = createBloc();
+    when(() => repo.loadFavorites()).thenReturn([paris]);
+    when(() => repo.loadLastLocation()).thenReturn(null);
+    when(() => repo.saveLastLocation(any())).thenAnswer((_) async {});
+    bloc.add(const LoadFavoritesEvent());
+
+    await pumpLocationScreen(tester);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Paris'));
+    await tester.pumpAndSettle();
+
+    verify(() => repo.saveLastLocation(paris)).called(1);
+  });
+
+  testWidgets('GPS error shows a SnackBar', (tester) async {
+    bloc = createBloc();
+    when(() => repo.loadFavorites()).thenReturn([]);
+    when(() => repo.detectCurrentLocation()).thenThrow(Exception('gps failed'));
+
+    await pumpLocationScreen(tester);
+    await tester.tap(find.byIcon(Icons.my_location_rounded));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SnackBar), findsOneWidget);
+  });
+}

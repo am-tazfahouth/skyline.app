@@ -1,16 +1,25 @@
 import 'package:intl/intl.dart';
+import 'package:sky_line/core/enums/setting_heat_unit.dart';
+import 'package:sky_line/core/enums/setting_wind_unit.dart';
+import 'package:sky_line/core/utils/weather_unit_converter.dart';
 
 class WeatherFormat {
   static String date(DateTime dateTime) {
     return DateFormat('dd MMMM yyyy').format(dateTime);
   }
 
-  static String temperature(double value) {
-    return '${value.toStringAsFixed(0)}°C';
+  static String temperature(double value, {SettingHeatUnit unit = SettingHeatUnit.celsius}) {
+    final converted = unit == SettingHeatUnit.fahrenheit
+        ? WeatherUnitConverter.celsiusToFahrenheit(value)
+        : value;
+    return '${converted.toStringAsFixed(0)}°${unit == SettingHeatUnit.celsius ? "C" : "F"}';
   }
 
-  static String wind(double value) {
-    return '${value.toStringAsFixed(0)} m/s';
+  static String wind(double value, {SettingWindUnit unit = SettingWindUnit.ms}) {
+    final converted = unit == SettingWindUnit.kmh
+        ? WeatherUnitConverter.msToKmh(value)
+        : value;
+    return '${converted.toStringAsFixed(0)} ${unit == SettingWindUnit.ms ? "m/s" : "km/h"}';
   }
 
   static String percent(double value) {

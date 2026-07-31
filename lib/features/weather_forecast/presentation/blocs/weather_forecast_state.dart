@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:sky_line/core/errors/failure.dart';
+import 'package:sky_line/core/errors/app_error_code.dart';
+import 'package:sky_line/features/settings/domain/entities/setting_entity.dart';
 import 'package:sky_line/features/weather_forecast/domain/entities/weather_entity.dart';
 import 'package:sky_line/features/weather_forecast/domain/entities/weather_result.dart';
 
@@ -18,39 +19,42 @@ class WeatherInitial extends WeatherForecastState {
 
 class WeatherLoaded extends WeatherForecastState {
   final WeatherResult result;
+  final SettingEntity settings;
   @override
   final bool isFetching;
 
-  const WeatherLoaded(this.result, {this.isFetching = false});
+  const WeatherLoaded(this.result, {this.isFetching = false, required this.settings});
 
-  WeatherLoaded copyWith({WeatherResult? result, bool? isFetching}) {
+  WeatherLoaded copyWith({WeatherResult? result, SettingEntity? settings, bool? isFetching}) {
     return WeatherLoaded(
       result ?? this.result,
       isFetching: isFetching ?? this.isFetching,
+      settings: settings ?? this.settings,
     );
   }
 
   @override
-  List<Object?> get props => [result, isFetching];
+  List<Object?> get props => [result, settings, isFetching];
 }
 
 class WeatherEmpty extends WeatherForecastState {
   @override
   final bool isFetching;
+  final SettingEntity settings;
 
-  const WeatherEmpty({this.isFetching = false});
+  const WeatherEmpty({this.isFetching = false, required this.settings});
 
   @override
-  List<Object?> get props => [isFetching];
+  List<Object?> get props => [isFetching, settings];
 }
 
 class WeatherError extends WeatherForecastState {
-  final Failure failure;
+  final AppErrorCode errorCode;
 
-  const WeatherError(this.failure);
+  const WeatherError({required this.errorCode});
 
   @override
-  List<Object?> get props => [failure];
+  List<Object?> get props => [errorCode];
 }
 
 extension WeatherStateX on WeatherForecastState {
@@ -58,6 +62,11 @@ extension WeatherStateX on WeatherForecastState {
   bool get hasWeather => this is WeatherLoaded;
   WeatherEntity? get weatherOrNull => switch (this) {
     WeatherLoaded(result: final r) => r.weather,
+    _ => null,
+  };
+  SettingEntity? get settingsOrNull => switch (this) {
+    WeatherLoaded(settings: final s) => s,
+    WeatherEmpty(settings: final s) => s,
     _ => null,
   };
 }

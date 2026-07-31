@@ -1,0 +1,87 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:sky_line/core/errors/app_error.dart';
+import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
+import 'package:sky_line/features/location/presentation/blocs/location_event.dart';
+import 'package:sky_line/features/location/presentation/blocs/location_state.dart';
+import 'package:sky_line/features/location/presentation/widgets/search_bar_widget.dart';
+import 'package:sky_line/features/location/presentation/widgets/search_result_tile.dart';
+
+class LocationSearchScreen extends StatelessWidget {
+  const LocationSearchScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Search City')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            SearchBarWidget(
+              onSearch: (query) {
+                context.read<LocationBloc>().add(SearchLocationsEvent(query));
+              },
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: BlocBuilder<LocationBloc, LocationState>(
+                builder: (context, state) {
+                  if (state is LocationSearchLoading) {
+                    return Center(
+                      child: LoadingAnimationWidget.staggeredDotsWave(
+                        color: theme.colorScheme.primary,
+                        size: 40,
+                      ),
+                    );
+                  }
+                  if (state is LocationSearchLoaded) {
+                    if (state.results.isEmpty) {
+                      return const Center(child: Text('No results found'));
+                    }
+                    return ListView.builder(
+                      itemCount: state.results.length,
+                      itemBuilder: (context, index) {
+                        final location = state.results[index];
+                        return SearchResultTile(
+                          location: location,
+                          onTap: () {
+                            final bloc = context.read<LocationBloc>();
+                            final favorites = bloc.repository.loadFavorites();
+                            final isAlreadyFavorite = favorites.any(
+                              (f) => f.latitude == location.latitude &&
+                                  f.longitude == location.longitude,
+                            );
+                            if (!isAlreadyFavorite) {
+                              bloc.add(AddFavoriteEvent(location: location));
+                            }
+                            bloc.add(SelectLocationEvent(location: location));
+                            Navigator.pop(context);
+                          },
+                        );
+                      },
+                    );
+                  }
+                  if (state is LocationError) {
+                    return Center(
+                      child: Text(
+                        AppError.getUserErrorMessage(state.errorCode),
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: theme.colorScheme.error,
+                        ),
+                      ),
+                    );
+                  }
+                  return const Center(child: Text('Type to search for a city'));
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

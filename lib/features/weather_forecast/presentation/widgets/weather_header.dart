@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
+import 'package:sky_line/features/location/presentation/blocs/location_state.dart';
+import 'package:sky_line/features/location/presentation/screens/location_screen.dart';
+import 'package:sky_line/features/settings/presentation/screens/settings_screen.dart';
 
 class WeatherHeader extends StatelessWidget implements PreferredSizeWidget {
   const WeatherHeader({super.key});
@@ -11,20 +16,39 @@ class WeatherHeader extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       leading: IconButton(
         icon: const Icon(Icons.grid_view_rounded),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const LocationScreen()),
+          );
+        },
       ),
       centerTitle: true,
-      title: Text(
-        'Moroni, Comoros',
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w800,
-        ),
+      title: BlocBuilder<LocationBloc, LocationState>(
+        builder: (context, state) {
+          final title = switch (state) {
+            LocationSelected(location: final l) => l.title,
+            LocationFavoritesLoaded(currentLocation: final c) => c?.title,
+            _ => null,
+          } ?? 'SkyLine';
+          return Text(
+            title,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+            ),
+          );
+        },
       ),
       actions: [
         IconButton(
           icon: const Icon(Icons.settings_rounded),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SettingsScreen()),
+            );
+          },
         ),
       ],
     );

@@ -1,0 +1,24 @@
+{
+  "@@locale": "ar",
+
+  "settingsTitle": "الإعدادات",
+  "settingsTheme": "المظهر",
+  "settingsLanguage": "اللغة",
+  "settingsWindUnit": "وحدة الرياح",
+  "settingsTemperatureUnit": "وحدة درجة الحرارة",
+
+  "settingsThemeLight": "فاتح",
+  "settingsThemeDark": "داكن",
+  "settingsThemeSystem": "النظام",
+
+  "settingsLangEn": "English",
+  "settingsLangFr": "Français",
+  "settingsLangEs": "Español",
+  "settingsLangAr": "العربية",
+
+  "settingsWindUnitMs": "م/ث",
+  "settingsWindUnitKmh": "كم/س",
+
+  "settingsTempUnitCelsius": "مئوية",
+  "settingsTempUnitFahrenheit": "فهرنهايت"
+}

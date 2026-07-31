@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/config/app_theme.dart';
+import 'package:sky_line/core/enums/setting_lang.dart';
 import 'package:sky_line/core/enums/setting_theme.dart';
 import 'package:sky_line/core/utils/platform_utils.dart';
-import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
+import 'package:sky_line/features/settings/presentation/blocs/settings_bloc.dart';
+import 'package:sky_line/features/settings/presentation/blocs/settings_event.dart';
+import 'package:sky_line/features/settings/presentation/blocs/settings_state.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_event.dart';
+import 'package:sky_line/features/location/presentation/blocs/location_event.dart';
 import 'package:sky_line/features/weather_forecast/presentation/screens/weather_screen.dart';
+import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/injection_container.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
@@ -17,14 +22,18 @@ void main() async {
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await InjectionContainer.init();
   FlutterNativeSplash.remove();
-  
+
   runApp(
     MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => WeatherForecastBloc(
-            InjectionContainer.weatherRepository,
-          )..add(FetchWeatherEvent()),
+          create: (_) => InjectionContainer.weatherBloc..add(FetchWeatherEvent()),
+        ),
+        BlocProvider(
+          create: (_) => InjectionContainer.settingsBloc..add(const LoadSettingsEvent()),
+        ),
+        BlocProvider(
+          create: (_) => InjectionContainer.locationBloc..add(LoadFavoritesEvent()),
         ),
       ],
       child: MyApp(),
@@ -37,18 +46,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appTheme = AppTheme(Theme.of(context).textTheme);
+    return BlocBuilder<SettingsBloc, SettingsState>(
+      builder: (context, state) {
+        if (state is! SettingsLoadSuccess) return const SizedBox.shrink();
+        final setting = state.setting;
+        final appTheme = AppTheme(Theme.of(context).textTheme);
 
-    return AnnotatedRegion(
-      value: PlatformUtils.getSystemUiStyle(SettingTheme.system, context),
-      child: MaterialApp(
-        title: 'SkyLine',
-        home: WeatherScreen(),
-        theme: appTheme.light(),
-        darkTheme: appTheme.dark(),
-        debugShowCheckedModeBanner: false,
-        themeMode: SettingTheme.getThemeMode(SettingTheme.system),
-      ),
+        return AnnotatedRegion(
+          value: PlatformUtils.getSystemUiStyle(setting.theme, context),
+          child: MaterialApp(
+            title: 'SkyLine',
+            home: WeatherScreen(),
+            theme: appTheme.light(),
+            darkTheme: appTheme.dark(),
+            debugShowCheckedModeBanner: false,
+            locale: Locale(getStringFromLang(setting.lang)),
+            supportedLocales: AppLocalisation.supportedLocales,
+            themeMode: SettingTheme.getThemeMode(setting.theme),
+            localizationsDelegates: AppLocalisation.localizationsDelegates,
+          ),
+        );
+      },
     );
   }
 }

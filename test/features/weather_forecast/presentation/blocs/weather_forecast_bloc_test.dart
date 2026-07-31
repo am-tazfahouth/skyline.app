@@ -1,18 +1,33 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:sky_line/core/errors/failure.dart';
+import 'package:sky_line/core/enums/setting_heat_unit.dart';
+import 'package:sky_line/core/enums/setting_wind_unit.dart';
+import 'package:sky_line/core/services/logger_sevices.dart';
+import 'package:sky_line/core/errors/weather_error_codes.dart';
+import 'package:sky_line/features/settings/domain/entities/setting_entity.dart';
 import 'package:sky_line/features/weather_forecast/domain/entities/current_weather_entity.dart';
 import 'package:sky_line/features/weather_forecast/domain/entities/daily_weather_entity.dart';
 import 'package:sky_line/features/weather_forecast/domain/entities/hourly_weather_entity.dart';
 import 'package:sky_line/features/weather_forecast/domain/entities/weather_entity.dart';
 import 'package:sky_line/features/weather_forecast/domain/entities/weather_result.dart';
 import 'package:sky_line/features/weather_forecast/domain/repositories/weather_repository.dart';
+import 'package:sky_line/features/weather_forecast/domain/usecases/get_settings_use_case.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_event.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_state.dart';
 
 class MockWeatherRepository extends Mock implements WeatherRepository {}
+
+class MockAppLogger extends Mock implements AppLogger {}
+
+class MockGetSettingsUseCase extends Mock implements GetSettingsUseCase {}
+
+const _defaultSettings = SettingEntity(
+  windUnit: SettingWindUnit.ms,
+  heatUnit: SettingHeatUnit.celsius,
+);
 
 WeatherResult _result({bool cached = false}) {
   return WeatherResult(
@@ -48,11 +63,26 @@ WeatherResult _result({bool cached = false}) {
   );
 }
 
+DioException _dioException({DioExceptionType type = DioExceptionType.badResponse, int? statusCode}) {
+  return DioException(
+    requestOptions: RequestOptions(path: ''),
+    type: type,
+    response: statusCode != null
+        ? Response(statusCode: statusCode, requestOptions: RequestOptions(path: ''))
+        : null,
+  );
+}
+
 void main() {
   late MockWeatherRepository mockRepository;
+  late MockAppLogger mockLogger;
+  late MockGetSettingsUseCase mockGetSettings;
 
   setUp(() {
     mockRepository = MockWeatherRepository();
+    mockLogger = MockAppLogger();
+    mockGetSettings = MockGetSettingsUseCase();
+    when(() => mockGetSettings()).thenAnswer((_) async => _defaultSettings);
   });
 
   group('FetchWeatherEvent', () {
@@ -63,7 +93,9 @@ void main() {
             .thenAnswer((_) async => _result(cached: true));
       },
       build: () => WeatherForecastBloc(
-        mockRepository,
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
         isConnected: () async => false,
       ),
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
@@ -81,11 +113,13 @@ void main() {
       setUp: () {
         when(() => mockRepository.loadCachedWeather())
             .thenAnswer((_) async => _result(cached: true));
-        when(() => mockRepository.fetchWeather())
+        when(() => mockRepository.fetchWeather(latitude: any(named: 'latitude'), longitude: any(named: 'longitude')))
             .thenAnswer((_) async => _result(cached: false));
       },
       build: () => WeatherForecastBloc(
-        mockRepository,
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
@@ -100,15 +134,17 @@ void main() {
     );
 
     blocTest<WeatherForecastBloc, WeatherForecastState>(
-      'cache valid + fetch fails → stays Loaded(cached)',
+      'cache valid + fetch fails with DioException → stays Loaded(cached)',
       setUp: () {
         when(() => mockRepository.loadCachedWeather())
             .thenAnswer((_) async => _result(cached: true));
-        when(() => mockRepository.fetchWeather())
-            .thenThrow(const ServerFailure('API down'));
+        when(() => mockRepository.fetchWeather(latitude: any(named: 'latitude'), longitude: any(named: 'longitude')))
+            .thenThrow(_dioException());
       },
       build: () => WeatherForecastBloc(
-        mockRepository,
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
@@ -126,16 +162,18 @@ void main() {
       setUp: () {
         when(() => mockRepository.loadCachedWeather())
             .thenAnswer((_) async => null);
-        when(() => mockRepository.fetchWeather())
+        when(() => mockRepository.fetchWeather(latitude: any(named: 'latitude'), longitude: any(named: 'longitude')))
             .thenAnswer((_) async => _result());
       },
       build: () => WeatherForecastBloc(
-        mockRepository,
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
       expect: () => [
-        const WeatherEmpty(isFetching: true),
+        WeatherEmpty(isFetching: true, settings: _defaultSettings),
         isA<WeatherLoaded>(),
       ],
     );
@@ -147,31 +185,35 @@ void main() {
             .thenAnswer((_) async => null);
       },
       build: () => WeatherForecastBloc(
-        mockRepository,
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
         isConnected: () async => false,
       ),
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
       expect: () => [
-        const WeatherEmpty(isFetching: true),
-        const WeatherEmpty(isFetching: false),
+        WeatherEmpty(isFetching: true, settings: _defaultSettings),
+        WeatherEmpty(isFetching: false, settings: _defaultSettings),
       ],
     );
 
     blocTest<WeatherForecastBloc, WeatherForecastState>(
-      'emits [Empty(fetching), Error] when no cache + online + fails',
+      'emits [Empty(fetching), Error] when no cache + online + DioException',
       setUp: () {
         when(() => mockRepository.loadCachedWeather())
             .thenAnswer((_) async => null);
-        when(() => mockRepository.fetchWeather())
-            .thenThrow(const ServerFailure('API down'));
+        when(() => mockRepository.fetchWeather(latitude: any(named: 'latitude'), longitude: any(named: 'longitude')))
+            .thenThrow(_dioException());
       },
       build: () => WeatherForecastBloc(
-        mockRepository,
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
       expect: () => [
-        const WeatherEmpty(isFetching: true),
+        WeatherEmpty(isFetching: true, settings: _defaultSettings),
         isA<WeatherError>(),
       ],
     );
@@ -181,16 +223,18 @@ void main() {
       setUp: () {
         when(() => mockRepository.loadCachedWeather())
             .thenAnswer((_) async => null);
-        when(() => mockRepository.fetchWeather())
+        when(() => mockRepository.fetchWeather(latitude: any(named: 'latitude'), longitude: any(named: 'longitude')))
             .thenThrow(Exception('unknown'));
       },
       build: () => WeatherForecastBloc(
-        mockRepository,
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
       expect: () => [
-        const WeatherEmpty(isFetching: true),
+        WeatherEmpty(isFetching: true, settings: _defaultSettings),
         isA<WeatherError>(),
       ],
     );
@@ -199,13 +243,15 @@ void main() {
   group('RefreshWeatherEvent', () {
     blocTest<WeatherForecastBloc, WeatherForecastState>(
       'from Loaded → fetch succeeds → Loaded(fresh)',
-      seed: () => WeatherLoaded(_result(cached: true)),
+      seed: () => WeatherLoaded(_result(cached: true), settings: _defaultSettings),
       setUp: () {
-        when(() => mockRepository.fetchWeather())
+        when(() => mockRepository.fetchWeather(latitude: any(named: 'latitude'), longitude: any(named: 'longitude')))
             .thenAnswer((_) async => _result(cached: false));
       },
       build: () => WeatherForecastBloc(
-        mockRepository,
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(const RefreshWeatherEvent()),
@@ -219,14 +265,16 @@ void main() {
     );
 
     blocTest<WeatherForecastBloc, WeatherForecastState>(
-      'from Loaded → fetch fails → stays Loaded(original)',
-      seed: () => WeatherLoaded(_result(cached: true)),
+      'from Loaded → fetch fails with DioException → stays Loaded(original)',
+      seed: () => WeatherLoaded(_result(cached: true), settings: _defaultSettings),
       setUp: () {
-        when(() => mockRepository.fetchWeather())
-            .thenThrow(const NetworkFailure('no net'));
+        when(() => mockRepository.fetchWeather(latitude: any(named: 'latitude'), longitude: any(named: 'longitude')))
+            .thenThrow(_dioException(type: DioExceptionType.connectionError));
       },
       build: () => WeatherForecastBloc(
-        mockRepository,
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(const RefreshWeatherEvent()),
@@ -241,56 +289,127 @@ void main() {
 
     blocTest<WeatherForecastBloc, WeatherForecastState>(
       'from Empty → fetch succeeds → Loaded',
-      seed: () => const WeatherEmpty(),
+      seed: () => WeatherEmpty(settings: _defaultSettings),
       setUp: () {
-        when(() => mockRepository.fetchWeather())
+        when(() => mockRepository.fetchWeather(latitude: any(named: 'latitude'), longitude: any(named: 'longitude')))
             .thenAnswer((_) async => _result());
       },
       build: () => WeatherForecastBloc(
-        mockRepository,
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(const RefreshWeatherEvent()),
       expect: () => [
-        const WeatherEmpty(isFetching: true),
+        WeatherEmpty(isFetching: true, settings: _defaultSettings),
         isA<WeatherLoaded>(),
       ],
     );
 
     blocTest<WeatherForecastBloc, WeatherForecastState>(
-      'from Empty → fetch fails → stays Empty',
-      seed: () => const WeatherEmpty(),
+      'from Empty → fetch fails with DioException → stays Empty',
+      seed: () => WeatherEmpty(settings: _defaultSettings),
       setUp: () {
-        when(() => mockRepository.fetchWeather())
-            .thenThrow(const ServerFailure('fail'));
+        when(() => mockRepository.fetchWeather(latitude: any(named: 'latitude'), longitude: any(named: 'longitude')))
+            .thenThrow(_dioException());
       },
       build: () => WeatherForecastBloc(
-        mockRepository,
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(const RefreshWeatherEvent()),
       expect: () => [
-        const WeatherEmpty(isFetching: true),
-        const WeatherEmpty(isFetching: false),
+        WeatherEmpty(isFetching: true, settings: _defaultSettings),
+        WeatherEmpty(isFetching: false, settings: _defaultSettings),
       ],
     );
 
     blocTest<WeatherForecastBloc, WeatherForecastState>(
       'from Empty → unexpected error → Error',
-      seed: () => const WeatherEmpty(),
+      seed: () => WeatherEmpty(settings: _defaultSettings),
       setUp: () {
-        when(() => mockRepository.fetchWeather())
+        when(() => mockRepository.fetchWeather(latitude: any(named: 'latitude'), longitude: any(named: 'longitude')))
             .thenThrow(Exception('unknown'));
       },
       build: () => WeatherForecastBloc(
-        mockRepository,
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(const RefreshWeatherEvent()),
       expect: () => [
-        const WeatherEmpty(isFetching: true),
+        WeatherEmpty(isFetching: true, settings: _defaultSettings),
         isA<WeatherError>(),
       ],
+    );
+  });
+
+  group('ApplySettingsEvent', () {
+    final newSettings = const SettingEntity(
+      windUnit: SettingWindUnit.kmh,
+      heatUnit: SettingHeatUnit.fahrenheit,
+    );
+
+    blocTest<WeatherForecastBloc, WeatherForecastState>(
+      'from WeatherLoaded → updates settings',
+      seed: () => WeatherLoaded(_result(cached: true), settings: _defaultSettings),
+      build: () => WeatherForecastBloc(
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
+        isConnected: () async => true,
+      ),
+      act: (bloc) => bloc.add(ApplySettingsEvent(settings: newSettings)),
+      expect: () => [
+        isA<WeatherLoaded>()
+            .having((s) => s.settings.windUnit, 'windUnit', SettingWindUnit.kmh)
+            .having((s) => s.settings.heatUnit, 'heatUnit', SettingHeatUnit.fahrenheit),
+      ],
+    );
+
+    blocTest<WeatherForecastBloc, WeatherForecastState>(
+      'from WeatherEmpty → updates settings',
+      seed: () => WeatherEmpty(settings: _defaultSettings),
+      build: () => WeatherForecastBloc(
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
+        isConnected: () async => true,
+      ),
+      act: (bloc) => bloc.add(ApplySettingsEvent(settings: newSettings)),
+      expect: () => [
+        isA<WeatherEmpty>()
+            .having((s) => s.settings.windUnit, 'windUnit', SettingWindUnit.kmh),
+      ],
+    );
+
+    blocTest<WeatherForecastBloc, WeatherForecastState>(
+      'from WeatherInitial → no state change',
+      build: () => WeatherForecastBloc(
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
+        isConnected: () async => true,
+      ),
+      act: (bloc) => bloc.add(ApplySettingsEvent(settings: newSettings)),
+      expect: () => [],
+    );
+
+    blocTest<WeatherForecastBloc, WeatherForecastState>(
+      'from WeatherError → no state change',
+      seed: () => WeatherError(errorCode: WeatherErrorCodes.fetch),
+      build: () => WeatherForecastBloc(
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
+        isConnected: () async => true,
+      ),
+      act: (bloc) => bloc.add(ApplySettingsEvent(settings: newSettings)),
+      expect: () => [],
     );
   });
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:sky_line/core/config/app_theme.dart';
+import 'package:sky_line/core/enums/setting_heat_unit.dart';
 import 'package:sky_line/core/utils/weather_format.dart';
 import 'package:sky_line/core/utils/weather_icon_mapper.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
@@ -22,6 +23,7 @@ class WeatherDailyTileList extends StatelessWidget {
         final gradientHot = colorScheme.tertiary;
 
         final weather = state.weatherOrNull;
+        final settings = state.settingsOrNull;
         if (weather == null) {
           return _buildPlaceholder(primaryText, secondaryText, gradientCold, gradientHot);
         }
@@ -53,8 +55,8 @@ class WeatherDailyTileList extends StatelessWidget {
             ...items.map((item) {
               final dayLabel = _formatDayLabel(item.date);
               final condition = WeatherFormat.condition(item.weatherCode);
-              final tempMin = '${item.tempMin.toStringAsFixed(0)}°';
-              final tempMax = '${item.tempMax.toStringAsFixed(0)}°';
+              final tempMin = WeatherFormat.temperature(item.tempMin, unit: settings?.heatUnit ?? SettingHeatUnit.celsius);
+              final tempMax = WeatherFormat.temperature(item.tempMax, unit: settings?.heatUnit ?? SettingHeatUnit.celsius);
               return _buildRowTile(
                 dayLabel: dayLabel,
                 condition: condition,
@@ -143,7 +145,7 @@ class WeatherDailyTileList extends StatelessWidget {
           ),
           const Spacer(),
           SizedBox(
-            width: 100,
+            width: 130,
             child: Column(
               children: [
                 Row(

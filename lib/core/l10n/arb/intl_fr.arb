@@ -1,0 +1,24 @@
+{
+  "@@locale": "fr",
+
+  "settingsTitle": "Paramètres",
+  "settingsTheme": "Thème",
+  "settingsLanguage": "Langue",
+  "settingsWindUnit": "Unité du vent",
+  "settingsTemperatureUnit": "Unité de température",
+
+  "settingsThemeLight": "Clair",
+  "settingsThemeDark": "Sombre",
+  "settingsThemeSystem": "Système",
+
+  "settingsLangEn": "English",
+  "settingsLangFr": "Français",
+  "settingsLangEs": "Español",
+  "settingsLangAr": "العربية",
+
+  "settingsWindUnitMs": "m/s",
+  "settingsWindUnitKmh": "km/h",
+
+  "settingsTempUnitCelsius": "Celsius",
+  "settingsTempUnitFahrenheit": "Fahrenheit"
+}

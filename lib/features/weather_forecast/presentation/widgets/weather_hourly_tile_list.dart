@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:sky_line/core/config/app_theme.dart';
+import 'package:sky_line/core/enums/setting_heat_unit.dart';
+import 'package:sky_line/core/utils/weather_format.dart';
 import 'package:sky_line/core/utils/weather_icon_mapper.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_state.dart';
@@ -19,6 +21,7 @@ class WeatherHourlyTileList extends StatelessWidget {
         final secondaryText = surface.onColorContainer;
 
         final weather = state.weatherOrNull;
+        final settings = state.settingsOrNull;
         if (weather == null) {
           return _buildPlaceholder(cardColor, primaryText, secondaryText);
         }
@@ -58,7 +61,7 @@ class WeatherHourlyTileList extends StatelessWidget {
               child: Row(
                 children: filtered.map((item) {
                   final time = DateFormat('HH:mm').format(item.time);
-                  final temp = '${item.temperature.toStringAsFixed(0)}°';
+                  final temp = WeatherFormat.temperature(item.temperature, unit: settings?.heatUnit ?? SettingHeatUnit.celsius);
                   final isDay = item.time.hour >= 6 && item.time.hour < 18;
                   return _buildTile(
                     time: time,

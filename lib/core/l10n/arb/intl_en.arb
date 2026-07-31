@@ -1,0 +1,28 @@
+{
+  "@@locale": "en",
+
+  "settingsTitle": "Settings",
+  "@settingsTitle": {
+    "description": "Title for the settings screen"
+  },
+
+  "settingsTheme": "Theme",
+  "settingsLanguage": "Language",
+  "settingsWindUnit": "Wind Unit",
+  "settingsTemperatureUnit": "Temperature Unit",
+
+  "settingsThemeLight": "Light",
+  "settingsThemeDark": "Dark",
+  "settingsThemeSystem": "System",
+
+  "settingsLangEn": "English",
+  "settingsLangFr": "Français",
+  "settingsLangEs": "Español",
+  "settingsLangAr": "العربية",
+
+  "settingsWindUnitMs": "m/s",
+  "settingsWindUnitKmh": "km/h",
+
+  "settingsTempUnitCelsius": "Celsius",
+  "settingsTempUnitFahrenheit": "Fahrenheit"
+}
