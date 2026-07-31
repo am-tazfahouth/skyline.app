@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:sky_line/core/config/app_routes.dart';
 import 'package:sky_line/core/enums/setting_heat_unit.dart';
 import 'package:sky_line/core/enums/setting_wind_unit.dart';
 import 'package:sky_line/core/services/logger_sevices.dart';
@@ -55,7 +56,10 @@ Widget createTestScreen(WeatherForecastBloc bloc, {LocationBloc? locationBloc}) 
       ),
       BlocProvider<LocationBloc>.value(value: locBloc),
     ],
-    child: MaterialApp(home: const WeatherScreen()),
+    child: MaterialApp(
+      onGenerateRoute: RouteGenerator.generateRoute,
+      home: const WeatherScreen(),
+    ),
   );
 }
 

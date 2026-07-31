@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sky_line/core/config/app_routes.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_state.dart';
-import 'package:sky_line/features/location/presentation/screens/location_screen.dart';
-import 'package:sky_line/features/settings/presentation/screens/settings_screen.dart';
 
 class WeatherHeader extends StatelessWidget implements PreferredSizeWidget {
   const WeatherHeader({super.key});
@@ -17,10 +16,7 @@ class WeatherHeader extends StatelessWidget implements PreferredSizeWidget {
       leading: IconButton(
         icon: const Icon(Icons.grid_view_rounded),
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const LocationScreen()),
-          );
+          Navigator.pushNamed(context, AppRoutes.location);
         },
       ),
       centerTitle: true,
@@ -44,10 +40,7 @@ class WeatherHeader extends StatelessWidget implements PreferredSizeWidget {
         IconButton(
           icon: const Icon(Icons.settings_rounded),
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const SettingsScreen()),
-            );
+            Navigator.pushNamed(context, AppRoutes.settings);
           },
         ),
       ],
