@@ -24,7 +24,7 @@ Le projet applique une structure **Clean Architecture stricte découpée par Fon
 ### Arborescence Structurelle Obligatoire
 lib
 ├── core                    # Couche transverse (cross-cutting concerns)
-│   ├── config          # Thèmes, injection de dépendances, configuration ObjectBox
+│   ├── config          # Thèmes, injection de dépendances, configuration ObjectBox, routing
 │   ├── constants   # Constantes (API keys, dimensions, durées)
 │   ├── enum           # Enumerations
 │   ├── errors          # Système d'erreurs unifié (Failures, AppErrorCode)
