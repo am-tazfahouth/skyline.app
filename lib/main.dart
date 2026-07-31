@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sky_line/core/config/app_routes.dart';
 import 'package:sky_line/core/config/app_theme.dart';
 import 'package:sky_line/core/enums/setting_lang.dart';
 import 'package:sky_line/core/enums/setting_theme.dart';
@@ -10,7 +11,6 @@ import 'package:sky_line/features/settings/presentation/blocs/settings_event.dar
 import 'package:sky_line/features/settings/presentation/blocs/settings_state.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_event.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_event.dart';
-import 'package:sky_line/features/weather_forecast/presentation/screens/weather_screen.dart';
 import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/injection_container.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -56,7 +56,8 @@ class MyApp extends StatelessWidget {
           value: PlatformUtils.getSystemUiStyle(setting.theme, context),
           child: MaterialApp(
             title: 'SkyLine',
-            home: WeatherScreen(),
+            initialRoute: AppRoutes.weather,
+            onGenerateRoute: RouteGenerator.generateRoute,
             theme: appTheme.light(),
             darkTheme: appTheme.dark(),
             debugShowCheckedModeBanner: false,
