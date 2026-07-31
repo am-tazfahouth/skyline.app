@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:sky_line/core/config/app_routes.dart';
 import 'package:sky_line/core/services/logger_sevices.dart';
 import 'package:sky_line/features/location/domain/entities/location_entity.dart';
 import 'package:sky_line/features/location/domain/repositories/location_repository.dart';
@@ -50,6 +51,7 @@ void main() {
       BlocProvider<LocationBloc>.value(
         value: bloc,
         child: MaterialApp(
+          onGenerateRoute: RouteGenerator.generateRoute,
           home: Builder(
             builder: (context) => Scaffold(
               body: Center(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sky_line/core/config/app_routes.dart';
 import 'package:sky_line/core/errors/app_error.dart';
 import 'package:sky_line/core/errors/app_error_code.dart';
 import 'package:sky_line/core/errors/location_error_codes.dart';
@@ -7,7 +8,6 @@ import 'package:sky_line/features/location/domain/entities/location_entity.dart'
 import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_event.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_state.dart';
-import 'package:sky_line/features/location/presentation/screens/location_search_screen.dart';
 import 'package:sky_line/features/location/presentation/widgets/favorites_list_widget.dart';
 
 class LocationScreen extends StatelessWidget {
@@ -75,10 +75,7 @@ class LocationScreen extends StatelessWidget {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const LocationSearchScreen()),
-            );
+            Navigator.pushNamed(context, AppRoutes.locationSearch);
           },
           child: const Icon(Icons.add),
         ),
