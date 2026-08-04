@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:sky_line/core/config/app_theme.dart';
 import 'package:sky_line/core/errors/app_error.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_event.dart';
@@ -14,9 +15,14 @@ class LocationSearchScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
-    return Scaffold(
-      appBar: AppBar(title: const Text('Search City')),
+    final bgColor = AppTheme.surfaceFor(Theme.of(context).brightness).color;
+    
+    return Scaffold(      
+      appBar: AppBar(
+        backgroundColor: bgColor,
+        title: const Text('Search City'),
+      ),
+      backgroundColor: bgColor,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

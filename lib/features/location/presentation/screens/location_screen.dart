@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/config/app_routes.dart';
+import 'package:sky_line/core/config/app_theme.dart';
 import 'package:sky_line/core/errors/app_error.dart';
 import 'package:sky_line/core/errors/app_error_code.dart';
 import 'package:sky_line/core/errors/location_error_codes.dart';
@@ -20,6 +21,8 @@ class LocationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = AppTheme.surfaceFor(Theme.of(context).brightness).color;
+    
     return BlocListener<LocationBloc, LocationState>(
       listener: (context, state) {
         if (state is LocationSelected) {
@@ -45,8 +48,10 @@ class LocationScreen extends StatelessWidget {
         }
       },
       child: Scaffold(
+        backgroundColor: bgColor,
         appBar: AppBar(
           title: const Text('Location'),
+          backgroundColor: bgColor,
           actions: [
             BlocBuilder<LocationBloc, LocationState>(
               builder: (context, state) {
