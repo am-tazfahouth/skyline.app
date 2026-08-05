@@ -50,6 +50,12 @@ class InjectionContainer {
       logger: logger,
       weatherRepository: weatherRepository,
       getSettings: getSettings,
+      getLastLocation: () {
+        final last = locationRepository.loadLastLocation();
+        return last == null
+            ? null
+            : (latitude: last.latitude, longitude: last.longitude);
+      },
     );
     locationRemoteSource = LocationRemoteSource(dio);
     locationLocalSource = LocationLocalSource(dbHelper);

@@ -41,6 +41,13 @@ void main() {
     country: 'France',
   );
 
+  const otherLocation = LocationEntity(
+    latitude: 40.71,
+    longitude: -74.00,
+    cityName: 'New York',
+    country: 'USA',
+  );
+
   group('LoadFavoritesEvent', () {
     blocTest<LocationBloc, LocationState>(
       'emits LocationFavoritesLoaded with favorites and last location',
@@ -55,6 +62,25 @@ void main() {
           .having((s) => s.favorites.length, 'favorites', 1)
           .having((s) => s.currentLocation?.cityName, 'current', 'Paris'),
       ],
+    );
+
+    blocTest<LocationBloc, LocationState>(
+      'clears a stale last location and nulls current location when favorites is empty',
+      build: () {
+        when(() => mockRepo.loadFavorites()).thenReturn([]);
+        when(() => mockRepo.loadLastLocation()).thenReturn(testLocation);
+        when(() => mockRepo.clearLastLocation()).thenAnswer((_) async {});
+        return bloc;
+      },
+      act: (bloc) => bloc.add(LoadFavoritesEvent()),
+      expect: () => [
+        isA<LocationFavoritesLoaded>()
+          .having((s) => s.favorites, 'favorites', isEmpty)
+          .having((s) => s.currentLocation, 'currentLocation', isNull),
+      ],
+      verify: (_) {
+        verify(() => mockRepo.clearLastLocation()).called(1);
+      },
     );
 
     blocTest<LocationBloc, LocationState>(
@@ -137,10 +163,70 @@ void main() {
         when(() => mockRepo.removeFavorite(any())).thenAnswer((_) async {});
         when(() => mockRepo.loadFavorites()).thenReturn([]);
         when(() => mockRepo.loadLastLocation()).thenReturn(null);
+        when(() => mockRepo.clearLastLocation()).thenAnswer((_) async {});
         return bloc;
       },
       act: (bloc) => bloc.add(const RemoveFavoriteEvent(location: testLocation)),
       expect: () => [isA<LocationFavoritesLoaded>()],
+    );
+
+    blocTest<LocationBloc, LocationState>(
+      'removing the last favorite clears the persisted last location and nulls the current one',
+      seed: () => LocationFavoritesLoaded(favorites: [testLocation], currentLocation: testLocation),
+      build: () {
+        when(() => mockRepo.removeFavorite(any())).thenAnswer((_) async {});
+        when(() => mockRepo.loadFavorites()).thenReturn([]);
+        when(() => mockRepo.clearLastLocation()).thenAnswer((_) async {});
+        return bloc;
+      },
+      act: (bloc) => bloc.add(const RemoveFavoriteEvent(location: testLocation)),
+      expect: () => [
+        isA<LocationFavoritesLoaded>()
+          .having((s) => s.favorites, 'favorites', isEmpty)
+          .having((s) => s.currentLocation, 'currentLocation', isNull),
+      ],
+      verify: (_) {
+        verify(() => mockRepo.clearLastLocation()).called(1);
+      },
+    );
+
+    blocTest<LocationBloc, LocationState>(
+      'removing a non-current favorite keeps the current location',
+      seed: () => LocationFavoritesLoaded(favorites: [testLocation, otherLocation], currentLocation: testLocation),
+      build: () {
+        when(() => mockRepo.removeFavorite(any())).thenAnswer((_) async {});
+        when(() => mockRepo.loadFavorites()).thenReturn([testLocation]);
+        return bloc;
+      },
+      act: (bloc) => bloc.add(const RemoveFavoriteEvent(location: otherLocation)),
+      expect: () => [
+        isA<LocationFavoritesLoaded>()
+          .having((s) => s.favorites, 'favorites', [testLocation])
+          .having((s) => s.currentLocation?.cityName, 'currentLocation', 'Paris'),
+      ],
+      verify: (_) {
+        verifyNever(() => mockRepo.clearLastLocation());
+      },
+    );
+
+    blocTest<LocationBloc, LocationState>(
+      'removing the current favorite clears it even when other favorites remain',
+      seed: () => LocationFavoritesLoaded(favorites: [testLocation, otherLocation], currentLocation: testLocation),
+      build: () {
+        when(() => mockRepo.removeFavorite(any())).thenAnswer((_) async {});
+        when(() => mockRepo.loadFavorites()).thenReturn([otherLocation]);
+        when(() => mockRepo.clearLastLocation()).thenAnswer((_) async {});
+        return bloc;
+      },
+      act: (bloc) => bloc.add(const RemoveFavoriteEvent(location: testLocation)),
+      expect: () => [
+        isA<LocationFavoritesLoaded>()
+          .having((s) => s.favorites, 'favorites', [otherLocation])
+          .having((s) => s.currentLocation, 'currentLocation', isNull),
+      ],
+      verify: (_) {
+        verify(() => mockRepo.clearLastLocation()).called(1);
+      },
     );
   });
 

@@ -145,8 +145,26 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
       await repository.removeFavorite(event.location);
       final favorites = repository.loadFavorites();
       final currentState = state;
-      final currentLocation = currentState is LocationSelected ? currentState.location : null;
-      emit(LocationFavoritesLoaded(favorites: favorites, currentLocation: currentLocation));
+      final previousLocation = currentState is LocationSelected
+          ? currentState.location
+          : currentState is LocationFavoritesLoaded
+              ? currentState.currentLocation
+              : null;
+      final isStillFavorite = previousLocation != null &&
+          favorites.any(
+            (f) =>
+                f.latitude == previousLocation.latitude &&
+                f.longitude == previousLocation.longitude,
+          );
+      final currentLocation = isStillFavorite ? previousLocation : null;
+      if (favorites.isEmpty ||
+          (previousLocation != null && currentLocation == null)) {
+        await repository.clearLastLocation();
+      }
+      emit(LocationFavoritesLoaded(
+        favorites: favorites,
+        currentLocation: currentLocation,
+      ));
     } catch (e, stackTrace) {
       logger.e(
         AppError.getDebugErrorMessage(LocationErrorCodes.saveFavoriteFailed),
@@ -195,7 +213,13 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   ) async {
     try {
       final favorites = repository.loadFavorites();
-      final lastLocation = repository.loadLastLocation();
+      var lastLocation = repository.loadLastLocation();
+      if (favorites.isEmpty) {
+        if (lastLocation != null) {
+          await repository.clearLastLocation();
+        }
+        lastLocation = null;
+      }
       emit(LocationFavoritesLoaded(favorites: favorites, currentLocation: lastLocation));
     } catch (e, stackTrace) {
       logger.e(

@@ -105,6 +105,11 @@ class LocationRepositoryImpl implements LocationRepository {
   }
 
   @override
+  Future<void> clearLastLocation() async {
+    _localSource.clearLastLocation();
+  }
+
+  @override
   Future<LocationEntity> detectCurrentLocation() async {
     final status = await _permissionSource.requestLocationPermission();
     if (status.isRestricted || status.isDenied) {

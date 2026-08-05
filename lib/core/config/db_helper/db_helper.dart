@@ -43,6 +43,10 @@ class DbHelper {
     ));
   }
 
+  void clearWeather() {
+    _box.removeAll();
+  }
+
   WeatherModel? loadWeather({int? maxAgeMillis}) {
     final entities = _box.getAll();
     if (entities.isEmpty) return null;
@@ -104,6 +108,10 @@ class DbHelper {
   void saveLastLocation(LastLocationEntity location) {
     _lastLocationBox.removeAll();
     _lastLocationBox.put(location);
+  }
+
+  void clearLastLocation() {
+    _lastLocationBox.removeAll();
   }
 
   void dispose() {

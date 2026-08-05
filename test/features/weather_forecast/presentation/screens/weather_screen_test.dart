@@ -21,6 +21,7 @@ import 'package:sky_line/features/weather_forecast/domain/repositories/weather_r
 import 'package:sky_line/features/weather_forecast/domain/usecases/get_settings_use_case.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_event.dart';
+import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_state.dart';
 import 'package:sky_line/features/weather_forecast/presentation/screens/weather_screen.dart';
 import 'package:sky_line/features/location/domain/entities/location_entity.dart';
 import 'package:sky_line/features/location/domain/repositories/location_repository.dart';
@@ -291,5 +292,79 @@ void main() {
     verify(
       () => mockRepository.fetchWeather(latitude: 48.85, longitude: 2.35),
     ).called(1);
+  });
+
+  testWidgets('clearing the current location resets weather to the empty fallback',
+      (tester) async {
+    when(() => mockRepository.fetchWeather(
+      latitude: any(named: 'latitude'),
+      longitude: any(named: 'longitude'),
+    )).thenAnswer((_) async => buildWeatherResult());
+    when(() => mockRepository.clearCachedWeather()).thenAnswer((_) async {});
+
+    final locationRepo = MockLocationRepository();
+    var favorites = [paris];
+    when(() => locationRepo.loadFavorites()).thenAnswer((_) => favorites);
+    when(() => locationRepo.loadLastLocation()).thenReturn(paris);
+    when(() => locationRepo.removeFavorite(any())).thenAnswer((_) async {
+      favorites = [];
+    });
+    when(() => locationRepo.clearLastLocation()).thenAnswer((_) async {});
+    final locationBloc = LocationBloc(
+      logger: MockAppLogger(),
+      repository: locationRepo,
+    );
+    locationBloc.add(const LoadFavoritesEvent());
+
+    final bloc = WeatherForecastBloc(
+      logger: MockAppLogger(),
+      weatherRepository: mockRepository,
+      getSettings: mockGetSettings,
+      isConnected: () async => true,
+    );
+    bloc.add(const FetchWeatherEvent());
+    await tester.pumpWidget(createTestScreen(bloc, locationBloc: locationBloc));
+    await tester.pumpAndSettle();
+    expect(bloc.state, isA<WeatherLoaded>());
+
+    locationBloc.add(const RemoveFavoriteEvent(location: paris));
+    await tester.pumpAndSettle();
+
+    expect(bloc.state, isA<WeatherEmpty>());
+  });
+
+  testWidgets('GPS failure does not reset the loaded weather', (tester) async {
+    when(() => mockRepository.fetchWeather(
+      latitude: any(named: 'latitude'),
+      longitude: any(named: 'longitude'),
+    )).thenAnswer((_) async => buildWeatherResult());
+    when(() => mockRepository.clearCachedWeather()).thenAnswer((_) async {});
+
+    final locationRepo = MockLocationRepository();
+    when(() => locationRepo.loadFavorites()).thenReturn([paris]);
+    when(() => locationRepo.loadLastLocation()).thenReturn(paris);
+    when(() => locationRepo.detectCurrentLocation()).thenThrow(Exception('fail'));
+    final locationBloc = LocationBloc(
+      logger: MockAppLogger(),
+      repository: locationRepo,
+    );
+    locationBloc.add(const LoadFavoritesEvent());
+
+    final bloc = WeatherForecastBloc(
+      logger: MockAppLogger(),
+      weatherRepository: mockRepository,
+      getSettings: mockGetSettings,
+      isConnected: () async => true,
+    );
+    bloc.add(const FetchWeatherEvent());
+    await tester.pumpWidget(createTestScreen(bloc, locationBloc: locationBloc));
+    await tester.pumpAndSettle();
+    expect(bloc.state, isA<WeatherLoaded>());
+
+    locationBloc.add(const DetectCurrentLocationEvent());
+    await tester.pumpAndSettle();
+
+    expect(bloc.state, isA<WeatherLoaded>());
+    expect(bloc.state, isNot(isA<WeatherEmpty>()));
   });
 }

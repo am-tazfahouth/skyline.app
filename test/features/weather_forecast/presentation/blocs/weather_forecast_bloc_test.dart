@@ -238,6 +238,54 @@ void main() {
         isA<WeatherError>(),
       ],
     );
+    blocTest<WeatherForecastBloc, WeatherForecastState>(
+      'no last location → emits Empty fallback and clears cache without fetching',
+      setUp: () {
+        when(() => mockRepository.clearCachedWeather()).thenAnswer((_) async {});
+      },
+      build: () => WeatherForecastBloc(
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
+        getLastLocation: () async => null,
+        isConnected: () async => true,
+      ),
+      act: (bloc) => bloc.add(const FetchWeatherEvent()),
+      expect: () => [
+        WeatherEmpty(isFetching: false, settings: _defaultSettings),
+      ],
+      verify: (_) {
+        verify(() => mockRepository.clearCachedWeather()).called(1);
+        verifyNever(() => mockRepository.loadCachedWeather());
+        verifyNever(() => mockRepository.fetchWeather(
+          latitude: any(named: 'latitude'), longitude: any(named: 'longitude')));
+      },
+    );
+
+    blocTest<WeatherForecastBloc, WeatherForecastState>(
+      'resolves coordinates from the last location when event has none',
+      setUp: () {
+        when(() => mockRepository.loadCachedWeather())
+            .thenAnswer((_) async => null);
+        when(() => mockRepository.fetchWeather(latitude: 1.0, longitude: 2.0))
+            .thenAnswer((_) async => _result());
+      },
+      build: () => WeatherForecastBloc(
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
+        getLastLocation: () async => (latitude: 1.0, longitude: 2.0),
+        isConnected: () async => true,
+      ),
+      act: (bloc) => bloc.add(const FetchWeatherEvent()),
+      expect: () => [
+        WeatherEmpty(isFetching: true, settings: _defaultSettings),
+        isA<WeatherLoaded>(),
+      ],
+      verify: (_) {
+        verify(() => mockRepository.fetchWeather(latitude: 1.0, longitude: 2.0)).called(1);
+      },
+    );
   });
 
   group('RefreshWeatherEvent', () {
@@ -345,6 +393,50 @@ void main() {
         WeatherEmpty(isFetching: true, settings: _defaultSettings),
         isA<WeatherError>(),
       ],
+    );
+
+    blocTest<WeatherForecastBloc, WeatherForecastState>(
+      'from Empty with no last location → stays Empty without fetching',
+      seed: () => WeatherEmpty(settings: _defaultSettings),
+      build: () => WeatherForecastBloc(
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
+        getLastLocation: () async => null,
+        isConnected: () async => true,
+      ),
+      act: (bloc) => bloc.add(const RefreshWeatherEvent()),
+      expect: () => [
+        WeatherEmpty(isFetching: true, settings: _defaultSettings),
+        WeatherEmpty(isFetching: false, settings: _defaultSettings),
+      ],
+      verify: (_) {
+        verifyNever(() => mockRepository.fetchWeather(
+          latitude: any(named: 'latitude'), longitude: any(named: 'longitude')));
+      },
+    );
+  });
+
+  group('ResetWeatherEvent', () {
+    blocTest<WeatherForecastBloc, WeatherForecastState>(
+      'clears cache and emits WeatherEmpty',
+      seed: () => WeatherLoaded(_result(cached: true), settings: _defaultSettings),
+      setUp: () {
+        when(() => mockRepository.clearCachedWeather()).thenAnswer((_) async {});
+      },
+      build: () => WeatherForecastBloc(
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
+        isConnected: () async => true,
+      ),
+      act: (bloc) => bloc.add(const ResetWeatherEvent()),
+      expect: () => [
+        WeatherEmpty(isFetching: false, settings: _defaultSettings),
+      ],
+      verify: (_) {
+        verify(() => mockRepository.clearCachedWeather()).called(1);
+      },
     );
   });
 

@@ -103,4 +103,14 @@ void main() {
       expect(result, isNull);
     });
   });
+
+  group('clearCachedWeather', () {
+    test('clears the persisted weather cache', () async {
+      when(() => mockDbHelper.clearWeather()).thenReturn(null);
+
+      await repository.clearCachedWeather();
+
+      verify(() => mockDbHelper.clearWeather()).called(1);
+    });
+  });
 }

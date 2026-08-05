@@ -195,6 +195,16 @@ void main() {
     });
   });
 
+  group('clearLastLocation', () {
+    test('delegates to local source', () async {
+      when(() => mockLocal.clearLastLocation()).thenReturn(null);
+
+      await repo.clearLastLocation();
+
+      verify(() => mockLocal.clearLastLocation()).called(1);
+    });
+  });
+
   group('detectCurrentLocation', () {
     final position = Position(
       latitude: -11.70,

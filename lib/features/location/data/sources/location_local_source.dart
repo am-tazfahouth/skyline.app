@@ -18,4 +18,6 @@ class LocationLocalSource {
   LastLocationEntity? loadLastLocation() => _dbHelper.loadLastLocation();
 
   void saveLastLocation(LastLocationEntity location) => _dbHelper.saveLastLocation(location);
+
+  void clearLastLocation() => _dbHelper.clearLastLocation();
 }

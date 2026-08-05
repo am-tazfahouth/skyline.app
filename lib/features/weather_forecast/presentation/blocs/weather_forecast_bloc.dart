@@ -11,24 +11,30 @@ import 'package:sky_line/features/weather_forecast/domain/usecases/get_settings_
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_event.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_state.dart';
 
+const double _defaultLatitude = -11.7022;
+const double _defaultLongitude = 43.2551;
+
+FutureOr<({double latitude, double longitude})?> _defaultLastLocation() =>
+    (latitude: _defaultLatitude, longitude: _defaultLongitude);
+
 class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastState> {
   final AppLogger logger;
   final WeatherRepository weatherRepository;
   final GetSettingsUseCase getSettings;
   final FutureOr<bool> Function() isConnected;
-
-  static const double _defaultLatitude = -11.7022;
-  static const double _defaultLongitude = 43.2551;
+  final FutureOr<({double latitude, double longitude})?> Function() getLastLocation;
 
   WeatherForecastBloc({
     required this.logger,
     required this.weatherRepository,
     required this.getSettings,
     this.isConnected = PlatformUtils.isConnected,
+    this.getLastLocation = _defaultLastLocation,
   }) : super(const WeatherInitial()) {
     on<FetchWeatherEvent>(_onFetchWeather);
     on<RefreshWeatherEvent>(_onRefreshWeather);
     on<ApplySettingsEvent>(_onApplySettings);
+    on<ResetWeatherEvent>(_onResetWeather);
   }
 
   void _onApplySettings(ApplySettingsEvent event, Emitter<WeatherForecastState> emit) {
@@ -51,8 +57,21 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
   }
 
   Future<void> _onFetchWeather(FetchWeatherEvent event, Emitter<WeatherForecastState> emit) async {
-    final cached = await weatherRepository.loadCachedWeather();
     final settings = await _loadSettings();
+    double? lat = event.latitude;
+    double? lon = event.longitude;
+    if (lat == null || lon == null) {
+      final last = await getLastLocation();
+      if (last == null) {
+        await weatherRepository.clearCachedWeather();
+        emit(WeatherEmpty(settings: settings));
+        return;
+      }
+      lat = last.latitude;
+      lon = last.longitude;
+    }
+
+    final cached = await weatherRepository.loadCachedWeather();
     final online = await isConnected();
 
     if (cached != null) {
@@ -71,8 +90,6 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
     }
 
     try {
-      final lat = event.latitude ?? _defaultLatitude;
-      final lon = event.longitude ?? _defaultLongitude;
       final fresh = await weatherRepository.fetchWeather(latitude: lat, longitude: lon);
       emit(WeatherLoaded(fresh, settings: settings));
     }
@@ -113,9 +130,20 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
     }
 
     final settings = await _loadSettings();
+    double? lat;
+    double? lon;
+    final last = await getLastLocation();
+    if (last != null) {
+      lat = last.latitude;
+      lon = last.longitude;
+    }
+    if (lat == null || lon == null) {
+      emit(WeatherEmpty(settings: settings));
+      return;
+    }
 
     try {
-      final fresh = await weatherRepository.fetchWeather(latitude: _defaultLatitude, longitude: _defaultLongitude);
+      final fresh = await weatherRepository.fetchWeather(latitude: lat, longitude: lon);
       emit(WeatherLoaded(fresh, settings: settings));
     }
     on DioException catch (dioError, stackTrace) {
@@ -139,5 +167,14 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
         emit(WeatherError(errorCode: WeatherErrorCodes.unexpected));
       }
     }
+  }
+
+  Future<void> _onResetWeather(
+    ResetWeatherEvent event,
+    Emitter<WeatherForecastState> emit,
+  ) async {
+    final settings = await _loadSettings();
+    await weatherRepository.clearCachedWeather();
+    emit(WeatherEmpty(settings: settings));
   }
 }

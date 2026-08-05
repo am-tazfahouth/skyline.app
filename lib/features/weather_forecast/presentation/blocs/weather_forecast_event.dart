@@ -30,3 +30,7 @@ class ApplySettingsEvent extends WeatherForecastEvent {
   @override
   List<Object?> get props => [settings];
 }
+
+class ResetWeatherEvent extends WeatherForecastEvent {
+  const ResetWeatherEvent();
+}

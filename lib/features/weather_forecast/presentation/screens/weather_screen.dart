@@ -17,6 +17,16 @@ class WeatherScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<LocationBloc, LocationState>(
+      listenWhen: (previous, current) {
+        if (current is LocationSelected) return true;
+        if (current is LocationFavoritesLoaded &&
+            current.currentLocation == null) {
+          return previous is LocationSelected ||
+              (previous is LocationFavoritesLoaded &&
+                  previous.currentLocation != null);
+        }
+        return false;
+      },
       listener: (context, state) {
         if (state is LocationSelected) {
           context.read<WeatherForecastBloc>().add(
@@ -25,6 +35,9 @@ class WeatherScreen extends StatelessWidget {
               longitude: state.location.longitude,
             ),
           );
+        } else if (state is LocationFavoritesLoaded &&
+            state.currentLocation == null) {
+          context.read<WeatherForecastBloc>().add(const ResetWeatherEvent());
         }
       },
       child: BlocBuilder<WeatherForecastBloc, WeatherForecastState>(

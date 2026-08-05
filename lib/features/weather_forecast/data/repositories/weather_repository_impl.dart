@@ -27,4 +27,9 @@ class WeatherRepositoryImpl implements WeatherRepository {
     _dbHelper.saveWeather(model);
     return WeatherResult(weather: model.toEntity(), isCached: false);
   }
+
+  @override
+  Future<void> clearCachedWeather() async {
+    _dbHelper.clearWeather();
+  }
 }
