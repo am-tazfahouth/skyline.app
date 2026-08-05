@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/errors/app_error.dart';
 import 'package:sky_line/core/errors/location_error_codes.dart';
+import 'package:sky_line/core/errors/location_exceptions.dart';
 import 'package:sky_line/core/services/logger_sevices.dart';
 import 'package:sky_line/features/location/domain/repositories/location_repository.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_event.dart';
@@ -13,6 +14,8 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   LocationBloc({required this.logger, required this.repository})
       : super(const LocationInitial()) {
     on<DetectCurrentLocationEvent>(_onDetectCurrentLocation);
+    on<OpenLocationSettingsEvent>(_onOpenLocationSettings);
+    on<OpenAppSettingsEvent>(_onOpenAppSettings);
     on<SearchLocationsEvent>(_onSearchLocations);
     on<SelectLocationEvent>(_onSelectLocation);
     on<AddFavoriteEvent>(_onAddFavorite);
@@ -31,6 +34,12 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
       await repository.saveLastLocation(location);
       final favorites = repository.loadFavorites();
       emit(LocationSelected(location: location, favorites: favorites));
+    } on LocationPermissionPermanentlyDeniedException {
+      emit(const LocationError(LocationErrorCodes.gpsPermissionPermanentlyDenied));
+    } on LocationPermissionDeniedException {
+      emit(const LocationError(LocationErrorCodes.gpsPermissionDenied));
+    } on LocationServiceDisabledException {
+      emit(const LocationError(LocationErrorCodes.gpsDisabled));
     } catch (e, stackTrace) {
       logger.e(
         AppError.getDebugErrorMessage(LocationErrorCodes.gpsFailed),
@@ -38,6 +47,36 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
         stackTrace: stackTrace,
       );
       emit(const LocationError(LocationErrorCodes.gpsFailed));
+    }
+  }
+
+  Future<void> _onOpenLocationSettings(
+    OpenLocationSettingsEvent event,
+    Emitter<LocationState> emit,
+  ) async {
+    try {
+      await repository.openLocationSettings();
+    } catch (e, stackTrace) {
+      logger.e(
+        AppError.getDebugErrorMessage(LocationErrorCodes.gpsFailed),
+        error: e,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  Future<void> _onOpenAppSettings(
+    OpenAppSettingsEvent event,
+    Emitter<LocationState> emit,
+  ) async {
+    try {
+      await repository.openAppSettings();
+    } catch (e, stackTrace) {
+      logger.e(
+        AppError.getDebugErrorMessage(LocationErrorCodes.gpsFailed),
+        error: e,
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -56,7 +95,7 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
         error: e,
         stackTrace: stackTrace,
       );
-      emit(const LocationError(LocationErrorCodes.searchFailed));
+      emit(const LocationSearchError(LocationErrorCodes.searchFailed));
     }
   }
 

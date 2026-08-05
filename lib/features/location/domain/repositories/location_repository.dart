@@ -9,4 +9,6 @@ abstract class LocationRepository {
   LocationEntity? loadLastLocation();
   Future<void> saveLastLocation(LocationEntity location);
   Future<LocationEntity> detectCurrentLocation();
+  Future<void> openLocationSettings();
+  Future<void> openAppSettings();
 }

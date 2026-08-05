@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:sky_line/core/config/app_routes.dart';
+import 'package:sky_line/core/errors/location_exceptions.dart';
 import 'package:sky_line/core/services/logger_sevices.dart';
 import 'package:sky_line/features/location/domain/entities/location_entity.dart';
 import 'package:sky_line/features/location/domain/repositories/location_repository.dart';
@@ -169,5 +170,65 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(SnackBar), findsOneWidget);
+  });
+
+  testWidgets('service disabled SnackBar offers Enable action opening location settings',
+      (tester) async {
+    bloc = createBloc();
+    when(() => repo.loadFavorites()).thenReturn([]);
+    when(() => repo.detectCurrentLocation())
+        .thenThrow(const LocationServiceDisabledException());
+    when(() => repo.openLocationSettings()).thenAnswer((_) async {});
+
+    await pumpLocationScreen(tester);
+    await tester.tap(find.byIcon(Icons.my_location_rounded));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Location services are turned off.'), findsOneWidget);
+    await tester.tap(find.text('Enable'));
+    await tester.pumpAndSettle();
+
+    verify(() => repo.openLocationSettings()).called(1);
+  });
+
+  testWidgets('permanently denied SnackBar offers Settings action opening app settings',
+      (tester) async {
+    bloc = createBloc();
+    when(() => repo.loadFavorites()).thenReturn([]);
+    when(() => repo.detectCurrentLocation())
+        .thenThrow(const LocationPermissionPermanentlyDeniedException());
+    when(() => repo.openAppSettings()).thenAnswer((_) async {});
+
+    await pumpLocationScreen(tester);
+    await tester.tap(find.byIcon(Icons.my_location_rounded));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Location permission is permanently denied. Please enable it in Settings.'),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Settings'));
+    await tester.pumpAndSettle();
+
+    verify(() => repo.openAppSettings()).called(1);
+  });
+
+  testWidgets('permission denied SnackBar offers Retry action re-detecting location',
+      (tester) async {
+    bloc = createBloc();
+    when(() => repo.loadFavorites()).thenReturn([]);
+    when(() => repo.detectCurrentLocation())
+        .thenThrow(const LocationPermissionDeniedException());
+
+    await pumpLocationScreen(tester);
+    await tester.tap(find.byIcon(Icons.my_location_rounded));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Location permission is required to get your current location.'),
+        findsOneWidget);
+    await tester.tap(find.text('Retry'));
+    await tester.pumpAndSettle();
+
+    verify(() => repo.detectCurrentLocation()).called(2);
   });
 }

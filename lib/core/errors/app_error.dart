@@ -12,6 +12,9 @@ class AppError {
  
   /// Get user-facing message (short, english defaults).
   static String getUserErrorMessage(AppErrorCode code) {
+    final specific = _userMessages[code];
+    if (specific != null) return specific;
+
     final type = _userErrorTypeMap[code] ?? UserErrorType.unexpected;
 
     switch (type) {
@@ -54,11 +57,21 @@ class AppError {
     // Location
     LocationErrorCodes.gpsDisabled: "GPS is disabled on the device.",
     LocationErrorCodes.gpsPermissionDenied: "GPS permission was denied by the user.",
+    LocationErrorCodes.gpsPermissionPermanentlyDenied: "GPS permission was permanently denied by the user.",
     LocationErrorCodes.gpsFailed: "Failed to detect GPS location.",
     LocationErrorCodes.searchFailed: "Failed to search for cities.",
     LocationErrorCodes.saveFavoriteFailed: "Failed to save favorite location.",
     LocationErrorCodes.loadFavoritesFailed: "Failed to load favorite locations.",
     LocationErrorCodes.unexpected: "An unexpected location error occurred.",
+  };
+
+  /// -------------------------
+  /// Specific user-facing messages (overrides type fallback)
+  /// -------------------------
+  static final Map<AppErrorCode, String> _userMessages = {
+    LocationErrorCodes.gpsDisabled: "Location services are turned off.",
+    LocationErrorCodes.gpsPermissionDenied: "Location permission is required to get your current location.",
+    LocationErrorCodes.gpsPermissionPermanentlyDenied: "Location permission is permanently denied. Please enable it in Settings.",
   };
 
   /// -------------------------

@@ -42,6 +42,7 @@ dependencies:
   path_provider: ^2.1.5
   weather_icons: ^3.0.0
   cupertino_icons: ^1.0.8
+  permission_handler: ^11.3.1
   flutter_native_splash: ^2.4.7
   objectbox_flutter_libs: ^5.0.0
   frontend_server_client: ^4.0.0

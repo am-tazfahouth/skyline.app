@@ -6,6 +6,7 @@ class LocationErrorCodes {
 
   static const gpsDisabled = AppErrorCode(AppErrorSource.location, 'gpsDisabled');
   static const gpsPermissionDenied = AppErrorCode(AppErrorSource.location, 'gpsPermissionDenied');
+  static const gpsPermissionPermanentlyDenied = AppErrorCode(AppErrorSource.location, 'gpsPermissionPermanentlyDenied');
   static const gpsFailed = AppErrorCode(AppErrorSource.location, 'gpsFailed');
   static const searchFailed = AppErrorCode(AppErrorSource.location, 'searchFailed');
   static const saveFavoriteFailed = AppErrorCode(AppErrorSource.location, 'saveFavoriteFailed');

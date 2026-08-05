@@ -71,7 +71,7 @@ class LocationSearchScreen extends StatelessWidget {
                       },
                     );
                   }
-                  if (state is LocationError) {
+                  if (state is LocationSearchError) {
                     return Center(
                       child: Text(
                         AppError.getUserErrorMessage(state.errorCode),

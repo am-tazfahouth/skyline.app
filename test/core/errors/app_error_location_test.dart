@@ -53,11 +53,32 @@ void main() {
       expect(message, 'An unexpected location error occurred.');
     });
 
-    test('getUserErrorMessage returns correct message for location type', () {
+    test('getUserErrorMessage returns correct message for gpsDisabled', () {
       final message = AppError.getUserErrorMessage(
         LocationErrorCodes.gpsDisabled,
       );
-      expect(message, 'Could not get your location. Please check permissions.');
+      expect(message, 'Location services are turned off.');
+    });
+
+    test('getUserErrorMessage returns correct message for gpsPermissionDenied', () {
+      final message = AppError.getUserErrorMessage(
+        LocationErrorCodes.gpsPermissionDenied,
+      );
+      expect(
+        message,
+        'Location permission is required to get your current location.',
+      );
+    });
+
+    test('getUserErrorMessage returns correct message for gpsPermissionPermanentlyDenied',
+        () {
+      final message = AppError.getUserErrorMessage(
+        LocationErrorCodes.gpsPermissionPermanentlyDenied,
+      );
+      expect(
+        message,
+        'Location permission is permanently denied. Please enable it in Settings.',
+      );
     });
 
     test('getUserErrorMessage returns correct message for search type', () {

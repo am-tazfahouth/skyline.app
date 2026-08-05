@@ -17,7 +17,31 @@ class LocationScreen extends StatelessWidget {
   bool _isGpsError(AppErrorCode code) =>
       code == LocationErrorCodes.gpsDisabled ||
       code == LocationErrorCodes.gpsPermissionDenied ||
+      code == LocationErrorCodes.gpsPermissionPermanentlyDenied ||
       code == LocationErrorCodes.gpsFailed;
+
+  SnackBarAction? _gpsErrorAction(BuildContext context, AppErrorCode code) {
+    final bloc = context.read<LocationBloc>();
+    if (code == LocationErrorCodes.gpsDisabled) {
+      return SnackBarAction(
+        label: 'Enable',
+        onPressed: () => bloc.add(const OpenLocationSettingsEvent()),
+      );
+    }
+    if (code == LocationErrorCodes.gpsPermissionDenied) {
+      return SnackBarAction(
+        label: 'Retry',
+        onPressed: () => bloc.add(const DetectCurrentLocationEvent()),
+      );
+    }
+    if (code == LocationErrorCodes.gpsPermissionPermanentlyDenied) {
+      return SnackBarAction(
+        label: 'Settings',
+        onPressed: () => bloc.add(const OpenAppSettingsEvent()),
+      );
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +67,7 @@ class LocationScreen extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppError.getUserErrorMessage(state.errorCode)),
+              action: _gpsErrorAction(context, state.errorCode),
             ),
           );
         }
@@ -80,6 +105,7 @@ class LocationScreen extends StatelessWidget {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
             Navigator.pushNamed(context, AppRoutes.locationSearch);
           },
           child: const Icon(Icons.add),

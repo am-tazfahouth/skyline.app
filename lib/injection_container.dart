@@ -14,6 +14,7 @@ import 'package:sky_line/features/weather_forecast/domain/usecases/get_settings_
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
 import 'package:sky_line/features/location/data/sources/location_remote_source.dart';
 import 'package:sky_line/features/location/data/sources/location_local_source.dart';
+import 'package:sky_line/features/location/data/sources/location_permission_source.dart';
 import 'package:sky_line/features/location/data/repositories/location_repository_impl.dart';
 import 'package:sky_line/features/location/domain/repositories/location_repository.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
@@ -29,6 +30,7 @@ class InjectionContainer {
   static late final WeatherForecastBloc weatherBloc;
   static late final LocationRemoteSource locationRemoteSource;
   static late final LocationLocalSource locationLocalSource;
+  static late final LocationPermissionSource locationPermissionSource;
   static late final LocationRepository locationRepository;
   static late final LocationBloc locationBloc;
 
@@ -51,8 +53,12 @@ class InjectionContainer {
     );
     locationRemoteSource = LocationRemoteSource(dio);
     locationLocalSource = LocationLocalSource(dbHelper);
-    locationRepository =
-        LocationRepositoryImpl(locationRemoteSource, locationLocalSource);
+    locationPermissionSource = LocationPermissionSource();
+    locationRepository = LocationRepositoryImpl(
+      locationRemoteSource,
+      locationLocalSource,
+      locationPermissionSource,
+    );
     locationBloc =
         LocationBloc(logger: logger, repository: locationRepository);
   }

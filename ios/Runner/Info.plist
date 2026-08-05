@@ -45,7 +45,9 @@
 		<true/>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
-		<key>UIStatusBarHidden</key>
-		<false/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>SkyLine uses your location to show the weather at your current position.</string>
+	<key>UIStatusBarHidden</key>
+	<false/>
 	</dict>
 </plist>

@@ -1,7 +1,9 @@
-import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart' as ph;
+import 'package:sky_line/core/errors/location_exceptions.dart';
 import 'package:sky_line/features/location/data/mappers/location_mapper.dart';
 import 'package:sky_line/features/location/data/sources/location_remote_source.dart';
 import 'package:sky_line/features/location/data/sources/location_local_source.dart';
+import 'package:sky_line/features/location/data/sources/location_permission_source.dart';
 import 'package:sky_line/features/location/domain/entities/location_entity.dart';
 import 'package:sky_line/features/location/domain/repositories/location_repository.dart';
 import 'package:sky_line/core/config/db_helper/location_cache_entity.dart';
@@ -10,8 +12,13 @@ import 'package:sky_line/core/config/db_helper/last_location_entity.dart';
 class LocationRepositoryImpl implements LocationRepository {
   final LocationRemoteSource _remoteSource;
   final LocationLocalSource _localSource;
+  final LocationPermissionSource _permissionSource;
 
-  LocationRepositoryImpl(this._remoteSource, this._localSource);
+  LocationRepositoryImpl(
+    this._remoteSource,
+    this._localSource,
+    this._permissionSource,
+  );
 
   @override
   Future<List<LocationEntity>> searchLocations(String query) async {
@@ -99,19 +106,20 @@ class LocationRepositoryImpl implements LocationRepository {
 
   @override
   Future<LocationEntity> detectCurrentLocation() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) throw Exception('gpsDisabled');
-
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) throw Exception('gpsPermissionDenied');
+    final status = await _permissionSource.requestLocationPermission();
+    if (status.isRestricted || status.isDenied) {
+      throw const LocationPermissionDeniedException();
     }
-    if (permission == LocationPermission.deniedForever) throw Exception('gpsPermissionDenied');
+    if (status.isPermanentlyDenied) {
+      throw const LocationPermissionPermanentlyDeniedException();
+    }
 
-    final position = await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(accuracy: LocationAccuracy.low),
-    );
+    final serviceEnabled = await _permissionSource.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      throw const LocationServiceDisabledException();
+    }
+
+    final position = await _permissionSource.getCurrentPosition();
 
     return LocationEntity(
       latitude: position.latitude,
@@ -119,5 +127,15 @@ class LocationRepositoryImpl implements LocationRepository {
       cityName: 'Current Location',
       isGpsLocation: true,
     );
+  }
+
+  @override
+  Future<void> openLocationSettings() async {
+    await _permissionSource.openLocationSettings();
+  }
+
+  @override
+  Future<void> openAppSettings() async {
+    await _permissionSource.openAppSettings();
   }
 }

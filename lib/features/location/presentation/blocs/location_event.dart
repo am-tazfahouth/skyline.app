@@ -11,6 +11,14 @@ class DetectCurrentLocationEvent extends LocationEvent {
   const DetectCurrentLocationEvent();
 }
 
+class OpenLocationSettingsEvent extends LocationEvent {
+  const OpenLocationSettingsEvent();
+}
+
+class OpenAppSettingsEvent extends LocationEvent {
+  const OpenAppSettingsEvent();
+}
+
 class SearchLocationsEvent extends LocationEvent {
   final String query;
   const SearchLocationsEvent(this.query);

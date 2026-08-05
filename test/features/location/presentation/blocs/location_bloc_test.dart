@@ -1,6 +1,8 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:sky_line/core/errors/location_error_codes.dart';
+import 'package:sky_line/core/errors/location_exceptions.dart';
 import 'package:sky_line/core/services/logger_sevices.dart';
 import 'package:sky_line/features/location/domain/entities/location_entity.dart';
 import 'package:sky_line/features/location/domain/repositories/location_repository.dart';
@@ -78,6 +80,20 @@ void main() {
       expect: () => [
         isA<LocationSearchLoading>(),
         isA<LocationSearchLoaded>().having((s) => s.results.length, 'results', 1),
+      ],
+    );
+
+    blocTest<LocationBloc, LocationState>(
+      'emits LocationSearchError when search throws',
+      build: () {
+        when(() => mockRepo.searchLocations(any())).thenThrow(Exception('fail'));
+        return bloc;
+      },
+      act: (bloc) => bloc.add(const SearchLocationsEvent('Paris')),
+      expect: () => [
+        isA<LocationSearchLoading>(),
+        isA<LocationSearchError>()
+            .having((s) => s.errorCode, 'code', LocationErrorCodes.searchFailed),
       ],
     );
   });
@@ -196,6 +212,79 @@ void main() {
         isA<LocationDetecting>(),
         isA<LocationSelected>().having((s) => s.location.isGpsLocation, 'isGps', true),
       ],
+    );
+
+    blocTest<LocationBloc, LocationState>(
+      'emits LocationError gpsPermissionDenied when permission denied',
+      build: () {
+        when(() => mockRepo.detectCurrentLocation())
+            .thenThrow(const LocationPermissionDeniedException());
+        return bloc;
+      },
+      act: (bloc) => bloc.add(DetectCurrentLocationEvent()),
+      expect: () => [
+        isA<LocationDetecting>(),
+        isA<LocationError>()
+            .having((s) => s.errorCode, 'code', LocationErrorCodes.gpsPermissionDenied),
+      ],
+    );
+
+    blocTest<LocationBloc, LocationState>(
+      'emits LocationError gpsPermissionPermanentlyDenied when denied forever',
+      build: () {
+        when(() => mockRepo.detectCurrentLocation())
+            .thenThrow(const LocationPermissionPermanentlyDeniedException());
+        return bloc;
+      },
+      act: (bloc) => bloc.add(DetectCurrentLocationEvent()),
+      expect: () => [
+        isA<LocationDetecting>(),
+        isA<LocationError>()
+            .having((s) => s.errorCode, 'code', LocationErrorCodes.gpsPermissionPermanentlyDenied),
+      ],
+    );
+
+    blocTest<LocationBloc, LocationState>(
+      'emits LocationError gpsDisabled when service is off',
+      build: () {
+        when(() => mockRepo.detectCurrentLocation())
+            .thenThrow(const LocationServiceDisabledException());
+        return bloc;
+      },
+      act: (bloc) => bloc.add(DetectCurrentLocationEvent()),
+      expect: () => [
+        isA<LocationDetecting>(),
+        isA<LocationError>()
+            .having((s) => s.errorCode, 'code', LocationErrorCodes.gpsDisabled),
+      ],
+    );
+  });
+
+  group('OpenLocationSettingsEvent', () {
+    blocTest<LocationBloc, LocationState>(
+      'opens location settings through the repository',
+      build: () {
+        when(() => mockRepo.openLocationSettings()).thenAnswer((_) async {});
+        return bloc;
+      },
+      act: (bloc) => bloc.add(const OpenLocationSettingsEvent()),
+      verify: (_) {
+        verify(() => mockRepo.openLocationSettings()).called(1);
+      },
+    );
+  });
+
+  group('OpenAppSettingsEvent', () {
+    blocTest<LocationBloc, LocationState>(
+      'opens app settings through the repository',
+      build: () {
+        when(() => mockRepo.openAppSettings()).thenAnswer((_) async {});
+        return bloc;
+      },
+      act: (bloc) => bloc.add(const OpenAppSettingsEvent()),
+      verify: (_) {
+        verify(() => mockRepo.openAppSettings()).called(1);
+      },
     );
   });
 }

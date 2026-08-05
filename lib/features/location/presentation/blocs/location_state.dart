@@ -27,6 +27,13 @@ class LocationSearchLoaded extends LocationState {
   List<Object?> get props => [results];
 }
 
+class LocationSearchError extends LocationState {
+  final AppErrorCode errorCode;
+  const LocationSearchError(this.errorCode);
+  @override
+  List<Object?> get props => [errorCode];
+}
+
 class LocationSelected extends LocationState {
   final LocationEntity location;
   final List<LocationEntity> favorites;
