@@ -111,6 +111,8 @@ class LocationScreen extends StatelessWidget {
           child: const Icon(Icons.add),
         ),
         body: BlocBuilder<LocationBloc, LocationState>(
+          buildWhen: (_, state) =>
+              state is LocationFavoritesLoaded || state is LocationSelected,
           builder: (context, state) {
             final favorites = switch (state) {
               LocationFavoritesLoaded(favorites: final f) => f,

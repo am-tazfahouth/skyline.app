@@ -160,6 +160,25 @@ void main() {
     verify(() => repo.saveLastLocation(paris)).called(1);
   });
 
+  testWidgets('GPS error keeps the favorites list visible', (tester) async {
+    bloc = createBloc();
+    when(() => repo.loadFavorites()).thenReturn([paris]);
+    when(() => repo.loadLastLocation()).thenReturn(null);
+    when(() => repo.detectCurrentLocation()).thenThrow(Exception('gps failed'));
+    bloc.add(const LoadFavoritesEvent());
+
+    await pumpLocationScreen(tester);
+    await tester.pumpAndSettle();
+    expect(find.text('Paris'), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.my_location_rounded));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SnackBar), findsOneWidget);
+    expect(find.text('Paris'), findsOneWidget);
+    expect(find.text('No favorites yet'), findsNothing);
+  });
+
   testWidgets('GPS error shows a SnackBar', (tester) async {
     bloc = createBloc();
     when(() => repo.loadFavorites()).thenReturn([]);
