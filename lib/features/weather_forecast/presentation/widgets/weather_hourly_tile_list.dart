@@ -87,7 +87,7 @@ class WeatherHourlyTileList extends StatelessWidget {
       clipBehavior: Clip.none,
       child: Row(
         children: List.generate(
-          5,
+          6,
           (_) => _buildTile(
             time: '--:--',
             icon: Icons.cloud_rounded,

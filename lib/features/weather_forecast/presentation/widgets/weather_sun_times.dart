@@ -122,69 +122,53 @@ class WeatherSunTimes extends StatelessWidget {
         color: cardColor,
         borderRadius: BorderRadius.circular(14),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            children: [
-              Icon(
-                size: 18,
-                color: primaryText,
-                Icons.wb_sunny_outlined,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                'Sun Time',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: primaryText,
-                ),
-              ),
-            ],
+          _TimePoint(
+            data: const TimePointData(
+              icon: Icons.wb_sunny_outlined,
+              iconColor: Colors.grey,
+              label: 'Sunrise',
+              time: '--:--',
+            ),
+            primaryText: primaryText,
+            secondaryText: secondaryText,
           ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              _TimePoint(
-                data: const TimePointData(
-                  icon: Icons.wb_sunny_outlined,
-                  iconColor: Colors.grey,
-                  label: 'Sunrise',
-                  time: '--:--',
-                ),
-                primaryText: primaryText,
-                secondaryText: secondaryText,
-              ),
-              Text(
+          Expanded(
+            child: Center(
+              child: Text(
                 '—',
                 style: TextStyle(color: secondaryText, fontSize: 20),
               ),
-              _TimePoint(
-                data: const TimePointData(
-                  icon: Icons.wb_sunny,
-                  iconColor: Colors.grey,
-                  label: 'Zenith',
-                  time: '--:--',
-                ),
-                primaryText: primaryText,
-                secondaryText: secondaryText,
-              ),
-              Text(
+            ),
+          ),
+          _TimePoint(
+            data: const TimePointData(
+              icon: Icons.wb_sunny,
+              iconColor: Colors.grey,
+              label: 'Zenith',
+              time: '--:--',
+            ),
+            primaryText: primaryText,
+            secondaryText: secondaryText,
+          ),
+          Expanded(
+            child: Center(
+              child: Text(
                 '—',
                 style: TextStyle(color: secondaryText, fontSize: 20),
               ),
-              _TimePoint(
-                data: const TimePointData(
-                  icon: Icons.nightlight_round_outlined,
-                  iconColor: Colors.grey,
-                  label: 'Sunset',
-                  time: '--:--',
-                ),
-                primaryText: primaryText,
-                secondaryText: secondaryText,
-              ),
-            ],
+            ),
+          ),
+          _TimePoint(
+            data: const TimePointData(
+              icon: Icons.nightlight_round_outlined,
+              iconColor: Colors.grey,
+              label: 'Sunset',
+              time: '--:--',
+            ),
+            primaryText: primaryText,
+            secondaryText: secondaryText,
           ),
         ],
       ),
