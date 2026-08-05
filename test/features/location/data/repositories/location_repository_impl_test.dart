@@ -3,6 +3,7 @@ import 'package:geolocator/geolocator.dart' hide LocationServiceDisabledExceptio
 import 'package:mocktail/mocktail.dart';
 import 'package:permission_handler/permission_handler.dart' as ph;
 import 'package:sky_line/core/errors/location_exceptions.dart';
+import 'package:sky_line/features/location/data/models/reverse_geocode_model.dart';
 import 'package:sky_line/features/location/data/sources/location_remote_source.dart';
 import 'package:sky_line/features/location/data/sources/location_local_source.dart';
 import 'package:sky_line/features/location/data/sources/location_permission_source.dart';
@@ -219,13 +220,19 @@ void main() {
       speedAccuracy: 0,
     );
 
-    test('requests permission, checks service, returns GPS location', () async {
+    void stubPermissions() {
       when(() => mockPermission.requestLocationPermission())
           .thenAnswer((_) async => ph.PermissionStatus.granted);
       when(() => mockPermission.isLocationServiceEnabled())
           .thenAnswer((_) async => true);
       when(() => mockPermission.getCurrentPosition())
           .thenAnswer((_) async => position);
+    }
+
+    test('requests permission, checks service, returns GPS location', () async {
+      stubPermissions();
+      when(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25))
+          .thenAnswer((_) async => const ReverseGeocodeModel(city: 'Moroni'));
 
       final result = await repo.detectCurrentLocation();
 
@@ -235,6 +242,61 @@ void main() {
       verify(() => mockPermission.requestLocationPermission()).called(1);
       verify(() => mockPermission.isLocationServiceEnabled()).called(1);
       verify(() => mockPermission.getCurrentPosition()).called(1);
+      verify(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25)).called(1);
+    });
+
+    test('returns enriched location when reverse geocoding succeeds', () async {
+      stubPermissions();
+      when(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25))
+          .thenAnswer((_) async => const ReverseGeocodeModel(
+                city: 'Moroni',
+                principalSubdivision: 'Grande Comore',
+                countryName: 'Comoros',
+              ));
+
+      final result = await repo.detectCurrentLocation();
+
+      expect(result.cityName, 'Moroni');
+      expect(result.country, 'Comoros');
+      expect(result.admin1, 'Grande Comore');
+      expect(result.isGpsLocation, isTrue);
+      expect(result.latitude, -11.70);
+      expect(result.longitude, 43.25);
+    });
+
+    test('uses locality when city is empty', () async {
+      stubPermissions();
+      when(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25))
+          .thenAnswer((_) async => const ReverseGeocodeModel(locality: 'Saint-Merri'));
+
+      final result = await repo.detectCurrentLocation();
+
+      expect(result.cityName, 'Saint-Merri');
+    });
+
+    test('falls back to Current Location when reverse geocoding throws', () async {
+      stubPermissions();
+      when(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25))
+          .thenThrow(Exception('network error'));
+
+      final result = await repo.detectCurrentLocation();
+
+      expect(result.cityName, 'Current Location');
+      expect(result.latitude, -11.70);
+      expect(result.longitude, 43.25);
+      expect(result.isGpsLocation, isTrue);
+    });
+
+    test('falls back to Current Location when no city or locality is returned', () async {
+      stubPermissions();
+      when(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25))
+          .thenAnswer((_) async => const ReverseGeocodeModel());
+
+      final result = await repo.detectCurrentLocation();
+
+      expect(result.cityName, 'Current Location');
+      expect(result.latitude, -11.70);
+      expect(result.longitude, 43.25);
     });
 
     test('throws LocationPermissionDeniedException when denied', () async {

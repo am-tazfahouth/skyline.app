@@ -125,13 +125,45 @@ class LocationRepositoryImpl implements LocationRepository {
     }
 
     final position = await _permissionSource.getCurrentPosition();
+    return _resolveDetectedLocation(position.latitude, position.longitude);
+  }
 
+  Future<LocationEntity> _resolveDetectedLocation(
+    double latitude,
+    double longitude,
+  ) async {
+    try {
+      final place =
+          await _remoteSource.reverseGeocode(latitude: latitude, longitude: longitude);
+      final city = _firstNonEmpty([place.city, place.locality]);
+      if (city == null) return _gpsFallback(latitude, longitude);
+      return LocationEntity(
+        latitude: latitude,
+        longitude: longitude,
+        cityName: city,
+        country: place.countryName,
+        admin1: place.principalSubdivision,
+        isGpsLocation: true,
+      );
+    } catch (_) {
+      return _gpsFallback(latitude, longitude);
+    }
+  }
+
+  LocationEntity _gpsFallback(double latitude, double longitude) {
     return LocationEntity(
-      latitude: position.latitude,
-      longitude: position.longitude,
+      latitude: latitude,
+      longitude: longitude,
       cityName: 'Current Location',
       isGpsLocation: true,
     );
+  }
+
+  String? _firstNonEmpty(List<String?> values) {
+    for (final value in values) {
+      if (value != null && value.trim().isNotEmpty) return value;
+    }
+    return null;
   }
 
   @override
