@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:sky_line/core/constants/api_constants.dart';
+import 'package:sky_line/features/location/data/models/reverse_geocode_model.dart';
 
 class LocationRemoteSource {
   final Dio _dio;
@@ -17,5 +18,20 @@ class LocationRemoteSource {
       },
     );
     return response.data as Map<String, dynamic>;
+  }
+
+  Future<ReverseGeocodeModel> reverseGeocode({
+    required double latitude,
+    required double longitude,
+  }) async {
+    final response = await _dio.get(
+      ApiConstants.bigDataCloudReverseGeocodeUrl,
+      queryParameters: {
+        'latitude': latitude,
+        'longitude': longitude,
+        'localityLanguage': 'fr',
+      },
+    );
+    return ReverseGeocodeModel.fromJson(response.data as Map<String, dynamic>);
   }
 }

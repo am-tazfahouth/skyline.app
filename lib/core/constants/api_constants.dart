@@ -7,6 +7,9 @@ class ApiConstants {
   static const String openMeteoGeocodingUrl =
       'https://geocoding-api.open-meteo.com/v1/search';
 
+  static const String bigDataCloudReverseGeocodeUrl =
+      'https://api.bigdatacloud.net/data/reverse-geocode-client';
+
   static const String _dailyParams =
       'temperature_2m_max,temperature_2m_min,weather_code,sunset,sunrise';
   static const String _hourlyParams =
