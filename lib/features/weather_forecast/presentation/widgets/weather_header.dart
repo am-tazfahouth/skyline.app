@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/config/app_routes.dart';
+import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_state.dart';
 
@@ -9,6 +10,7 @@ class WeatherHeader extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalisation.of(context)!;
     return AppBar(
       notificationPredicate: (_) => false,
       backgroundColor: Colors.transparent,
@@ -26,7 +28,7 @@ class WeatherHeader extends StatelessWidget implements PreferredSizeWidget {
             LocationSelected(location: final l) => l.title,
             LocationFavoritesLoaded(currentLocation: final c) => c?.title,
             _ => null,
-          } ?? 'SkyLine';
+          } ?? l10n.appTitle;
           return Text(
             title,
             style: const TextStyle(

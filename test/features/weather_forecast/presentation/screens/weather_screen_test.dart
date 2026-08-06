@@ -275,6 +275,20 @@ void main() {
       find.text('Pas de connexion internet. Vérifiez votre réseau.'),
       findsOneWidget,
     );
+    expect(find.text('Réessayer'), findsOneWidget);
+  });
+
+  testWidgets('initial view shows localized prompt in French', (tester) async {
+    final bloc = WeatherForecastBloc(
+      logger: MockAppLogger(),
+      weatherRepository: mockRepository,
+      getSettings: mockGetSettings,
+      isConnected: () async => true,
+    );
+
+    await tester.pumpWidget(createTestScreen(bloc, locale: const Locale('fr')));
+
+    expect(find.text('Recherchez un lieu'), findsOneWidget);
   });
 
   testWidgets('shows error view on error state', (tester) async {
