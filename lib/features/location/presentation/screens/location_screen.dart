@@ -23,21 +23,22 @@ class LocationScreen extends StatelessWidget {
 
   SnackBarAction? _gpsErrorAction(BuildContext context, AppErrorCode code) {
     final bloc = context.read<LocationBloc>();
+    final l10n = AppLocalisation.of(context)!;
     if (code == LocationErrorCodes.gpsDisabled) {
       return SnackBarAction(
-        label: 'Enable',
+        label: l10n.locationEnable,
         onPressed: () => bloc.add(const OpenLocationSettingsEvent()),
       );
     }
     if (code == LocationErrorCodes.gpsPermissionDenied) {
       return SnackBarAction(
-        label: 'Retry',
+        label: l10n.weatherRetry,
         onPressed: () => bloc.add(const DetectCurrentLocationEvent()),
       );
     }
     if (code == LocationErrorCodes.gpsPermissionPermanentlyDenied) {
       return SnackBarAction(
-        label: 'Settings',
+        label: l10n.settingsTitle,
         onPressed: () => bloc.add(const OpenAppSettingsEvent()),
       );
     }
@@ -47,6 +48,7 @@ class LocationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bgColor = AppTheme.surfaceFor(Theme.of(context).brightness).color;
+    final l10n = AppLocalisation.of(context)!;
     
     return BlocListener<LocationBloc, LocationState>(
       listener: (context, state) {
@@ -79,7 +81,7 @@ class LocationScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: bgColor,
         appBar: AppBar(
-          title: const Text('Location'),
+          title: Text(l10n.locationTitle),
           backgroundColor: bgColor,
           actions: [
             BlocBuilder<LocationBloc, LocationState>(
@@ -96,7 +98,7 @@ class LocationScreen extends StatelessWidget {
                 }
                 return IconButton(
                   icon: const Icon(Icons.my_location_rounded),
-                  tooltip: 'Current location',
+                  tooltip: l10n.locationCurrentLocationTooltip,
                   onPressed: () {
                     context
                         .read<LocationBloc>()

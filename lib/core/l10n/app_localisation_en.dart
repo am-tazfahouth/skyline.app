@@ -162,6 +162,30 @@ class AppLocalisationEn extends AppLocalisation {
   String get weatherNightTitle => 'Night Time';
 
   @override
+  String get locationTitle => 'Location';
+
+  @override
+  String get locationCurrentLocationTooltip => 'Current location';
+
+  @override
+  String get locationEnable => 'Enable';
+
+  @override
+  String get locationNoFavorites => 'No favorites yet';
+
+  @override
+  String get locationSearchTitle => 'Search City';
+
+  @override
+  String get locationSearchHint => 'Search city...';
+
+  @override
+  String get locationSearchNoResults => 'No results found';
+
+  @override
+  String get locationSearchPrompt => 'Type to search for a city';
+
+  @override
   String get errorNetwork =>
       'No internet connection. Please check your network.';
 

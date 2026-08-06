@@ -162,6 +162,31 @@ class AppLocalisationFr extends AppLocalisation {
   String get weatherNightTitle => 'Heures de nuit';
 
   @override
+  String get locationTitle => 'Lieux';
+
+  @override
+  String get locationCurrentLocationTooltip => 'Position actuelle';
+
+  @override
+  String get locationEnable => 'Activer';
+
+  @override
+  String get locationNoFavorites => 'Aucun favori pour l\'instant';
+
+  @override
+  String get locationSearchTitle => 'Rechercher une ville';
+
+  @override
+  String get locationSearchHint => 'Rechercher une ville...';
+
+  @override
+  String get locationSearchNoResults => 'Aucun résultat trouvé';
+
+  @override
+  String get locationSearchPrompt =>
+      'Saisissez un nom de ville pour rechercher';
+
+  @override
   String get errorNetwork =>
       'Pas de connexion internet. Vérifiez votre réseau.';
 

@@ -366,6 +366,54 @@ abstract class AppLocalisation {
   /// **'Night Time'**
   String get weatherNightTitle;
 
+  /// Title for the location (favorites) screen
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get locationTitle;
+
+  /// Tooltip for the GPS current location action
+  ///
+  /// In en, this message translates to:
+  /// **'Current location'**
+  String get locationCurrentLocationTooltip;
+
+  /// Snackbar action to enable location services
+  ///
+  /// In en, this message translates to:
+  /// **'Enable'**
+  String get locationEnable;
+
+  /// Empty state message when no favorite locations are saved
+  ///
+  /// In en, this message translates to:
+  /// **'No favorites yet'**
+  String get locationNoFavorites;
+
+  /// Title for the location search screen
+  ///
+  /// In en, this message translates to:
+  /// **'Search City'**
+  String get locationSearchTitle;
+
+  /// Hint text of the city search field
+  ///
+  /// In en, this message translates to:
+  /// **'Search city...'**
+  String get locationSearchHint;
+
+  /// Empty state message when the city search returns no results
+  ///
+  /// In en, this message translates to:
+  /// **'No results found'**
+  String get locationSearchNoResults;
+
+  /// Initial state prompt before the user starts searching
+  ///
+  /// In en, this message translates to:
+  /// **'Type to search for a city'**
+  String get locationSearchPrompt;
+
   /// No description provided for @errorNetwork.
   ///
   /// In en, this message translates to:

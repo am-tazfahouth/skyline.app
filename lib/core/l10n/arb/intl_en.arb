@@ -95,6 +95,46 @@
   "weatherSunTitle": "Sun Time",
   "weatherNightTitle": "Night Time",
 
+  "locationTitle": "Location",
+  "@locationTitle": {
+    "description": "Title for the location (favorites) screen"
+  },
+
+  "locationCurrentLocationTooltip": "Current location",
+  "@locationCurrentLocationTooltip": {
+    "description": "Tooltip for the GPS current location action"
+  },
+
+  "locationEnable": "Enable",
+  "@locationEnable": {
+    "description": "Snackbar action to enable location services"
+  },
+
+  "locationNoFavorites": "No favorites yet",
+  "@locationNoFavorites": {
+    "description": "Empty state message when no favorite locations are saved"
+  },
+
+  "locationSearchTitle": "Search City",
+  "@locationSearchTitle": {
+    "description": "Title for the location search screen"
+  },
+
+  "locationSearchHint": "Search city...",
+  "@locationSearchHint": {
+    "description": "Hint text of the city search field"
+  },
+
+  "locationSearchNoResults": "No results found",
+  "@locationSearchNoResults": {
+    "description": "Empty state message when the city search returns no results"
+  },
+
+  "locationSearchPrompt": "Type to search for a city",
+  "@locationSearchPrompt": {
+    "description": "Initial state prompt before the user starts searching"
+  },
+
   "errorNetwork": "No internet connection. Please check your network.",
   "errorFetch": "Could not load weather data. Please try again.",
   "errorCache": "Could not save weather data locally.",

@@ -162,6 +162,30 @@ class AppLocalisationAr extends AppLocalisation {
   String get weatherNightTitle => 'وقت الليل';
 
   @override
+  String get locationTitle => 'المواقع';
+
+  @override
+  String get locationCurrentLocationTooltip => 'الموقع الحالي';
+
+  @override
+  String get locationEnable => 'تفعيل';
+
+  @override
+  String get locationNoFavorites => 'لا توجد أماكن مفضلة بعد';
+
+  @override
+  String get locationSearchTitle => 'ابحث عن مدينة';
+
+  @override
+  String get locationSearchHint => 'ابحث عن مدينة...';
+
+  @override
+  String get locationSearchNoResults => 'لا توجد نتائج';
+
+  @override
+  String get locationSearchPrompt => 'اكتب للبحث عن مدينة';
+
+  @override
   String get errorNetwork => 'لا يوجد اتصال بالإنترنت. يرجى التحقق من شبكتك.';
 
   @override

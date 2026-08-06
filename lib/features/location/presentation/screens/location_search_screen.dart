@@ -22,7 +22,7 @@ class LocationSearchScreen extends StatelessWidget {
     return Scaffold(      
       appBar: AppBar(
         backgroundColor: bgColor,
-        title: const Text('Search City'),
+        title: Text(l10n.locationSearchTitle),
       ),
       backgroundColor: bgColor,
       body: Padding(
@@ -48,7 +48,7 @@ class LocationSearchScreen extends StatelessWidget {
                   }
                   if (state is LocationSearchLoaded) {
                     if (state.results.isEmpty) {
-                      return const Center(child: Text('No results found'));
+                      return Center(child: Text(l10n.locationSearchNoResults));
                     }
                     return ListView.builder(
                       itemCount: state.results.length,
@@ -83,7 +83,7 @@ class LocationSearchScreen extends StatelessWidget {
                       ),
                     );
                   }
-                  return const Center(child: Text('Type to search for a city'));
+                  return Center(child: Text(l10n.locationSearchPrompt));
                 },
               ),
             ),

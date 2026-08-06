@@ -162,6 +162,30 @@ class AppLocalisationEs extends AppLocalisation {
   String get weatherNightTitle => 'Hora nocturna';
 
   @override
+  String get locationTitle => 'Ubicaciones';
+
+  @override
+  String get locationCurrentLocationTooltip => 'Ubicación actual';
+
+  @override
+  String get locationEnable => 'Activar';
+
+  @override
+  String get locationNoFavorites => 'Aún no hay favoritos';
+
+  @override
+  String get locationSearchTitle => 'Buscar ciudad';
+
+  @override
+  String get locationSearchHint => 'Buscar ciudad...';
+
+  @override
+  String get locationSearchNoResults => 'No se encontraron resultados';
+
+  @override
+  String get locationSearchPrompt => 'Escribe para buscar una ciudad';
+
+  @override
   String get errorNetwork => 'Sin conexión a internet. Compruebe su red.';
 
   @override

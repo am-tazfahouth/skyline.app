@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:sky_line/core/l10n/app_localisation.dart';
 
 class SearchBarWidget extends StatefulWidget {
   final ValueChanged<String> onSearch;
@@ -46,12 +47,13 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalisation.of(context)!;
     return TextField(
       controller: _controller,
       onChanged: _onChanged,
       autofocus: true,
       decoration: InputDecoration(
-        hintText: 'Search city...',
+        hintText: l10n.locationSearchHint,
         prefixIcon: const Icon(Icons.search),
         suffixIcon: _hasText
             ? IconButton(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/features/location/domain/entities/location_entity.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_event.dart';
@@ -16,8 +17,9 @@ class FavoritesListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalisation.of(context)!;
     if (favorites.isEmpty) {
-      return const Center(child: Text('No favorites yet'));
+      return Center(child: Text(l10n.locationNoFavorites));
     }
 
     return ReorderableListView.builder(
