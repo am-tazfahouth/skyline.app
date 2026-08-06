@@ -3,6 +3,7 @@ import 'package:sky_line/core/errors/app_error_code.dart';
 import 'package:sky_line/core/errors/location_error_codes.dart';
 import 'package:sky_line/core/errors/setting_error_codes.dart';
 import 'package:sky_line/core/errors/weather_error_codes.dart';
+import 'package:sky_line/core/l10n/app_localisation.dart';
 
 class AppError {
   /// Get debug message (for logs). Falls back to a generic message.
@@ -10,33 +11,29 @@ class AppError {
     return _debugErrorMessages[code] ?? 'Unknown debug error: $code';
   }
  
-  /// Get user-facing message (short, english defaults).
-  static String getUserErrorMessage(AppErrorCode code) {
-    final specific = _userMessages[code];
-    if (specific != null) return specific;
+  /// Get user-facing message (localized).
+  static String getUserErrorMessage(AppErrorCode code, AppLocalisation l10n) {
+    if (code == LocationErrorCodes.gpsDisabled) return l10n.errorGpsDisabled;
+    if (code == LocationErrorCodes.gpsPermissionDenied) {
+      return l10n.errorGpsPermissionDenied;
+    }
+    if (code == LocationErrorCodes.gpsPermissionPermanentlyDenied) {
+      return l10n.errorGpsPermissionPermanentlyDenied;
+    }
 
     final type = _userErrorTypeMap[code] ?? UserErrorType.unexpected;
 
-    switch (type) {
-      case UserErrorType.network:
-        return "No internet connection. Please check your network.";
-      case UserErrorType.fetch:
-        return "Could not load weather data. Please try again.";
-      case UserErrorType.cache:
-        return "Could not save weather data locally.";
-      case UserErrorType.loadCache:
-        return "Could not load cached weather data.";
-      case UserErrorType.unexpected:
-        return "Something went wrong. Please try again.";        
-      case UserErrorType.loadSetting:
-        return "Could not load your preferences.";
-      case UserErrorType.updateSetting:
-        return "Could not save your preferences.";
-      case UserErrorType.location:
-        return "Could not get your location. Please check permissions.";
-      case UserErrorType.search:
-        return "Could not search cities. Please try again.";
-    }
+    return switch (type) {
+      UserErrorType.network => l10n.errorNetwork,
+      UserErrorType.fetch => l10n.errorFetch,
+      UserErrorType.cache => l10n.errorCache,
+      UserErrorType.loadCache => l10n.errorLoadCache,
+      UserErrorType.unexpected => l10n.errorUnexpected,
+      UserErrorType.loadSetting => l10n.errorLoadSetting,
+      UserErrorType.updateSetting => l10n.errorUpdateSetting,
+      UserErrorType.location => l10n.errorLocation,
+      UserErrorType.search => l10n.errorSearch,
+    };
   }
 
   /// -------------------------
@@ -63,15 +60,6 @@ class AppError {
     LocationErrorCodes.saveFavoriteFailed: "Failed to save favorite location.",
     LocationErrorCodes.loadFavoritesFailed: "Failed to load favorite locations.",
     LocationErrorCodes.unexpected: "An unexpected location error occurred.",
-  };
-
-  /// -------------------------
-  /// Specific user-facing messages (overrides type fallback)
-  /// -------------------------
-  static final Map<AppErrorCode, String> _userMessages = {
-    LocationErrorCodes.gpsDisabled: "Location services are turned off.",
-    LocationErrorCodes.gpsPermissionDenied: "Location permission is required to get your current location.",
-    LocationErrorCodes.gpsPermissionPermanentlyDenied: "Location permission is permanently denied. Please enable it in Settings.",
   };
 
   /// -------------------------

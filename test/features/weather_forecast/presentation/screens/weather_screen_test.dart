@@ -252,6 +252,31 @@ void main() {
     expect(find.text('Bruine'), findsWidgets);
   });
 
+  testWidgets('shows localized error message in French', (tester) async {
+    when(() => mockRepository.fetchWeather(
+      latitude: any(named: 'latitude'),
+      longitude: any(named: 'longitude'),
+    )).thenThrow(DioException(
+      requestOptions: RequestOptions(path: ''),
+      type: DioExceptionType.connectionError,
+    ));
+
+    final bloc = WeatherForecastBloc(
+      logger: MockAppLogger(),
+      weatherRepository: mockRepository,
+      getSettings: mockGetSettings,
+      isConnected: () async => true,
+    );
+    bloc.add(const FetchWeatherEvent());
+    await tester.pumpWidget(createTestScreen(bloc, locale: const Locale('fr')));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Pas de connexion internet. Vérifiez votre réseau.'),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('shows error view on error state', (tester) async {
     when(() => mockRepository.fetchWeather(latitude: any(named: 'latitude'), longitude: any(named: 'longitude')))
         .thenThrow(DioException(

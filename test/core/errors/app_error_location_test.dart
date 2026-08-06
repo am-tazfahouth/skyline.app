@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sky_line/core/errors/app_error.dart';
 import 'package:sky_line/core/errors/location_error_codes.dart';
+import 'package:sky_line/core/l10n/app_localisation_en.dart';
 
 void main() {
   group('AppError - Location error codes', () {
@@ -56,6 +57,7 @@ void main() {
     test('getUserErrorMessage returns correct message for gpsDisabled', () {
       final message = AppError.getUserErrorMessage(
         LocationErrorCodes.gpsDisabled,
+        AppLocalisationEn(),
       );
       expect(message, 'Location services are turned off.');
     });
@@ -63,6 +65,7 @@ void main() {
     test('getUserErrorMessage returns correct message for gpsPermissionDenied', () {
       final message = AppError.getUserErrorMessage(
         LocationErrorCodes.gpsPermissionDenied,
+        AppLocalisationEn(),
       );
       expect(
         message,
@@ -74,6 +77,7 @@ void main() {
         () {
       final message = AppError.getUserErrorMessage(
         LocationErrorCodes.gpsPermissionPermanentlyDenied,
+        AppLocalisationEn(),
       );
       expect(
         message,
@@ -84,6 +88,7 @@ void main() {
     test('getUserErrorMessage returns correct message for search type', () {
       final message = AppError.getUserErrorMessage(
         LocationErrorCodes.searchFailed,
+        AppLocalisationEn(),
       );
       expect(message, 'Could not search cities. Please try again.');
     });

@@ -31,7 +31,7 @@ class SettingsScreen extends StatelessWidget {
           if (state is SettingsError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(AppError.getUserErrorMessage(state.errorCode)),
+                content: Text(AppError.getUserErrorMessage(state.errorCode, l10n)),
               ),
             );
           }

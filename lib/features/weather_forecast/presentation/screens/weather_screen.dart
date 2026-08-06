@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/errors/app_error.dart';
+import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_state.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
@@ -16,6 +17,7 @@ class WeatherScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalisation.of(context)!;
     return BlocListener<LocationBloc, LocationState>(
       listenWhen: (previous, current) {
         if (current is LocationSelected) return true;
@@ -42,7 +44,7 @@ class WeatherScreen extends StatelessWidget {
       },
       child: BlocBuilder<WeatherForecastBloc, WeatherForecastState>(
         builder: (context, state) {
-          final content = _contentFor(state);
+          final content = _contentFor(context, state);
           if (state.hasData && state.isFetching) {
             final theme = Theme.of(context);
             final primary = theme.colorScheme.primary;
@@ -63,7 +65,7 @@ class WeatherScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'Refreshing...',
+                            l10n.weatherRefreshing,
                             style: theme.textTheme.bodyLarge?.copyWith(
                               color: primary,
                             ),
@@ -82,13 +84,14 @@ class WeatherScreen extends StatelessWidget {
     );
   }
 
-  Widget _contentFor(WeatherForecastState state) {
+  Widget _contentFor(BuildContext context, WeatherForecastState state) {
+    final l10n = AppLocalisation.of(context)!;
     return switch (state) {
       WeatherInitial() => const WeatherInitialView(),
       WeatherEmpty() => const WeatherContentView(),
       WeatherLoaded() => const WeatherContentView(),
       WeatherError(errorCode: final code) =>
-        WeatherErrorView(message: AppError.getUserErrorMessage(code)),
+        WeatherErrorView(message: AppError.getUserErrorMessage(code, l10n)),
       _ => const WeatherInitialView(),
     };
   }

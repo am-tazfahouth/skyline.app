@@ -5,6 +5,7 @@ import 'package:sky_line/core/config/app_theme.dart';
 import 'package:sky_line/core/errors/app_error.dart';
 import 'package:sky_line/core/errors/app_error_code.dart';
 import 'package:sky_line/core/errors/location_error_codes.dart';
+import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/features/location/domain/entities/location_entity.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_event.dart';
@@ -66,7 +67,10 @@ class LocationScreen extends StatelessWidget {
         } else if (state is LocationError && _isGpsError(state.errorCode)) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(AppError.getUserErrorMessage(state.errorCode)),
+              content: Text(AppError.getUserErrorMessage(
+                state.errorCode,
+                AppLocalisation.of(context)!,
+              )),
               action: _gpsErrorAction(context, state.errorCode),
             ),
           );
