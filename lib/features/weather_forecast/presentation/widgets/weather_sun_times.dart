@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/config/app_theme.dart';
+import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_state.dart';
 import 'package:sky_line/features/weather_forecast/presentation/widgets/sun_time/sun_times_ui_model.dart';
@@ -15,6 +16,7 @@ class WeatherSunTimes extends StatelessWidget {
     final primaryText = surface.onColor;
     final secondaryText = surface.onColorContainer;
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalisation.of(context)!;
 
     return BlocBuilder<WeatherForecastBloc, WeatherForecastState>(
       builder: (context, state) {
@@ -25,6 +27,7 @@ class WeatherSunTimes extends StatelessWidget {
             cardColor: cardColor,
             primaryText: primaryText,
             secondaryText: secondaryText,
+            l10n: l10n,
           );
         }
 
@@ -39,6 +42,7 @@ class WeatherSunTimes extends StatelessWidget {
           nextSunrise: nextSunrise,
           now: now,
           colorScheme: colorScheme,
+          l10n: l10n,
         );
 
         return Container(
@@ -115,6 +119,7 @@ class WeatherSunTimes extends StatelessWidget {
     required Color cardColor,
     required Color primaryText,
     required Color secondaryText,
+    required AppLocalisation l10n,
   }) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -125,10 +130,10 @@ class WeatherSunTimes extends StatelessWidget {
       child: Row(
         children: [
           _TimePoint(
-            data: const TimePointData(
+            data: TimePointData(
               icon: Icons.wb_sunny_outlined,
               iconColor: Colors.grey,
-              label: 'Sunrise',
+              label: l10n.weatherSunSunrise,
               time: '--:--',
             ),
             primaryText: primaryText,
@@ -143,10 +148,10 @@ class WeatherSunTimes extends StatelessWidget {
             ),
           ),
           _TimePoint(
-            data: const TimePointData(
+            data: TimePointData(
               icon: Icons.wb_sunny,
               iconColor: Colors.grey,
-              label: 'Zenith',
+              label: l10n.weatherSunZenith,
               time: '--:--',
             ),
             primaryText: primaryText,
@@ -161,10 +166,10 @@ class WeatherSunTimes extends StatelessWidget {
             ),
           ),
           _TimePoint(
-            data: const TimePointData(
+            data: TimePointData(
               icon: Icons.nightlight_round_outlined,
               iconColor: Colors.grey,
-              label: 'Sunset',
+              label: l10n.weatherSunSunset,
               time: '--:--',
             ),
             primaryText: primaryText,

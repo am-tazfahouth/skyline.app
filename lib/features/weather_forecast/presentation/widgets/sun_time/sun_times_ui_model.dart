@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/features/weather_forecast/domain/entities/daily_weather_entity.dart';
 
 /// Color palette for the sun path chart, switching between day and night modes.
@@ -76,6 +76,8 @@ class PeriodConfig {
   final bool isDay;
   final String title;
   final IconData titleIcon;
+  final String middleLabel;
+  final String middleTime;
 
   const PeriodConfig({
     required this.firstIcon,
@@ -91,6 +93,8 @@ class PeriodConfig {
     required this.isDay,
     required this.title,
     required this.titleIcon,
+    required this.middleLabel,
+    required this.middleTime,
   });
 
   TimePointData get start => TimePointData(
@@ -108,23 +112,19 @@ class PeriodConfig {
       );
 
   TimePointData get middle {
-    final midpoint = DateTime.fromMillisecondsSinceEpoch(
-      (chartStart.millisecondsSinceEpoch + chartEnd.millisecondsSinceEpoch) ~/ 2,
-    );
-    final time = DateFormat('hh:mm a').format(midpoint);
     if (isDay) {
       return TimePointData(
         icon: Icons.wb_sunny,
         iconColor: firstColor,
-        label: 'Zenith',
-        time: time,
+        label: middleLabel,
+        time: middleTime,
       );
     }
     return TimePointData(
       icon: Icons.nights_stay,
       iconColor: secondColor,
-      label: 'Midnight',
-      time: time,
+      label: middleLabel,
+      time: middleTime,
     );
   }
 
@@ -135,65 +135,73 @@ class PeriodConfig {
     required DateTime nextSunrise,
     required DateTime now,
     required ColorScheme colorScheme,
+    required AppLocalisation l10n,
   }) {
     final isDay = now.isAfter(today.sunrise) && now.isBefore(today.sunset);
 
+    final String firstLabel;
+    final String secondLabel;
+    final IconData firstIcon;
+    final IconData secondIcon;
+    final Color firstColor;
+    final Color secondColor;
+    final DateTime firstTime;
+    final DateTime secondTime;
+    final String title;
+    final IconData titleIcon;
+
     if (isDay) {
-      // Day: sunrise → sunset
-      return PeriodConfig(
-        firstIcon: Icons.wb_sunny_outlined,
-        firstColor: colorScheme.primary,
-        firstLabel: 'Sunrise',
-        firstTime: DateFormat('hh:mm a').format(today.sunrise),
-        secondIcon: Icons.nightlight_round_outlined,
-        secondColor: colorScheme.secondary,
-        secondLabel: 'Sunset',
-        secondTime: DateFormat('hh:mm a').format(today.sunset),
-        chartStart: today.sunrise,
-        chartEnd: today.sunset,
-        isDay: true,
-        title: 'Sun Time',
-        titleIcon: Icons.wb_sunny_outlined,
-      );
+      firstLabel = l10n.weatherSunSunrise;
+      firstIcon = Icons.wb_sunny_outlined;
+      firstColor = colorScheme.primary;
+      firstTime = today.sunrise;
+      secondLabel = l10n.weatherSunSunset;
+      secondIcon = Icons.nightlight_round_outlined;
+      secondColor = colorScheme.secondary;
+      secondTime = today.sunset;
+      title = l10n.weatherSunTitle;
+      titleIcon = Icons.wb_sunny_outlined;
+    } else {
+      firstLabel = l10n.weatherSunSunset;
+      firstIcon = Icons.nightlight_round_outlined;
+      firstColor = colorScheme.secondary;
+      secondLabel = l10n.weatherSunSunrise;
+      secondIcon = Icons.wb_sunny_outlined;
+      secondColor = colorScheme.primary;
+      title = l10n.weatherNightTitle;
+      titleIcon = Icons.nightlight_round_outlined;
+      if (now.isAfter(today.sunset)) {
+        firstTime = today.sunset;
+        secondTime = nextSunrise;
+      } else {
+        // Dawn: proxy sunset is approximated as 12h before today's sunrise
+        // since Open-Meteo only provides today's data.
+        final proxySunset = today.sunrise.subtract(const Duration(hours: 12));
+        firstTime = proxySunset;
+        secondTime = today.sunrise;
+      }
     }
 
-    if (now.isAfter(today.sunset)) {
-      // Evening: sunset → next sunrise
-      return PeriodConfig(
-        firstIcon: Icons.nightlight_round_outlined,
-        firstColor: colorScheme.secondary,
-        firstLabel: 'Sunset',
-        firstTime: DateFormat('hh:mm a').format(today.sunset),
-        secondIcon: Icons.wb_sunny_outlined,
-        secondColor: colorScheme.primary,
-        secondLabel: 'Sunrise',
-        secondTime: DateFormat('hh:mm a').format(nextSunrise),
-        chartStart: today.sunset,
-        chartEnd: nextSunrise,
-        isDay: false,
-        title: 'Night Time',
-        titleIcon: Icons.nightlight_round_outlined,
-      );
-    }
+    final midpoint = DateTime.fromMillisecondsSinceEpoch(
+      (firstTime.millisecondsSinceEpoch + secondTime.millisecondsSinceEpoch) ~/ 2,
+    );
 
-    // Dawn: proxy sunset → today's sunrise
-    // Approximate yesterday's sunset as 12h before today's sunrise
-    // since Open-Meteo only provides today's data.
-    final proxySunset = today.sunrise.subtract(const Duration(hours: 12));
     return PeriodConfig(
-      firstIcon: Icons.nightlight_round_outlined,
-      firstColor: colorScheme.secondary,
-      firstLabel: 'Sunset',
-      firstTime: DateFormat('hh:mm a').format(proxySunset),
-      secondIcon: Icons.wb_sunny_outlined,
-      secondColor: colorScheme.primary,
-      secondLabel: 'Sunrise',
-      secondTime: DateFormat('hh:mm a').format(today.sunrise),
-      chartStart: proxySunset,
-      chartEnd: today.sunrise,
-      isDay: false,
-      title: 'Night Time',
-      titleIcon: Icons.nightlight_round_outlined,
+      firstIcon: firstIcon,
+      firstColor: firstColor,
+      firstLabel: firstLabel,
+      firstTime: l10n.weatherSunTime(firstTime),
+      secondIcon: secondIcon,
+      secondColor: secondColor,
+      secondLabel: secondLabel,
+      secondTime: l10n.weatherSunTime(secondTime),
+      chartStart: firstTime,
+      chartEnd: secondTime,
+      isDay: isDay,
+      title: title,
+      titleIcon: titleIcon,
+      middleLabel: isDay ? l10n.weatherSunZenith : l10n.weatherSunMidnight,
+      middleTime: l10n.weatherSunTime(midpoint),
     );
   }
 }
