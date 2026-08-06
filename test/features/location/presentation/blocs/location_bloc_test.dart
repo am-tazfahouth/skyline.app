@@ -210,22 +210,26 @@ void main() {
     );
 
     blocTest<LocationBloc, LocationState>(
-      'removing the current favorite clears it even when other favorites remain',
-      seed: () => LocationFavoritesLoaded(favorites: [testLocation, otherLocation], currentLocation: testLocation),
+      'removing the current favorite promotes the first remaining favorite',
+      seed: () => LocationFavoritesLoaded(
+        favorites: [testLocation, otherLocation],
+        currentLocation: testLocation,
+      ),
       build: () {
         when(() => mockRepo.removeFavorite(any())).thenAnswer((_) async {});
         when(() => mockRepo.loadFavorites()).thenReturn([otherLocation]);
-        when(() => mockRepo.clearLastLocation()).thenAnswer((_) async {});
+        when(() => mockRepo.saveLastLocation(any())).thenAnswer((_) async {});
         return bloc;
       },
       act: (bloc) => bloc.add(const RemoveFavoriteEvent(location: testLocation)),
       expect: () => [
         isA<LocationFavoritesLoaded>()
           .having((s) => s.favorites, 'favorites', [otherLocation])
-          .having((s) => s.currentLocation, 'currentLocation', isNull),
+          .having((s) => s.currentLocation?.cityName, 'currentLocation', 'New York'),
       ],
       verify: (_) {
-        verify(() => mockRepo.clearLastLocation()).called(1);
+        verify(() => mockRepo.saveLastLocation(otherLocation)).called(1);
+        verifyNever(() => mockRepo.clearLastLocation());
       },
     );
   });

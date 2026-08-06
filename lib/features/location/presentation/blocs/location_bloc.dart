@@ -3,6 +3,7 @@ import 'package:sky_line/core/errors/app_error.dart';
 import 'package:sky_line/core/errors/location_error_codes.dart';
 import 'package:sky_line/core/errors/location_exceptions.dart';
 import 'package:sky_line/core/services/logger_sevices.dart';
+import 'package:sky_line/features/location/domain/entities/location_entity.dart';
 import 'package:sky_line/features/location/domain/repositories/location_repository.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_event.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_state.dart';
@@ -156,7 +157,15 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
                 f.latitude == previousLocation.latitude &&
                 f.longitude == previousLocation.longitude,
           );
-      final currentLocation = isStillFavorite ? previousLocation : null;
+      final LocationEntity? currentLocation;
+      if (isStillFavorite) {
+        currentLocation = previousLocation;
+      } else if (previousLocation != null && favorites.isNotEmpty) {
+        currentLocation = favorites.first;
+        await repository.saveLastLocation(currentLocation);
+      } else {
+        currentLocation = null;
+      }
       if (favorites.isEmpty ||
           (previousLocation != null && currentLocation == null)) {
         await repository.clearLastLocation();
