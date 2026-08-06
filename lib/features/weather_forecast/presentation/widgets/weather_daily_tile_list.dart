@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:sky_line/core/config/app_theme.dart';
 import 'package:sky_line/core/enums/setting_heat_unit.dart';
+import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/core/utils/weather_format.dart';
 import 'package:sky_line/core/utils/weather_icon_mapper.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
@@ -19,6 +19,7 @@ class WeatherDailyTileList extends StatelessWidget {
         final primaryText = surface.onColor;
         final secondaryText = surface.onColorContainer;
         final colorScheme = Theme.of(context).colorScheme;
+        final l10n = AppLocalisation.of(context)!;
         final gradientCold = colorScheme.primary;
         final gradientHot = colorScheme.tertiary;
 
@@ -42,7 +43,7 @@ class WeatherDailyTileList extends StatelessWidget {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  'Next 7 Days',
+                  l10n.weatherDailyTitle,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
@@ -53,8 +54,8 @@ class WeatherDailyTileList extends StatelessWidget {
             ),
             const SizedBox(height: 5),
             ...items.map((item) {
-              final dayLabel = _formatDayLabel(item.date);
-              final condition = WeatherFormat.condition(item.weatherCode);
+              final dayLabel = _formatDayLabel(item.date, l10n);
+              final condition = WeatherFormat.condition(item.weatherCode, l10n);
               final tempMin = WeatherFormat.temperature(item.tempMin, unit: settings?.heatUnit ?? SettingHeatUnit.celsius);
               final tempMax = WeatherFormat.temperature(item.tempMax, unit: settings?.heatUnit ?? SettingHeatUnit.celsius);
               return _buildRowTile(
@@ -75,14 +76,14 @@ class WeatherDailyTileList extends StatelessWidget {
     );
   }
 
-  String _formatDayLabel(DateTime date) {
+  String _formatDayLabel(DateTime date, AppLocalisation l10n) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final target = DateTime(date.year, date.month, date.day);
     final diff = target.difference(today).inDays;
-    if (diff == 0) return 'Today';
-    if (diff == 1) return 'Tomorrow';
-    return DateFormat('E, d MMM').format(date);
+    if (diff == 0) return l10n.weatherDayToday;
+    if (diff == 1) return l10n.weatherDayTomorrow;
+    return l10n.weatherDayLabel(date);
   }
 
   Widget _buildPlaceholder(Color primaryText, Color secondaryText, Color gradientCold, Color gradientHot) {

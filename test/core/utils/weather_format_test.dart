@@ -1,6 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sky_line/core/enums/setting_heat_unit.dart';
 import 'package:sky_line/core/enums/setting_wind_unit.dart';
+import 'package:sky_line/core/l10n/app_localisation.dart';
+import 'package:sky_line/core/l10n/app_localisation_en.dart';
+import 'package:sky_line/core/l10n/app_localisation_fr.dart';
 import 'package:sky_line/core/utils/weather_format.dart';
 
 void main() {
@@ -35,15 +38,17 @@ void main() {
   });
 
   group('WeatherFormat other methods', () {
-    test('date formats correctly', () {
-      final dt = DateTime(2026, 6, 26);
-      expect(WeatherFormat.date(dt), '26 June 2026');
+    test('condition returns correct English labels', () {
+      final AppLocalisation l10n = AppLocalisationEn();
+      expect(WeatherFormat.condition(0, l10n), 'Clear');
+      expect(WeatherFormat.condition(3, l10n), 'Partly cloudy');
+      expect(WeatherFormat.condition(95, l10n), 'Thunderstorm');
     });
 
-    test('condition returns correct string', () {
-      expect(WeatherFormat.condition(0), 'Clear');
-      expect(WeatherFormat.condition(3), 'Partly cloudy');
-      expect(WeatherFormat.condition(95), 'Thunderstorm');
+    test('condition returns localized French labels', () {
+      final AppLocalisation l10n = AppLocalisationFr();
+      expect(WeatherFormat.condition(0, l10n), 'Ciel dégagé');
+      expect(WeatherFormat.condition(95, l10n), 'Orage');
     });
   });
 }

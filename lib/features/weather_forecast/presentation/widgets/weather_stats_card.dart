@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/config/app_theme.dart';
 import 'package:sky_line/core/enums/setting_wind_unit.dart';
+import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/core/utils/weather_format.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_state.dart';
@@ -14,6 +15,7 @@ class WeatherStatsCard extends StatelessWidget {
     return BlocBuilder<WeatherForecastBloc, WeatherForecastState>(
       builder: (context, state) {
         final surface = AppTheme.surfaceFor(Theme.of(context).brightness);
+        final l10n = AppLocalisation.of(context)!;
         final cardColor = surface.colorContainer;
         final primaryText = surface.onColor;
         final secondaryText = surface.onColorContainer;
@@ -35,7 +37,7 @@ class WeatherStatsCard extends StatelessWidget {
             Expanded(child: _buildStatCard(
               icon: Icons.air_rounded,
               value: wind,
-              label: 'Wind',
+              label: l10n.weatherStatsWind,
               cardColor: cardColor,
               primaryText: primaryText,
               secondaryText: secondaryText,
@@ -44,7 +46,7 @@ class WeatherStatsCard extends StatelessWidget {
             Expanded(child: _buildStatCard(
               icon: Icons.umbrella_rounded,
               value: rain,
-              label: 'Chance of rain',
+              label: l10n.weatherStatsChanceOfRain,
               cardColor: cardColor,
               primaryText: primaryText,
               secondaryText: secondaryText,
@@ -53,7 +55,7 @@ class WeatherStatsCard extends StatelessWidget {
             Expanded(child: _buildStatCard(
               icon: Icons.water_drop_outlined,
               value: humidity,
-              label: 'Humidity',
+              label: l10n.weatherStatsHumidity,
               cardColor: cardColor,
               primaryText: primaryText,
               secondaryText: secondaryText,

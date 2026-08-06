@@ -8,6 +8,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:sky_line/core/config/app_routes.dart';
 import 'package:sky_line/core/enums/setting_heat_unit.dart';
 import 'package:sky_line/core/enums/setting_wind_unit.dart';
+import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/core/services/logger_sevices.dart';
 import 'package:sky_line/features/settings/domain/entities/setting_entity.dart';
 import 'package:sky_line/features/settings/domain/repositories/setting_repository.dart';
@@ -43,7 +44,11 @@ const _defaultSettings = SettingEntity(
   heatUnit: SettingHeatUnit.celsius,
 );
 
-Widget createTestScreen(WeatherForecastBloc bloc, {LocationBloc? locationBloc}) {
+Widget createTestScreen(
+  WeatherForecastBloc bloc, {
+  LocationBloc? locationBloc,
+  Locale locale = const Locale('en'),
+}) {
   final locBloc = locationBloc ??
       LocationBloc(logger: MockAppLogger(), repository: MockLocationRepository());
   return MultiBlocProvider(
@@ -59,6 +64,9 @@ Widget createTestScreen(WeatherForecastBloc bloc, {LocationBloc? locationBloc}) 
     ],
     child: MaterialApp(
       onGenerateRoute: RouteGenerator.generateRoute,
+      locale: locale,
+      supportedLocales: AppLocalisation.supportedLocales,
+      localizationsDelegates: AppLocalisation.localizationsDelegates,
       home: const WeatherScreen(),
     ),
   );
@@ -187,6 +195,61 @@ void main() {
     expect(find.text('12 m/s'), findsOneWidget);
     expect(find.text('65%'), findsOneWidget);
     expect(find.text('SkyLine'), findsOneWidget);
+  });
+
+  testWidgets('shows localized weather content in French', (tester) async {
+    final now = DateTime.now();
+    final weather = WeatherEntity(
+      current: const CurrentWeatherEntity(
+        temperature: 28.0,
+        humidity: 65,
+        isDay: true,
+        windSpeed: 12.0,
+        precipitation: 0.0,
+        weatherCode: 51,
+      ),
+      hourly: [
+        HourlyWeatherEntity(
+          time: now.add(const Duration(hours: 1)),
+          temperature: 28.0,
+          precipitationProbability: 10,
+          weatherCode: 0,
+        ),
+      ],
+      daily: [
+        DailyWeatherEntity(
+          date: now,
+          tempMax: 29.0,
+          tempMin: 23.0,
+          weatherCode: 51,
+          sunrise: DateTime(now.year, now.month, now.day, 3, 16),
+          sunset: DateTime(now.year, now.month, now.day, 14, 50),
+        ),
+      ],
+    );
+
+    when(() => mockRepository.fetchWeather(
+      latitude: any(named: 'latitude'),
+      longitude: any(named: 'longitude'),
+    )).thenAnswer((_) async => WeatherResult(weather: weather, isCached: false));
+
+    final bloc = WeatherForecastBloc(
+      logger: MockAppLogger(),
+      weatherRepository: mockRepository,
+      getSettings: mockGetSettings,
+      isConnected: () async => true,
+    );
+    bloc.add(const FetchWeatherEvent());
+    await tester.pumpWidget(createTestScreen(bloc, locale: const Locale('fr')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Vent'), findsOneWidget);
+    expect(find.text('Risque de pluie'), findsOneWidget);
+    expect(find.text('Humidité'), findsOneWidget);
+    expect(find.text('Prévisions horaires'), findsOneWidget);
+    expect(find.text('7 prochains jours'), findsOneWidget);
+    expect(find.text('Aujourd\'hui'), findsOneWidget);
+    expect(find.text('Bruine'), findsWidgets);
   });
 
   testWidgets('shows error view on error state', (tester) async {

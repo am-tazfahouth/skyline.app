@@ -1,13 +1,9 @@
-import 'package:intl/intl.dart';
 import 'package:sky_line/core/enums/setting_heat_unit.dart';
 import 'package:sky_line/core/enums/setting_wind_unit.dart';
+import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/core/utils/weather_unit_converter.dart';
 
 class WeatherFormat {
-  static String date(DateTime dateTime) {
-    return DateFormat('dd MMMM yyyy').format(dateTime);
-  }
-
   static String temperature(double value, {SettingHeatUnit unit = SettingHeatUnit.celsius}) {
     final converted = unit == SettingHeatUnit.fahrenheit
         ? WeatherUnitConverter.celsiusToFahrenheit(value)
@@ -30,14 +26,14 @@ class WeatherFormat {
     return '$value%';
   }
 
-  static String condition(int weatherCode) {
-    if (weatherCode == 0) return 'Clear';
-    if (weatherCode <= 3) return 'Partly cloudy';
-    if (weatherCode <= 48) return 'Foggy';
-    if (weatherCode <= 55) return 'Drizzle';
-    if (weatherCode <= 65) return 'Rain';
-    if (weatherCode <= 75) return 'Snow';
-    if (weatherCode <= 82) return 'Rain showers';
-    return 'Thunderstorm';
+  static String condition(int weatherCode, AppLocalisation l10n) {
+    if (weatherCode == 0) return l10n.weatherConditionClear;
+    if (weatherCode <= 3) return l10n.weatherConditionPartlyCloudy;
+    if (weatherCode <= 48) return l10n.weatherConditionFoggy;
+    if (weatherCode <= 55) return l10n.weatherConditionDrizzle;
+    if (weatherCode <= 65) return l10n.weatherConditionRain;
+    if (weatherCode <= 75) return l10n.weatherConditionSnow;
+    if (weatherCode <= 82) return l10n.weatherConditionRainShowers;
+    return l10n.weatherConditionThunderstorm;
   }
 }
