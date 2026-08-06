@@ -503,5 +503,43 @@ void main() {
       act: (bloc) => bloc.add(ApplySettingsEvent(settings: newSettings)),
       expect: () => [],
     );
+
+    blocTest<WeatherForecastBloc, WeatherForecastState>(
+      'from fetching WeatherLoaded → updates settings and preserves isFetching',
+      seed: () => WeatherLoaded(
+        _result(cached: true),
+        isFetching: true,
+        settings: _defaultSettings,
+      ),
+      build: () => WeatherForecastBloc(
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
+        isConnected: () async => true,
+      ),
+      act: (bloc) => bloc.add(ApplySettingsEvent(settings: newSettings)),
+      expect: () => [
+        isA<WeatherLoaded>()
+            .having((s) => s.isFetching, 'isFetching', true)
+            .having((s) => s.settings.heatUnit, 'heatUnit', SettingHeatUnit.fahrenheit),
+      ],
+    );
+
+    blocTest<WeatherForecastBloc, WeatherForecastState>(
+      'from fetching WeatherEmpty → updates settings and preserves isFetching',
+      seed: () => WeatherEmpty(isFetching: true, settings: _defaultSettings),
+      build: () => WeatherForecastBloc(
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
+        isConnected: () async => true,
+      ),
+      act: (bloc) => bloc.add(ApplySettingsEvent(settings: newSettings)),
+      expect: () => [
+        isA<WeatherEmpty>()
+            .having((s) => s.isFetching, 'isFetching', true)
+            .having((s) => s.settings.heatUnit, 'heatUnit', SettingHeatUnit.fahrenheit),
+      ],
+    );
   });
 }

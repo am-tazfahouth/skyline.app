@@ -11,6 +11,8 @@ import 'package:sky_line/features/settings/presentation/widgets/select_wind_unit
 import 'package:sky_line/features/settings/presentation/widgets/setting_card.dart';
 import 'package:sky_line/features/settings/presentation/widgets/setting_item.dart';
 import 'package:sky_line/core/l10n/app_localisation.dart';
+import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
+import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_event.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -27,12 +29,22 @@ class SettingsScreen extends StatelessWidget {
       ),
       backgroundColor: bgColor,
       body: BlocListener<SettingsBloc, SettingsState>(
+        listenWhen: (previous, current) {
+          if (current is SettingsError) return true;
+          if (current is! SettingsLoadSuccess) return false;
+          if (previous is! SettingsLoadSuccess) return true;
+          return previous.setting != current.setting;
+        },
         listener: (context, state) {
           if (state is SettingsError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(AppError.getUserErrorMessage(state.errorCode, l10n)),
               ),
+            );
+          } else if (state is SettingsLoadSuccess) {
+            context.read<WeatherForecastBloc>().add(
+              ApplySettingsEvent(settings: state.setting),
             );
           }
         },

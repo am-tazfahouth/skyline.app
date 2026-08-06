@@ -39,10 +39,10 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
 
   void _onApplySettings(ApplySettingsEvent event, Emitter<WeatherForecastState> emit) {
     switch (state) {
-      case WeatherLoaded(:final result):
-        emit(WeatherLoaded(result, settings: event.settings));
-      case WeatherEmpty _:
-        emit(WeatherEmpty(settings: event.settings));
+      case WeatherLoaded(:final result, :final isFetching):
+        emit(WeatherLoaded(result, isFetching: isFetching, settings: event.settings));
+      case WeatherEmpty(:final isFetching):
+        emit(WeatherEmpty(isFetching: isFetching, settings: event.settings));
       default:
         break;
     }
