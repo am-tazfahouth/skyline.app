@@ -9,7 +9,6 @@ import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_fo
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_state.dart';
 import 'package:sky_line/features/weather_forecast/presentation/widgets/views/weather_content_view.dart';
 import 'package:sky_line/features/weather_forecast/presentation/widgets/views/weather_error_view.dart';
-import 'package:sky_line/features/weather_forecast/presentation/widgets/views/weather_initial_view.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class WeatherScreen extends StatelessWidget {
@@ -87,12 +86,9 @@ class WeatherScreen extends StatelessWidget {
   Widget _contentFor(BuildContext context, WeatherForecastState state) {
     final l10n = AppLocalisation.of(context)!;
     return switch (state) {
-      WeatherInitial() => const WeatherInitialView(),
-      WeatherEmpty() => const WeatherContentView(),
-      WeatherLoaded() => const WeatherContentView(),
       WeatherError(errorCode: final code) =>
         WeatherErrorView(message: AppError.getUserErrorMessage(code, l10n)),
-      _ => const WeatherInitialView(),
+      _ => const WeatherContentView(),
     };
   }
 }

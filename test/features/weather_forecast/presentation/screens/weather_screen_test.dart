@@ -278,7 +278,7 @@ void main() {
     expect(find.text('Réessayer'), findsOneWidget);
   });
 
-  testWidgets('initial view shows localized prompt in French', (tester) async {
+  testWidgets('initial state shows the weather content fallback', (tester) async {
     final bloc = WeatherForecastBloc(
       logger: MockAppLogger(),
       weatherRepository: mockRepository,
@@ -288,7 +288,8 @@ void main() {
 
     await tester.pumpWidget(createTestScreen(bloc, locale: const Locale('fr')));
 
-    expect(find.text('Recherchez un lieu'), findsOneWidget);
+    expect(find.text('SkyLine'), findsOneWidget);
+    expect(find.text('--°C'), findsOneWidget);
   });
 
   testWidgets('shows error view on error state', (tester) async {
