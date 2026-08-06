@@ -197,6 +197,246 @@ abstract class AppLocalisation {
   /// In en, this message translates to:
   /// **'Fahrenheit'**
   String get settingsTempUnitFahrenheit;
+
+  /// App brand name used as the weather header title fallback
+  ///
+  /// In en, this message translates to:
+  /// **'SkyLine'**
+  String get appTitle;
+
+  /// No description provided for @weatherRefreshing.
+  ///
+  /// In en, this message translates to:
+  /// **'Refreshing...'**
+  String get weatherRefreshing;
+
+  /// No description provided for @weatherRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get weatherRetry;
+
+  /// No description provided for @weatherSearchForLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for a location'**
+  String get weatherSearchForLocation;
+
+  /// Full localized long date
+  ///
+  /// In en, this message translates to:
+  /// **'{date}'**
+  String weatherDateLong(DateTime date);
+
+  /// Short localized day label with abbreviated weekday
+  ///
+  /// In en, this message translates to:
+  /// **'{date}'**
+  String weatherDayLabel(DateTime date);
+
+  /// Short localized time of day
+  ///
+  /// In en, this message translates to:
+  /// **'{time}'**
+  String weatherSunTime(DateTime time);
+
+  /// No description provided for @weatherConditionClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get weatherConditionClear;
+
+  /// No description provided for @weatherConditionPartlyCloudy.
+  ///
+  /// In en, this message translates to:
+  /// **'Partly cloudy'**
+  String get weatherConditionPartlyCloudy;
+
+  /// No description provided for @weatherConditionFoggy.
+  ///
+  /// In en, this message translates to:
+  /// **'Foggy'**
+  String get weatherConditionFoggy;
+
+  /// No description provided for @weatherConditionDrizzle.
+  ///
+  /// In en, this message translates to:
+  /// **'Drizzle'**
+  String get weatherConditionDrizzle;
+
+  /// No description provided for @weatherConditionRain.
+  ///
+  /// In en, this message translates to:
+  /// **'Rain'**
+  String get weatherConditionRain;
+
+  /// No description provided for @weatherConditionSnow.
+  ///
+  /// In en, this message translates to:
+  /// **'Snow'**
+  String get weatherConditionSnow;
+
+  /// No description provided for @weatherConditionRainShowers.
+  ///
+  /// In en, this message translates to:
+  /// **'Rain showers'**
+  String get weatherConditionRainShowers;
+
+  /// No description provided for @weatherConditionThunderstorm.
+  ///
+  /// In en, this message translates to:
+  /// **'Thunderstorm'**
+  String get weatherConditionThunderstorm;
+
+  /// No description provided for @weatherStatsWind.
+  ///
+  /// In en, this message translates to:
+  /// **'Wind'**
+  String get weatherStatsWind;
+
+  /// No description provided for @weatherStatsChanceOfRain.
+  ///
+  /// In en, this message translates to:
+  /// **'Chance of rain'**
+  String get weatherStatsChanceOfRain;
+
+  /// No description provided for @weatherStatsHumidity.
+  ///
+  /// In en, this message translates to:
+  /// **'Humidity'**
+  String get weatherStatsHumidity;
+
+  /// No description provided for @weatherHourlyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hourly Forecast'**
+  String get weatherHourlyTitle;
+
+  /// No description provided for @weatherDailyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Next 7 Days'**
+  String get weatherDailyTitle;
+
+  /// No description provided for @weatherDayToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get weatherDayToday;
+
+  /// No description provided for @weatherDayTomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get weatherDayTomorrow;
+
+  /// No description provided for @weatherSunSunrise.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunrise'**
+  String get weatherSunSunrise;
+
+  /// No description provided for @weatherSunSunset.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunset'**
+  String get weatherSunSunset;
+
+  /// No description provided for @weatherSunZenith.
+  ///
+  /// In en, this message translates to:
+  /// **'Zenith'**
+  String get weatherSunZenith;
+
+  /// No description provided for @weatherSunMidnight.
+  ///
+  /// In en, this message translates to:
+  /// **'Midnight'**
+  String get weatherSunMidnight;
+
+  /// No description provided for @weatherSunTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sun Time'**
+  String get weatherSunTitle;
+
+  /// No description provided for @weatherNightTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Night Time'**
+  String get weatherNightTitle;
+
+  /// No description provided for @errorNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection. Please check your network.'**
+  String get errorNetwork;
+
+  /// No description provided for @errorFetch.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load weather data. Please try again.'**
+  String get errorFetch;
+
+  /// No description provided for @errorCache.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save weather data locally.'**
+  String get errorCache;
+
+  /// No description provided for @errorLoadCache.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load cached weather data.'**
+  String get errorLoadCache;
+
+  /// No description provided for @errorUnexpected.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get errorUnexpected;
+
+  /// No description provided for @errorLoadSetting.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your preferences.'**
+  String get errorLoadSetting;
+
+  /// No description provided for @errorUpdateSetting.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save your preferences.'**
+  String get errorUpdateSetting;
+
+  /// No description provided for @errorLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not get your location. Please check permissions.'**
+  String get errorLocation;
+
+  /// No description provided for @errorSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not search cities. Please try again.'**
+  String get errorSearch;
+
+  /// No description provided for @errorGpsDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Location services are turned off.'**
+  String get errorGpsDisabled;
+
+  /// No description provided for @errorGpsPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission is required to get your current location.'**
+  String get errorGpsPermissionDenied;
+
+  /// No description provided for @errorGpsPermissionPermanentlyDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission is permanently denied. Please enable it in Settings.'**
+  String get errorGpsPermissionPermanentlyDenied;
 }
 
 class _AppLocalisationDelegate extends LocalizationsDelegate<AppLocalisation> {

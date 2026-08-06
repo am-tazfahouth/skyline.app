@@ -55,4 +55,154 @@ class AppLocalisationFr extends AppLocalisation {
 
   @override
   String get settingsTempUnitFahrenheit => 'Fahrenheit';
+
+  @override
+  String get appTitle => 'SkyLine';
+
+  @override
+  String get weatherRefreshing => 'Actualisation...';
+
+  @override
+  String get weatherRetry => 'Réessayer';
+
+  @override
+  String get weatherSearchForLocation => 'Recherchez un lieu';
+
+  @override
+  String weatherDateLong(DateTime date) {
+    final intl.DateFormat dateDateFormat = intl.DateFormat(
+      'dMMMMy',
+      localeName,
+    );
+    final String dateString = dateDateFormat.format(date);
+
+    return '$dateString';
+  }
+
+  @override
+  String weatherDayLabel(DateTime date) {
+    final intl.DateFormat dateDateFormat = intl.DateFormat(
+      'E dMMM',
+      localeName,
+    );
+    final String dateString = dateDateFormat.format(date);
+
+    return '$dateString';
+  }
+
+  @override
+  String weatherSunTime(DateTime time) {
+    final intl.DateFormat timeDateFormat = intl.DateFormat.jm(localeName);
+    final String timeString = timeDateFormat.format(time);
+
+    return '$timeString';
+  }
+
+  @override
+  String get weatherConditionClear => 'Ciel dégagé';
+
+  @override
+  String get weatherConditionPartlyCloudy => 'Partiellement nuageux';
+
+  @override
+  String get weatherConditionFoggy => 'Brouillard';
+
+  @override
+  String get weatherConditionDrizzle => 'Bruine';
+
+  @override
+  String get weatherConditionRain => 'Pluie';
+
+  @override
+  String get weatherConditionSnow => 'Neige';
+
+  @override
+  String get weatherConditionRainShowers => 'Averses';
+
+  @override
+  String get weatherConditionThunderstorm => 'Orage';
+
+  @override
+  String get weatherStatsWind => 'Vent';
+
+  @override
+  String get weatherStatsChanceOfRain => 'Risque de pluie';
+
+  @override
+  String get weatherStatsHumidity => 'Humidité';
+
+  @override
+  String get weatherHourlyTitle => 'Prévisions horaires';
+
+  @override
+  String get weatherDailyTitle => '7 prochains jours';
+
+  @override
+  String get weatherDayToday => 'Aujourd\'hui';
+
+  @override
+  String get weatherDayTomorrow => 'Demain';
+
+  @override
+  String get weatherSunSunrise => 'Lever du soleil';
+
+  @override
+  String get weatherSunSunset => 'Coucher du soleil';
+
+  @override
+  String get weatherSunZenith => 'Zénith';
+
+  @override
+  String get weatherSunMidnight => 'Minuit';
+
+  @override
+  String get weatherSunTitle => 'Heures du soleil';
+
+  @override
+  String get weatherNightTitle => 'Heures de nuit';
+
+  @override
+  String get errorNetwork =>
+      'Pas de connexion internet. Vérifiez votre réseau.';
+
+  @override
+  String get errorFetch =>
+      'Impossible de charger les données météo. Veuillez réessayer.';
+
+  @override
+  String get errorCache =>
+      'Impossible d\'enregistrer les données météo localement.';
+
+  @override
+  String get errorLoadCache =>
+      'Impossible de charger les données météo en cache.';
+
+  @override
+  String get errorUnexpected => 'Une erreur est survenue. Veuillez réessayer.';
+
+  @override
+  String get errorLoadSetting => 'Impossible de charger vos préférences.';
+
+  @override
+  String get errorUpdateSetting => 'Impossible d\'enregistrer vos préférences.';
+
+  @override
+  String get errorLocation =>
+      'Impossible d\'obtenir votre position. Vérifiez les autorisations.';
+
+  @override
+  String get errorSearch =>
+      'Impossible de rechercher des villes. Veuillez réessayer.';
+
+  @override
+  String get errorGpsDisabled =>
+      'Les services de localisation sont désactivés.';
+
+  @override
+  String get errorGpsPermissionDenied =>
+      'L\'autorisation de localisation est requise pour obtenir votre position actuelle.';
+
+  @override
+  String get errorGpsPermissionPermanentlyDenied =>
+      'L\'autorisation de localisation est refusée définitivement. Activez-la dans les Réglages.';
 }

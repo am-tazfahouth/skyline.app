@@ -24,5 +24,87 @@
   "settingsWindUnitKmh": "km/h",
 
   "settingsTempUnitCelsius": "Celsius",
-  "settingsTempUnitFahrenheit": "Fahrenheit"
+  "settingsTempUnitFahrenheit": "Fahrenheit",
+
+  "appTitle": "SkyLine",
+  "@appTitle": {
+    "description": "App brand name used as the weather header title fallback"
+  },
+
+  "weatherRefreshing": "Refreshing...",
+  "weatherRetry": "Retry",
+  "weatherSearchForLocation": "Search for a location",
+
+  "weatherDateLong": "{date}",
+  "@weatherDateLong": {
+    "description": "Full localized long date",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "dMMMMy",
+        "isCustomDateFormat": true
+      }
+    }
+  },
+
+  "weatherDayLabel": "{date}",
+  "@weatherDayLabel": {
+    "description": "Short localized day label with abbreviated weekday",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "E dMMM",
+        "isCustomDateFormat": true
+      }
+    }
+  },
+
+  "weatherSunTime": "{time}",
+  "@weatherSunTime": {
+    "description": "Short localized time of day",
+    "placeholders": {
+      "time": {
+        "type": "DateTime",
+        "format": "jm"
+      }
+    }
+  },
+
+  "weatherConditionClear": "Clear",
+  "weatherConditionPartlyCloudy": "Partly cloudy",
+  "weatherConditionFoggy": "Foggy",
+  "weatherConditionDrizzle": "Drizzle",
+  "weatherConditionRain": "Rain",
+  "weatherConditionSnow": "Snow",
+  "weatherConditionRainShowers": "Rain showers",
+  "weatherConditionThunderstorm": "Thunderstorm",
+
+  "weatherStatsWind": "Wind",
+  "weatherStatsChanceOfRain": "Chance of rain",
+  "weatherStatsHumidity": "Humidity",
+
+  "weatherHourlyTitle": "Hourly Forecast",
+  "weatherDailyTitle": "Next 7 Days",
+  "weatherDayToday": "Today",
+  "weatherDayTomorrow": "Tomorrow",
+
+  "weatherSunSunrise": "Sunrise",
+  "weatherSunSunset": "Sunset",
+  "weatherSunZenith": "Zenith",
+  "weatherSunMidnight": "Midnight",
+  "weatherSunTitle": "Sun Time",
+  "weatherNightTitle": "Night Time",
+
+  "errorNetwork": "No internet connection. Please check your network.",
+  "errorFetch": "Could not load weather data. Please try again.",
+  "errorCache": "Could not save weather data locally.",
+  "errorLoadCache": "Could not load cached weather data.",
+  "errorUnexpected": "Something went wrong. Please try again.",
+  "errorLoadSetting": "Could not load your preferences.",
+  "errorUpdateSetting": "Could not save your preferences.",
+  "errorLocation": "Could not get your location. Please check permissions.",
+  "errorSearch": "Could not search cities. Please try again.",
+  "errorGpsDisabled": "Location services are turned off.",
+  "errorGpsPermissionDenied": "Location permission is required to get your current location.",
+  "errorGpsPermissionPermanentlyDenied": "Location permission is permanently denied. Please enable it in Settings."
 }

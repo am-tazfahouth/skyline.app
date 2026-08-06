@@ -55,4 +55,148 @@ class AppLocalisationAr extends AppLocalisation {
 
   @override
   String get settingsTempUnitFahrenheit => 'فهرنهايت';
+
+  @override
+  String get appTitle => 'SkyLine';
+
+  @override
+  String get weatherRefreshing => 'جارٍ التحديث...';
+
+  @override
+  String get weatherRetry => 'إعادة المحاولة';
+
+  @override
+  String get weatherSearchForLocation => 'ابحث عن مكان';
+
+  @override
+  String weatherDateLong(DateTime date) {
+    final intl.DateFormat dateDateFormat = intl.DateFormat(
+      'dMMMMy',
+      localeName,
+    );
+    final String dateString = dateDateFormat.format(date);
+
+    return '$dateString';
+  }
+
+  @override
+  String weatherDayLabel(DateTime date) {
+    final intl.DateFormat dateDateFormat = intl.DateFormat(
+      'E dMMM',
+      localeName,
+    );
+    final String dateString = dateDateFormat.format(date);
+
+    return '$dateString';
+  }
+
+  @override
+  String weatherSunTime(DateTime time) {
+    final intl.DateFormat timeDateFormat = intl.DateFormat.jm(localeName);
+    final String timeString = timeDateFormat.format(time);
+
+    return '$timeString';
+  }
+
+  @override
+  String get weatherConditionClear => 'صافٍ';
+
+  @override
+  String get weatherConditionPartlyCloudy => 'غائم جزئياً';
+
+  @override
+  String get weatherConditionFoggy => 'ضبابي';
+
+  @override
+  String get weatherConditionDrizzle => 'رذاذ';
+
+  @override
+  String get weatherConditionRain => 'مطر';
+
+  @override
+  String get weatherConditionSnow => 'ثلج';
+
+  @override
+  String get weatherConditionRainShowers => 'زخات مطر';
+
+  @override
+  String get weatherConditionThunderstorm => 'عاصفة رعدية';
+
+  @override
+  String get weatherStatsWind => 'الرياح';
+
+  @override
+  String get weatherStatsChanceOfRain => 'احتمال هطول المطر';
+
+  @override
+  String get weatherStatsHumidity => 'الرطوبة';
+
+  @override
+  String get weatherHourlyTitle => 'توقعات كل ساعة';
+
+  @override
+  String get weatherDailyTitle => 'الأيام السبعة القادمة';
+
+  @override
+  String get weatherDayToday => 'اليوم';
+
+  @override
+  String get weatherDayTomorrow => 'غداً';
+
+  @override
+  String get weatherSunSunrise => 'شروق الشمس';
+
+  @override
+  String get weatherSunSunset => 'غروب الشمس';
+
+  @override
+  String get weatherSunZenith => 'الذروة';
+
+  @override
+  String get weatherSunMidnight => 'منتصف الليل';
+
+  @override
+  String get weatherSunTitle => 'وقت الشمس';
+
+  @override
+  String get weatherNightTitle => 'وقت الليل';
+
+  @override
+  String get errorNetwork => 'لا يوجد اتصال بالإنترنت. يرجى التحقق من شبكتك.';
+
+  @override
+  String get errorFetch => 'تعذّر تحميل بيانات الطقس. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get errorCache => 'تعذّر حفظ بيانات الطقس محلياً.';
+
+  @override
+  String get errorLoadCache => 'تعذّر تحميل بيانات الطقس المحفوظة.';
+
+  @override
+  String get errorUnexpected => 'حدث خطأ ما. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get errorLoadSetting => 'تعذّر تحميل تفضيلاتك.';
+
+  @override
+  String get errorUpdateSetting => 'تعذّر حفظ تفضيلاتك.';
+
+  @override
+  String get errorLocation =>
+      'تعذّر الحصول على موقعك. يرجى التحقق من الأذونات.';
+
+  @override
+  String get errorSearch => 'تعذّر البحث عن المدن. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get errorGpsDisabled => 'خدمات الموقع معطّلة.';
+
+  @override
+  String get errorGpsPermissionDenied =>
+      'يجب منح إذن الموقع للحصول على موقعك الحالي.';
+
+  @override
+  String get errorGpsPermissionPermanentlyDenied =>
+      'تم رفض إذن الموقع نهائياً. يرجى تفعيله في الإعدادات.';
 }
