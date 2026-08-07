@@ -59,18 +59,18 @@ class SettingsScreen extends StatelessWidget {
                 children: [
                   const SizedBox(height: 20),
                   SettingCard(
-                    title: "General", 
+                    title: l10n.settingsSectionGeneral, 
                     options: [
                       SettingItem(
-                        title: 'Theme',
-                        description: 'Choose the theme of the application',
+                        title: l10n.settingsTheme,
+                        description: l10n.settingsThemeDescription,
                         icon: Icons.light_mode_outlined,
                         onClick: () => selectThemeDialog(context, setting)
                       ),
                       SizedBox(height: 5),
                       SettingItem(
-                        title: 'Language',
-                        description: 'Choose the language of the application',
+                        title: l10n.settingsLanguage,
+                        description: l10n.settingsLanguageDescription,
                         icon: Icons.language_outlined,
                         onClick: () => selectLangDialog(context, setting)
                       ),
@@ -78,18 +78,18 @@ class SettingsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   SettingCard(
-                    title: "Preference", 
+                    title: l10n.settingsSectionPreference, 
                     options: [
                       SettingItem(
-                        title: 'Wind',
-                        description: 'Choose the unit of measurement for wind',
+                        title: l10n.settingsWindUnit,
+                        description: l10n.settingsWindUnitDescription,
                         icon: Icons.air_outlined,
                         onClick: () => selectWindUnitDialog(context, setting)
                       ),
                       SizedBox(height: 5),
                       SettingItem(
-                        title: 'Temperature',
-                        description: 'Choose the unit of measurement of the temperature',
+                        title: l10n.settingsTemperatureUnit,
+                        description: l10n.settingsTemperatureUnitDescription,
                         icon: Icons.thermostat_outlined,
                         onClick: () => selectHeatUnitDialog(context, setting)
                       ),
@@ -97,11 +97,11 @@ class SettingsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   SettingCard(
-                    title: "About", 
+                    title: l10n.settingsSectionAbout, 
                     options: [
                       SettingItem(
-                        title: 'Share',
-                        description: 'Share with your friend',
+                        title: l10n.settingsShare,
+                        description: l10n.settingsShareDescription,
                         icon: Icons.share, 
                         onClick: () {}
                       ),
@@ -109,7 +109,7 @@ class SettingsScreen extends StatelessWidget {
                         height: 5,
                       ),
                       SettingItem(
-                        title: 'Licenses',
+                        title: l10n.settingsLicenses,
                         icon: Icons.info_outline_rounded,
                         onClick: () => _showLicence(context, "0.6.4")
                       ),
@@ -117,7 +117,7 @@ class SettingsScreen extends StatelessWidget {
                         height: 5,
                       ),
                       SettingItem(
-                        title: "App version: 0.6.4",
+                        title: l10n.settingsAppVersion('0.6.4'),
                         icon: Icons.android,
                         onClick: null
                       ),
@@ -134,16 +134,17 @@ class SettingsScreen extends StatelessWidget {
   }
 
   void _showLicence(BuildContext context, String version) {
+    final l10n = AppLocalisation.of(context)!;
     showLicensePage(
       context: context,
-      applicationName: 'Notly',
+      applicationName: l10n.appTitle,
       applicationVersion: version,
       applicationIcon: Image.asset(
         'assets/images/logo/ic_launcher.png',
         height: 70,
         width: 70,
       ),
-      applicationLegalese: "© 2026 TzfLab"
+      applicationLegalese: l10n.settingsCopyright
     );
   }
 }

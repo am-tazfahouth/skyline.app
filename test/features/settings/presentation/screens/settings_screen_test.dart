@@ -123,8 +123,8 @@ void main() {
 
     expect(find.text('Theme'), findsOneWidget);
     expect(find.text('Language'), findsOneWidget);
-    expect(find.text('Wind'), findsOneWidget);
-    expect(find.text('Temperature'), findsOneWidget);
+    expect(find.text('Wind Unit'), findsOneWidget);
+    expect(find.text('Temperature Unit'), findsOneWidget);
   });
 
   testWidgets('should display setting descriptions', (tester) async {

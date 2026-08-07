@@ -108,6 +108,24 @@ abstract class AppLocalisation {
   /// **'Settings'**
   String get settingsTitle;
 
+  /// Section title grouping general application preferences
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get settingsSectionGeneral;
+
+  /// Section title grouping measurement unit preferences
+  ///
+  /// In en, this message translates to:
+  /// **'Preference'**
+  String get settingsSectionPreference;
+
+  /// Section title grouping about and legal entries
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get settingsSectionAbout;
+
   /// No description provided for @settingsTheme.
   ///
   /// In en, this message translates to:
@@ -131,6 +149,60 @@ abstract class AppLocalisation {
   /// In en, this message translates to:
   /// **'Temperature Unit'**
   String get settingsTemperatureUnit;
+
+  /// Description of the theme setting
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the theme of the application'**
+  String get settingsThemeDescription;
+
+  /// Description of the language setting
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the language of the application'**
+  String get settingsLanguageDescription;
+
+  /// Description of the wind measurement unit setting
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the unit of measurement for wind'**
+  String get settingsWindUnitDescription;
+
+  /// Description of the temperature measurement unit setting
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the unit of measurement of the temperature'**
+  String get settingsTemperatureUnitDescription;
+
+  /// Entry to share the app
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get settingsShare;
+
+  /// Description of the share entry
+  ///
+  /// In en, this message translates to:
+  /// **'Share with your friend'**
+  String get settingsShareDescription;
+
+  /// Entry opening the open source licenses page
+  ///
+  /// In en, this message translates to:
+  /// **'Licenses'**
+  String get settingsLicenses;
+
+  /// App version label
+  ///
+  /// In en, this message translates to:
+  /// **'App version: {version}'**
+  String settingsAppVersion(String version);
+
+  /// Copyright line shown on the licenses page
+  ///
+  /// In en, this message translates to:
+  /// **'© 2026 TzfLab'**
+  String get settingsCopyright;
 
   /// No description provided for @settingsThemeLight.
   ///

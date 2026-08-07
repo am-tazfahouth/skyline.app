@@ -6,10 +6,66 @@
     "description": "Title for the settings screen"
   },
 
+  "settingsSectionGeneral": "General",
+  "@settingsSectionGeneral": {
+    "description": "Section title grouping general application preferences"
+  },
+  "settingsSectionPreference": "Preference",
+  "@settingsSectionPreference": {
+    "description": "Section title grouping measurement unit preferences"
+  },
+  "settingsSectionAbout": "About",
+  "@settingsSectionAbout": {
+    "description": "Section title grouping about and legal entries"
+  },
+
   "settingsTheme": "Theme",
   "settingsLanguage": "Language",
   "settingsWindUnit": "Wind Unit",
   "settingsTemperatureUnit": "Temperature Unit",
+
+  "settingsThemeDescription": "Choose the theme of the application",
+  "@settingsThemeDescription": {
+    "description": "Description of the theme setting"
+  },
+  "settingsLanguageDescription": "Choose the language of the application",
+  "@settingsLanguageDescription": {
+    "description": "Description of the language setting"
+  },
+  "settingsWindUnitDescription": "Choose the unit of measurement for wind",
+  "@settingsWindUnitDescription": {
+    "description": "Description of the wind measurement unit setting"
+  },
+  "settingsTemperatureUnitDescription": "Choose the unit of measurement of the temperature",
+  "@settingsTemperatureUnitDescription": {
+    "description": "Description of the temperature measurement unit setting"
+  },
+
+  "settingsShare": "Share",
+  "@settingsShare": {
+    "description": "Entry to share the app"
+  },
+  "settingsShareDescription": "Share with your friend",
+  "@settingsShareDescription": {
+    "description": "Description of the share entry"
+  },
+  "settingsLicenses": "Licenses",
+  "@settingsLicenses": {
+    "description": "Entry opening the open source licenses page"
+  },
+  "settingsAppVersion": "App version: {version}",
+  "@settingsAppVersion": {
+    "description": "App version label",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsCopyright": "© 2026 TzfLab",
+  "@settingsCopyright": {
+    "description": "Copyright line shown on the licenses page"
+  },
 
   "settingsThemeLight": "Light",
   "settingsThemeDark": "Dark",

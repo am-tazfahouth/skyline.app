@@ -12,6 +12,15 @@ class AppLocalisationFr extends AppLocalisation {
   String get settingsTitle => 'Paramètres';
 
   @override
+  String get settingsSectionGeneral => 'Général';
+
+  @override
+  String get settingsSectionPreference => 'Préférences';
+
+  @override
+  String get settingsSectionAbout => 'À propos';
+
+  @override
   String get settingsTheme => 'Thème';
 
   @override
@@ -22,6 +31,39 @@ class AppLocalisationFr extends AppLocalisation {
 
   @override
   String get settingsTemperatureUnit => 'Unité de température';
+
+  @override
+  String get settingsThemeDescription =>
+      'Choisissez le thème de l\'application';
+
+  @override
+  String get settingsLanguageDescription =>
+      'Choisissez la langue de l\'application';
+
+  @override
+  String get settingsWindUnitDescription =>
+      'Choisissez l\'unité de mesure du vent';
+
+  @override
+  String get settingsTemperatureUnitDescription =>
+      'Choisissez l\'unité de mesure de la température';
+
+  @override
+  String get settingsShare => 'Partager';
+
+  @override
+  String get settingsShareDescription => 'Partagez avec vos amis';
+
+  @override
+  String get settingsLicenses => 'Licences';
+
+  @override
+  String settingsAppVersion(String version) {
+    return 'Version de l\'application : $version';
+  }
+
+  @override
+  String get settingsCopyright => '© 2026 TzfLab';
 
   @override
   String get settingsThemeLight => 'Clair';
