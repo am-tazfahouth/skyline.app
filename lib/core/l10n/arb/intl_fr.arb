@@ -54,7 +54,6 @@
   "locationCurrentLocationTooltip": "Position actuelle",
   "locationEnable": "Activer",
   "locationNoFavorites": "Aucun favori pour l'instant",
-  "locationSearchTitle": "Rechercher une ville",
   "locationSearchHint": "Rechercher une ville...",
   "locationSearchNoResults": "Aucun résultat trouvé",
   "locationSearchPrompt": "Saisissez un nom de ville pour rechercher",

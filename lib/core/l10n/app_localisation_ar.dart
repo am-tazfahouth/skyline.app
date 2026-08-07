@@ -174,9 +174,6 @@ class AppLocalisationAr extends AppLocalisation {
   String get locationNoFavorites => 'لا توجد أماكن مفضلة بعد';
 
   @override
-  String get locationSearchTitle => 'ابحث عن مدينة';
-
-  @override
   String get locationSearchHint => 'ابحث عن مدينة...';
 
   @override

@@ -115,11 +115,6 @@
     "description": "Empty state message when no favorite locations are saved"
   },
 
-  "locationSearchTitle": "Search City",
-  "@locationSearchTitle": {
-    "description": "Title for the location search screen"
-  },
-
   "locationSearchHint": "Search city...",
   "@locationSearchHint": {
     "description": "Hint text of the city search field"

@@ -22,72 +22,64 @@ class LocationSearchScreen extends StatelessWidget {
     return Scaffold(      
       appBar: AppBar(
         backgroundColor: bgColor,
-        title: Text(l10n.locationSearchTitle),
+        title: SearchBarWidget(
+          onSearch: (query) {
+            context.read<LocationBloc>().add(SearchLocationsEvent(query));
+          },
+        ),
       ),
       backgroundColor: bgColor,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            SearchBarWidget(
-              onSearch: (query) {
-                context.read<LocationBloc>().add(SearchLocationsEvent(query));
-              },
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: BlocBuilder<LocationBloc, LocationState>(
-                builder: (context, state) {
-                  if (state is LocationSearchLoading) {
-                    return Center(
-                      child: LoadingAnimationWidget.staggeredDotsWave(
-                        color: theme.colorScheme.primary,
-                        size: 40,
-                      ),
-                    );
-                  }
-                  if (state is LocationSearchLoaded) {
-                    if (state.results.isEmpty) {
-                      return Center(child: Text(l10n.locationSearchNoResults));
-                    }
-                    return ListView.builder(
-                      itemCount: state.results.length,
-                      itemBuilder: (context, index) {
-                        final location = state.results[index];
-                        return SearchResultTile(
-                          location: location,
-                          onTap: () {
-                            final bloc = context.read<LocationBloc>();
-                            final favorites = bloc.repository.loadFavorites();
-                            final isAlreadyFavorite = favorites.any(
-                              (f) => f.latitude == location.latitude &&
-                                  f.longitude == location.longitude,
-                            );
-                            if (!isAlreadyFavorite) {
-                              bloc.add(AddFavoriteEvent(location: location));
-                            }
-                            bloc.add(SelectLocationEvent(location: location));
-                            Navigator.pop(context);
-                          },
-                        );
-                      },
-                    );
-                  }
-                  if (state is LocationSearchError) {
-                    return Center(
-                      child: Text(
-                        AppError.getUserErrorMessage(state.errorCode, l10n),
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: theme.colorScheme.error,
-                        ),
-                      ),
-                    );
-                  }
-                  return Center(child: Text(l10n.locationSearchPrompt));
+        child: BlocBuilder<LocationBloc, LocationState>(
+          builder: (context, state) {
+            if (state is LocationSearchLoading) {
+              return Center(
+                child: LoadingAnimationWidget.staggeredDotsWave(
+                  color: theme.colorScheme.primary,
+                  size: 40,
+                ),
+              );
+            }
+            if (state is LocationSearchLoaded) {
+              if (state.results.isEmpty) {
+                return Center(child: Text(l10n.locationSearchNoResults));
+              }
+              return ListView.builder(
+                itemCount: state.results.length,
+                itemBuilder: (context, index) {
+                  final location = state.results[index];
+                  return SearchResultTile(
+                    location: location,
+                    onTap: () {
+                      final bloc = context.read<LocationBloc>();
+                      final favorites = bloc.repository.loadFavorites();
+                      final isAlreadyFavorite = favorites.any(
+                        (f) => f.latitude == location.latitude &&
+                            f.longitude == location.longitude,
+                      );
+                      if (!isAlreadyFavorite) {
+                        bloc.add(AddFavoriteEvent(location: location));
+                      }
+                      bloc.add(SelectLocationEvent(location: location));
+                      Navigator.pop(context);
+                    },
+                  );
                 },
-              ),
-            ),
-          ],
+              );
+            }
+            if (state is LocationSearchError) {
+              return Center(
+                child: Text(
+                  AppError.getUserErrorMessage(state.errorCode, l10n),
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: theme.colorScheme.error,
+                  ),
+                ),
+              );
+            }
+            return Center(child: Text(l10n.locationSearchPrompt));
+          },
         ),
       ),
     );

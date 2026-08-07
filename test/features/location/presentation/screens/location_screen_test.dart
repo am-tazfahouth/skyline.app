@@ -103,7 +103,7 @@ void main() {
     await tester.tap(find.byType(FloatingActionButton));
     await tester.pumpAndSettle();
 
-    expect(find.text('Search City'), findsOneWidget);
+    expect(find.text('Search city...'), findsOneWidget);
   });
 
   testWidgets('GPS action dispatches DetectCurrentLocationEvent', (tester) async {

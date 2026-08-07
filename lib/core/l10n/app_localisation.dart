@@ -390,12 +390,6 @@ abstract class AppLocalisation {
   /// **'No favorites yet'**
   String get locationNoFavorites;
 
-  /// Title for the location search screen
-  ///
-  /// In en, this message translates to:
-  /// **'Search City'**
-  String get locationSearchTitle;
-
   /// Hint text of the city search field
   ///
   /// In en, this message translates to:

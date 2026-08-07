@@ -174,9 +174,6 @@ class AppLocalisationFr extends AppLocalisation {
   String get locationNoFavorites => 'Aucun favori pour l\'instant';
 
   @override
-  String get locationSearchTitle => 'Rechercher une ville';
-
-  @override
   String get locationSearchHint => 'Rechercher une ville...';
 
   @override

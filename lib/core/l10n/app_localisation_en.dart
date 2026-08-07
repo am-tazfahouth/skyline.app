@@ -174,9 +174,6 @@ class AppLocalisationEn extends AppLocalisation {
   String get locationNoFavorites => 'No favorites yet';
 
   @override
-  String get locationSearchTitle => 'Search City';
-
-  @override
   String get locationSearchHint => 'Search city...';
 
   @override
