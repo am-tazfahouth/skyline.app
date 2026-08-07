@@ -20,11 +20,17 @@ class WeatherScreen extends StatelessWidget {
     return BlocListener<LocationBloc, LocationState>(
       listenWhen: (previous, current) {
         if (current is LocationSelected) return true;
-        if (current is LocationFavoritesLoaded &&
-            current.currentLocation == null) {
-          return previous is LocationSelected ||
-              (previous is LocationFavoritesLoaded &&
-                  previous.currentLocation != null);
+        if (current is LocationFavoritesLoaded) {
+          final previousLocation = switch (previous) {
+            LocationSelected(location: final l) => l,
+            LocationFavoritesLoaded(currentLocation: final c) => c,
+            _ => null,
+          };
+          final currentLocation = current.currentLocation;
+          if (currentLocation == null) return previousLocation != null;
+          return previousLocation != null &&
+              (previousLocation.latitude != currentLocation.latitude ||
+                  previousLocation.longitude != currentLocation.longitude);
         }
         return false;
       },
@@ -36,9 +42,18 @@ class WeatherScreen extends StatelessWidget {
               longitude: state.location.longitude,
             ),
           );
-        } else if (state is LocationFavoritesLoaded &&
-            state.currentLocation == null) {
-          context.read<WeatherForecastBloc>().add(const ResetWeatherEvent());
+        } else if (state is LocationFavoritesLoaded) {
+          final location = state.currentLocation;
+          if (location == null) {
+            context.read<WeatherForecastBloc>().add(const ResetWeatherEvent());
+          } else {
+            context.read<WeatherForecastBloc>().add(
+              FetchWeatherEvent(
+                latitude: location.latitude,
+                longitude: location.longitude,
+              ),
+            );
+          }
         }
       },
       child: BlocBuilder<WeatherForecastBloc, WeatherForecastState>(

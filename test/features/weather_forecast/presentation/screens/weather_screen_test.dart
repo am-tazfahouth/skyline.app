@@ -436,6 +436,58 @@ void main() {
     expect(bloc.state, isA<WeatherEmpty>());
   });
 
+  testWidgets('removing the displayed favorite switches to the first remaining favorite',
+      (tester) async {
+    when(() => mockRepository.fetchWeather(
+      latitude: any(named: 'latitude'),
+      longitude: any(named: 'longitude'),
+    )).thenAnswer((_) async => buildWeatherResult());
+    when(() => mockRepository.clearCachedWeather()).thenAnswer((_) async {});
+
+    const ny = LocationEntity(
+      latitude: 40.71,
+      longitude: -74.00,
+      cityName: 'New York',
+      country: 'USA',
+    );
+
+    final locationRepo = MockLocationRepository();
+    var favorites = [paris, ny];
+    when(() => locationRepo.loadFavorites()).thenAnswer((_) => favorites);
+    when(() => locationRepo.loadLastLocation()).thenReturn(paris);
+    when(() => locationRepo.removeFavorite(any())).thenAnswer((_) async {
+      favorites = [ny];
+    });
+    when(() => locationRepo.saveLastLocation(any())).thenAnswer((_) async {});
+    when(() => locationRepo.clearLastLocation()).thenAnswer((_) async {});
+    final locationBloc = LocationBloc(
+      logger: MockAppLogger(),
+      repository: locationRepo,
+    );
+    locationBloc.add(const LoadFavoritesEvent());
+
+    final bloc = WeatherForecastBloc(
+      logger: MockAppLogger(),
+      weatherRepository: mockRepository,
+      getSettings: mockGetSettings,
+      isConnected: () async => true,
+    );
+    bloc.add(const FetchWeatherEvent());
+    await tester.pumpWidget(createTestScreen(bloc, locationBloc: locationBloc));
+    await tester.pumpAndSettle();
+    expect(bloc.state, isA<WeatherLoaded>());
+
+    locationBloc.add(const RemoveFavoriteEvent(location: paris));
+    await tester.pumpAndSettle();
+
+    verify(
+      () => mockRepository.fetchWeather(latitude: 40.71, longitude: -74.00),
+    ).called(1);
+    expect(bloc.state, isA<WeatherLoaded>());
+    expect(bloc.state, isNot(isA<WeatherEmpty>()));
+    expect(find.text('New York, USA'), findsOneWidget);
+  });
+
   testWidgets('GPS failure does not reset the loaded weather', (tester) async {
     when(() => mockRepository.fetchWeather(
       latitude: any(named: 'latitude'),
