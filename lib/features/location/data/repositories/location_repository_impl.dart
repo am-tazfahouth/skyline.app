@@ -175,4 +175,14 @@ class LocationRepositoryImpl implements LocationRepository {
   Future<void> openAppSettings() async {
     await _permissionSource.openAppSettings();
   }
+
+  @override
+  Future<bool> hasSeenLocationOnboarding() async {
+    return _localSource.loadOnboardingFlag();
+  }
+
+  @override
+  Future<void> markLocationOnboardingSeen() async {
+    _localSource.saveOnboardingFlag(true);
+  }
 }

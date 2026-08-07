@@ -86,4 +86,21 @@ void main() {
       expect(fresh, isNotNull);
     });
   });
+
+  group('onboarding flag', () {
+    test('default flag is false when nothing saved', () {
+      expect(dbHelper.loadOnboardingFlag(), isFalse);
+    });
+
+    test('loadOnboardingFlag returns true after saveOnboardingFlag(true)', () {
+      dbHelper.saveOnboardingFlag(true);
+      expect(dbHelper.loadOnboardingFlag(), isTrue);
+    });
+
+    test('loadOnboardingFlag returns false after saveOnboardingFlag(false)', () {
+      dbHelper.saveOnboardingFlag(true);
+      dbHelper.saveOnboardingFlag(false);
+      expect(dbHelper.loadOnboardingFlag(), isFalse);
+    });
+  });
 }

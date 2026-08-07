@@ -408,6 +408,42 @@ abstract class AppLocalisation {
   /// **'Type to search for a city'**
   String get locationSearchPrompt;
 
+  /// Title of the location permission onboarding screen
+  ///
+  /// In en, this message translates to:
+  /// **'Set your location'**
+  String get locationOnboardingTitle;
+
+  /// No description provided for @locationOnboardingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable location access to see the weather for your current position.'**
+  String get locationOnboardingBody;
+
+  /// No description provided for @locationOnboardingEnable.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable location'**
+  String get locationOnboardingEnable;
+
+  /// No description provided for @locationOnboardingLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get locationOnboardingLater;
+
+  /// Empty state message of the weather home when no location is selected
+  ///
+  /// In en, this message translates to:
+  /// **'Search for a city to see the weather.'**
+  String get weatherEmptySearchMessage;
+
+  /// No description provided for @weatherEmptySearchAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get weatherEmptySearchAction;
+
   /// No description provided for @errorNetwork.
   ///
   /// In en, this message translates to:

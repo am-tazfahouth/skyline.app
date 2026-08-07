@@ -153,9 +153,28 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "5:609088943354033885",
+      "lastPropertyId": "2:6383766242130415974",
+      "name": "OnboardingCacheEntity",
+      "properties": [
+        {
+          "id": "1:1409676658897534020",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6383766242130415974",
+          "name": "hasSeenLocationOnboarding",
+          "type": 1
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "4:4340715015938654862",
+  "lastEntityId": "5:609088943354033885",
   "lastIndexId": "0:0",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",

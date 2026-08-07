@@ -4,6 +4,7 @@ import 'package:sky_line/core/config/db_helper/weather_cache_entity.dart';
 import 'package:sky_line/core/config/db_helper/setting_cache_entity.dart';
 import 'package:sky_line/core/config/db_helper/location_cache_entity.dart';
 import 'package:sky_line/core/config/db_helper/last_location_entity.dart';
+import 'package:sky_line/core/config/db_helper/onboarding_cache_entity.dart';
 import 'package:sky_line/core/enums/setting_heat_unit.dart';
 import 'package:sky_line/core/enums/setting_lang.dart';
 import 'package:sky_line/core/enums/setting_theme.dart';
@@ -19,12 +20,14 @@ class DbHelper {
   late final Box<SettingCacheEntity> _settingsBox;
   late final Box<LocationCacheEntity> _locationBox;
   late final Box<LastLocationEntity> _lastLocationBox;
+  late final Box<OnboardingCacheEntity> _onboardingBox;
 
   DbHelper._(this._store)
       : _box = Box<WeatherCacheEntity>(_store),
         _settingsBox = Box<SettingCacheEntity>(_store),
         _locationBox = Box<LocationCacheEntity>(_store),
-        _lastLocationBox = Box<LastLocationEntity>(_store);
+        _lastLocationBox = Box<LastLocationEntity>(_store),
+        _onboardingBox = Box<OnboardingCacheEntity>(_store);
 
   static Future<DbHelper> init({String? directory}) async {
     if (_instance != null) return _instance!;
@@ -112,6 +115,20 @@ class DbHelper {
 
   void clearLastLocation() {
     _lastLocationBox.removeAll();
+  }
+
+  bool loadOnboardingFlag() {
+    final entities = _onboardingBox.getAll();
+    if (entities.isEmpty) return false;
+    return entities.first.hasSeenLocationOnboarding;
+  }
+
+  void saveOnboardingFlag(bool seen) {
+    _onboardingBox.removeAll();
+    _onboardingBox.put(OnboardingCacheEntity(
+      id: 0,
+      hasSeenLocationOnboarding: seen,
+    ));
   }
 
   void dispose() {

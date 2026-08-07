@@ -206,6 +206,32 @@ void main() {
     });
   });
 
+  group('hasSeenLocationOnboarding', () {
+    test('returns true when local source flag is true', () async {
+      when(() => mockLocal.loadOnboardingFlag()).thenReturn(true);
+
+      final result = await repo.hasSeenLocationOnboarding();
+      expect(result, isTrue);
+    });
+
+    test('returns false when local source flag is false', () async {
+      when(() => mockLocal.loadOnboardingFlag()).thenReturn(false);
+
+      final result = await repo.hasSeenLocationOnboarding();
+      expect(result, isFalse);
+    });
+  });
+
+  group('markLocationOnboardingSeen', () {
+    test('saves onboarding flag with true', () async {
+      when(() => mockLocal.saveOnboardingFlag(true)).thenReturn(null);
+
+      await repo.markLocationOnboardingSeen();
+
+      verify(() => mockLocal.saveOnboardingFlag(true)).called(1);
+    });
+  });
+
   group('detectCurrentLocation', () {
     final position = Position(
       latitude: -11.70,

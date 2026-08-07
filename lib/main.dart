@@ -35,6 +35,9 @@ void main() async {
         BlocProvider(
           create: (_) => InjectionContainer.locationBloc..add(LoadFavoritesEvent()),
         ),
+        BlocProvider(
+          create: (_) => InjectionContainer.locationOnboardingBloc,
+        ),
       ],
       child: MyApp(),
     ),

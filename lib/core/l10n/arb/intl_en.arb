@@ -130,6 +130,24 @@
     "description": "Initial state prompt before the user starts searching"
   },
 
+  "locationOnboardingTitle": "Set your location",
+  "@locationOnboardingTitle": {
+    "description": "Title of the location permission onboarding screen"
+  },
+
+  "locationOnboardingBody": "Enable location access to see the weather for your current position.",
+
+  "locationOnboardingEnable": "Enable location",
+
+  "locationOnboardingLater": "Later",
+
+  "weatherEmptySearchMessage": "Search for a city to see the weather.",
+  "@weatherEmptySearchMessage": {
+    "description": "Empty state message of the weather home when no location is selected"
+  },
+
+  "weatherEmptySearchAction": "Search",
+
   "errorNetwork": "No internet connection. Please check your network.",
   "errorFetch": "Could not load weather data. Please try again.",
   "errorCache": "Could not save weather data locally.",

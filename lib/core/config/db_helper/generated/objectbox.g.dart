@@ -16,6 +16,7 @@ import 'package:objectbox_flutter_libs/objectbox_flutter_libs.dart';
 
 import '../last_location_entity.dart';
 import '../location_cache_entity.dart';
+import '../onboarding_cache_entity.dart';
 import '../setting_cache_entity.dart';
 import '../weather_cache_entity.dart';
 
@@ -200,6 +201,28 @@ final _entities = <obx_int.ModelEntity>[
     relations: <obx_int.ModelRelation>[],
     backlinks: <obx_int.ModelBacklink>[],
   ),
+  obx_int.ModelEntity(
+    id: const obx_int.IdUid(5, 609088943354033885),
+    name: 'OnboardingCacheEntity',
+    lastPropertyId: const obx_int.IdUid(2, 6383766242130415974),
+    flags: 0,
+    properties: <obx_int.ModelProperty>[
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(1, 1409676658897534020),
+        name: 'id',
+        type: 6,
+        flags: 1,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(2, 6383766242130415974),
+        name: 'hasSeenLocationOnboarding',
+        type: 1,
+        flags: 0,
+      ),
+    ],
+    relations: <obx_int.ModelRelation>[],
+    backlinks: <obx_int.ModelBacklink>[],
+  ),
 ];
 
 /// Shortcut for [obx.Store.new] that passes [getObjectBoxModel] and for Flutter
@@ -240,7 +263,7 @@ Future<obx.Store> openStore({
 obx_int.ModelDefinition getObjectBoxModel() {
   final model = obx_int.ModelInfo(
     entities: _entities,
-    lastEntityId: const obx_int.IdUid(4, 4340715015938654862),
+    lastEntityId: const obx_int.IdUid(5, 609088943354033885),
     lastIndexId: const obx_int.IdUid(0, 0),
     lastRelationId: const obx_int.IdUid(0, 0),
     lastSequenceId: const obx_int.IdUid(0, 0),
@@ -512,6 +535,44 @@ obx_int.ModelDefinition getObjectBoxModel() {
         return object;
       },
     ),
+    OnboardingCacheEntity: obx_int.EntityDefinition<OnboardingCacheEntity>(
+      model: _entities[4],
+      toOneRelations: (OnboardingCacheEntity object) => [],
+      toManyRelations: (OnboardingCacheEntity object) => {},
+      getId: (OnboardingCacheEntity object) => object.id,
+      setId: (OnboardingCacheEntity object, int id) {
+        object.id = id;
+      },
+      objectToFB: (OnboardingCacheEntity object, fb.Builder fbb) {
+        fbb.startTable(3);
+        fbb.addInt64(0, object.id);
+        fbb.addBool(1, object.hasSeenLocationOnboarding);
+        fbb.finish(fbb.endTable());
+        return object.id;
+      },
+      objectFromFB: (obx.Store store, ByteData fbData) {
+        final buffer = fb.BufferContext(fbData);
+        final rootOffset = buffer.derefObject(0);
+        final idParam = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          4,
+          0,
+        );
+        final hasSeenLocationOnboardingParam = const fb.BoolReader().vTableGet(
+          buffer,
+          rootOffset,
+          6,
+          false,
+        );
+        final object = OnboardingCacheEntity(
+          id: idParam,
+          hasSeenLocationOnboarding: hasSeenLocationOnboardingParam,
+        );
+
+        return object;
+      },
+    ),
   };
 
   return obx_int.ModelDefinition(model, bindings);
@@ -642,4 +703,18 @@ class WeatherCacheEntity_ {
   static final savedAt = obx.QueryIntegerProperty<WeatherCacheEntity>(
     _entities[3].properties[2],
   );
+}
+
+/// [OnboardingCacheEntity] entity fields to define ObjectBox queries.
+class OnboardingCacheEntity_ {
+  /// See [OnboardingCacheEntity.id].
+  static final id = obx.QueryIntegerProperty<OnboardingCacheEntity>(
+    _entities[4].properties[0],
+  );
+
+  /// See [OnboardingCacheEntity.hasSeenLocationOnboarding].
+  static final hasSeenLocationOnboarding =
+      obx.QueryBooleanProperty<OnboardingCacheEntity>(
+        _entities[4].properties[1],
+      );
 }

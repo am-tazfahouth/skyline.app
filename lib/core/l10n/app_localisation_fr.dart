@@ -184,6 +184,26 @@ class AppLocalisationFr extends AppLocalisation {
       'Saisissez un nom de ville pour rechercher';
 
   @override
+  String get locationOnboardingTitle => 'Définir votre position';
+
+  @override
+  String get locationOnboardingBody =>
+      'Autorisez la localisation pour voir la météo à votre position actuelle.';
+
+  @override
+  String get locationOnboardingEnable => 'Activer la localisation';
+
+  @override
+  String get locationOnboardingLater => 'Plus tard';
+
+  @override
+  String get weatherEmptySearchMessage =>
+      'Recherchez une ville pour voir la météo.';
+
+  @override
+  String get weatherEmptySearchAction => 'Rechercher';
+
+  @override
   String get errorNetwork =>
       'Pas de connexion internet. Vérifiez votre réseau.';
 

@@ -2,48 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/config/app_routes.dart';
 import 'package:sky_line/core/config/app_theme.dart';
-import 'package:sky_line/core/errors/app_error.dart';
-import 'package:sky_line/core/errors/app_error_code.dart';
-import 'package:sky_line/core/errors/location_error_codes.dart';
 import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/features/location/domain/entities/location_entity.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_event.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_state.dart';
+import 'package:sky_line/features/location/presentation/utils/gps_error_feedback.dart';
 import 'package:sky_line/features/location/presentation/widgets/favorites_list_widget.dart';
 
 class LocationScreen extends StatelessWidget {
   const LocationScreen({super.key});
-
-  bool _isGpsError(AppErrorCode code) =>
-      code == LocationErrorCodes.gpsDisabled ||
-      code == LocationErrorCodes.gpsPermissionDenied ||
-      code == LocationErrorCodes.gpsPermissionPermanentlyDenied ||
-      code == LocationErrorCodes.gpsFailed;
-
-  SnackBarAction? _gpsErrorAction(BuildContext context, AppErrorCode code) {
-    final bloc = context.read<LocationBloc>();
-    final l10n = AppLocalisation.of(context)!;
-    if (code == LocationErrorCodes.gpsDisabled) {
-      return SnackBarAction(
-        label: l10n.locationEnable,
-        onPressed: () => bloc.add(const OpenLocationSettingsEvent()),
-      );
-    }
-    if (code == LocationErrorCodes.gpsPermissionDenied) {
-      return SnackBarAction(
-        label: l10n.weatherRetry,
-        onPressed: () => bloc.add(const DetectCurrentLocationEvent()),
-      );
-    }
-    if (code == LocationErrorCodes.gpsPermissionPermanentlyDenied) {
-      return SnackBarAction(
-        label: l10n.settingsTitle,
-        onPressed: () => bloc.add(const OpenAppSettingsEvent()),
-      );
-    }
-    return null;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,16 +34,8 @@ class LocationScreen extends StatelessWidget {
           if (context.mounted) {
             Navigator.pop(context);
           }
-        } else if (state is LocationError && _isGpsError(state.errorCode)) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppError.getUserErrorMessage(
-                state.errorCode,
-                AppLocalisation.of(context)!,
-              )),
-              action: _gpsErrorAction(context, state.errorCode),
-            ),
-          );
+        } else if (state is LocationError && isGpsError(state.errorCode)) {
+          showGpsErrorSnackBar(context, state.errorCode);
         }
       },
       child: Scaffold(

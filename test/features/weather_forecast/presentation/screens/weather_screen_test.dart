@@ -8,6 +8,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:sky_line/core/config/app_routes.dart';
 import 'package:sky_line/core/enums/setting_heat_unit.dart';
 import 'package:sky_line/core/enums/setting_wind_unit.dart';
+import 'package:sky_line/core/errors/location_exceptions.dart';
 import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/core/services/logger_sevices.dart';
 import 'package:sky_line/features/settings/domain/entities/setting_entity.dart';
@@ -28,6 +29,8 @@ import 'package:sky_line/features/location/domain/entities/location_entity.dart'
 import 'package:sky_line/features/location/domain/repositories/location_repository.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_event.dart';
+import 'package:sky_line/features/location/presentation/blocs/location_onboarding_bloc.dart';
+import 'package:sky_line/features/location/presentation/widgets/location_onboarding_sheet.dart';
 
 class MockWeatherRepository extends Mock implements WeatherRepository {}
 
@@ -44,13 +47,38 @@ const _defaultSettings = SettingEntity(
   heatUnit: SettingHeatUnit.celsius,
 );
 
+const gpsLocation = LocationEntity(
+  latitude: 46.20,
+  longitude: 6.14,
+  cityName: 'Geneva',
+  country: 'Switzerland',
+);
+
+LocationOnboardingBloc buildOnboardingBloc({
+  required MockLocationRepository repo,
+}) {
+  return LocationOnboardingBloc(
+    logger: MockAppLogger(),
+    repository: repo,
+  );
+}
+
 Widget createTestScreen(
   WeatherForecastBloc bloc, {
   LocationBloc? locationBloc,
+  LocationOnboardingBloc? locationOnboardingBloc,
   Locale locale = const Locale('en'),
 }) {
   final locBloc = locationBloc ??
       LocationBloc(logger: MockAppLogger(), repository: MockLocationRepository());
+  final onboardingRepo = MockLocationRepository();
+  when(() => onboardingRepo.hasSeenLocationOnboarding())
+      .thenAnswer((_) async => true);
+  final onboardingBloc = locationOnboardingBloc ??
+      LocationOnboardingBloc(
+        logger: MockAppLogger(),
+        repository: onboardingRepo,
+      );
   return MultiBlocProvider(
     providers: [
       BlocProvider<WeatherForecastBloc>.value(value: bloc),
@@ -61,6 +89,7 @@ Widget createTestScreen(
         ),
       ),
       BlocProvider<LocationBloc>.value(value: locBloc),
+      BlocProvider<LocationOnboardingBloc>.value(value: onboardingBloc),
     ],
     child: MaterialApp(
       onGenerateRoute: RouteGenerator.generateRoute,
@@ -111,7 +140,19 @@ void main() {
     when(() => mockGetSettings()).thenAnswer((_) async => _defaultSettings);
     when(() => mockRepository.loadCachedWeather())
         .thenAnswer((_) async => null);
+    when(() => mockRepository.clearCachedWeather()).thenAnswer((_) async {});
   });
+
+  WeatherForecastBloc buildEmptyBloc() {
+    final bloc = WeatherForecastBloc(
+      logger: MockAppLogger(),
+      weatherRepository: mockRepository,
+      getSettings: mockGetSettings,
+      isConnected: () async => true,
+    );
+    bloc.add(const ResetWeatherEvent());
+    return bloc;
+  }
 
   testWidgets('shows loading overlay when fetching', (tester) async {
     final completer = Completer<WeatherResult>();
@@ -521,5 +562,229 @@ void main() {
 
     expect(bloc.state, isA<WeatherLoaded>());
     expect(bloc.state, isNot(isA<WeatherEmpty>()));
+  });
+
+  testWidgets('shows onboarding sheet when onboarding not seen and weather is empty',
+      (tester) async {
+    final onboardingRepo = MockLocationRepository();
+    when(() => onboardingRepo.hasSeenLocationOnboarding())
+        .thenAnswer((_) async => false);
+    when(() => onboardingRepo.markLocationOnboardingSeen())
+        .thenAnswer((_) async {});
+    final onboardingBloc = buildOnboardingBloc(repo: onboardingRepo);
+
+    final bloc = buildEmptyBloc();
+    await tester.pumpWidget(
+      createTestScreen(bloc, locationOnboardingBloc: onboardingBloc),
+    );
+    await tester.pump();
+    expect(find.text('Set your location'), findsNothing);
+
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(LocationOnboardingSheet), findsOneWidget);
+    expect(find.text('Set your location'), findsOneWidget);
+    expect(find.text('Search for a city to see the weather.'), findsNothing);
+  });
+
+  testWidgets('sheet Later completes onboarding and shows fallback search snackbar',
+      (tester) async {
+    final onboardingRepo = MockLocationRepository();
+    when(() => onboardingRepo.hasSeenLocationOnboarding())
+        .thenAnswer((_) async => false);
+    when(() => onboardingRepo.markLocationOnboardingSeen())
+        .thenAnswer((_) async {});
+    final onboardingBloc = buildOnboardingBloc(repo: onboardingRepo);
+
+    final bloc = buildEmptyBloc();
+    await tester.pumpWidget(
+      createTestScreen(bloc, locationOnboardingBloc: onboardingBloc),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pumpAndSettle();
+    expect(find.text('Set your location'), findsOneWidget);
+
+    await tester.tap(find.text('Later'));
+    await tester.pumpAndSettle();
+
+    verify(() => onboardingRepo.markLocationOnboardingSeen()).called(1);
+    expect(find.text('Set your location'), findsNothing);
+    expect(find.text('Search for a city to see the weather.'), findsOneWidget);
+  });
+
+  testWidgets('sheet close icon completes onboarding and shows fallback search snackbar',
+      (tester) async {
+    final onboardingRepo = MockLocationRepository();
+    when(() => onboardingRepo.hasSeenLocationOnboarding())
+        .thenAnswer((_) async => false);
+    when(() => onboardingRepo.markLocationOnboardingSeen())
+        .thenAnswer((_) async {});
+    final onboardingBloc = buildOnboardingBloc(repo: onboardingRepo);
+
+    final bloc = buildEmptyBloc();
+    await tester.pumpWidget(
+      createTestScreen(bloc, locationOnboardingBloc: onboardingBloc),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pumpAndSettle();
+    expect(find.text('Set your location'), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.close));
+    await tester.pumpAndSettle();
+
+    verify(() => onboardingRepo.markLocationOnboardingSeen()).called(1);
+    expect(find.text('Set your location'), findsNothing);
+    expect(find.text('Search for a city to see the weather.'), findsOneWidget);
+  });
+
+  testWidgets('sheet enable location fetches weather for the GPS position',
+      (tester) async {
+    when(() => mockRepository.fetchWeather(
+      latitude: any(named: 'latitude'),
+      longitude: any(named: 'longitude'),
+    )).thenAnswer((_) async => buildWeatherResult());
+
+    final onboardingRepo = MockLocationRepository();
+    when(() => onboardingRepo.hasSeenLocationOnboarding())
+        .thenAnswer((_) async => false);
+    when(() => onboardingRepo.markLocationOnboardingSeen())
+        .thenAnswer((_) async {});
+    final onboardingBloc = buildOnboardingBloc(repo: onboardingRepo);
+
+    final locationRepo = MockLocationRepository();
+    when(() => locationRepo.detectCurrentLocation())
+        .thenAnswer((_) async => gpsLocation);
+    when(() => locationRepo.saveLastLocation(any())).thenAnswer((_) async {});
+    when(() => locationRepo.loadFavorites()).thenReturn([]);
+    final locationBloc = LocationBloc(
+      logger: MockAppLogger(),
+      repository: locationRepo,
+    );
+
+    final bloc = buildEmptyBloc();
+    await tester.pumpWidget(
+      createTestScreen(
+        bloc,
+        locationBloc: locationBloc,
+        locationOnboardingBloc: onboardingBloc,
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pumpAndSettle();
+    expect(find.text('Set your location'), findsOneWidget);
+
+    await tester.tap(find.text('Enable location'));
+    await tester.pumpAndSettle();
+
+    verify(() => onboardingRepo.markLocationOnboardingSeen()).called(1);
+    verify(() => locationRepo.detectCurrentLocation()).called(1);
+    verify(
+      () => mockRepository.fetchWeather(
+        latitude: gpsLocation.latitude,
+        longitude: gpsLocation.longitude,
+      ),
+    ).called(1);
+    expect(find.text('Search for a city to see the weather.'), findsNothing);
+  });
+
+  testWidgets('sheet enable location with GPS failure shows GPS error snackbar',
+      (tester) async {
+    final onboardingRepo = MockLocationRepository();
+    when(() => onboardingRepo.hasSeenLocationOnboarding())
+        .thenAnswer((_) async => false);
+    when(() => onboardingRepo.markLocationOnboardingSeen())
+        .thenAnswer((_) async {});
+    final onboardingBloc = buildOnboardingBloc(repo: onboardingRepo);
+
+    final locationRepo = MockLocationRepository();
+    when(() => locationRepo.detectCurrentLocation())
+        .thenThrow(const LocationServiceDisabledException());
+    final locationBloc = LocationBloc(
+      logger: MockAppLogger(),
+      repository: locationRepo,
+    );
+
+    final bloc = buildEmptyBloc();
+    await tester.pumpWidget(
+      createTestScreen(
+        bloc,
+        locationBloc: locationBloc,
+        locationOnboardingBloc: onboardingBloc,
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pumpAndSettle();
+    expect(find.text('Set your location'), findsOneWidget);
+
+    await tester.tap(find.text('Enable location'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Location services are turned off.'), findsOneWidget);
+    expect(find.text('Search for a city to see the weather.'), findsNothing);
+  });
+
+  testWidgets('shows fallback search snackbar when onboarding seen and navigates to search',
+      (tester) async {
+    final bloc = buildEmptyBloc();
+    await tester.pumpWidget(createTestScreen(bloc));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(LocationOnboardingSheet), findsNothing);
+    expect(find.text('Search for a city to see the weather.'), findsOneWidget);
+
+    await tester.tap(find.text('Search'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Search city...'), findsOneWidget);
+  });
+
+  testWidgets('does not show onboarding sheet or snackbar on loaded weather',
+      (tester) async {
+    when(() => mockRepository.fetchWeather(
+      latitude: any(named: 'latitude'),
+      longitude: any(named: 'longitude'),
+    )).thenAnswer((_) async => buildWeatherResult());
+
+    final bloc = WeatherForecastBloc(
+      logger: MockAppLogger(),
+      weatherRepository: mockRepository,
+      getSettings: mockGetSettings,
+      isConnected: () async => true,
+    );
+    bloc.add(const FetchWeatherEvent());
+    await tester.pumpWidget(createTestScreen(bloc));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(LocationOnboardingSheet), findsNothing);
+    expect(find.text('Search for a city to see the weather.'), findsNothing);
+  });
+
+  testWidgets('does not show onboarding sheet or snackbar on weather error',
+      (tester) async {
+    when(() => mockRepository.fetchWeather(
+      latitude: any(named: 'latitude'),
+      longitude: any(named: 'longitude'),
+    )).thenThrow(DioException(
+      requestOptions: RequestOptions(path: ''),
+      type: DioExceptionType.connectionError,
+    ));
+
+    final bloc = WeatherForecastBloc(
+      logger: MockAppLogger(),
+      weatherRepository: mockRepository,
+      getSettings: mockGetSettings,
+      isConnected: () async => true,
+    );
+    bloc.add(const FetchWeatherEvent());
+    await tester.pumpWidget(createTestScreen(bloc));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(LocationOnboardingSheet), findsNothing);
+    expect(find.text('Search for a city to see the weather.'), findsNothing);
   });
 }

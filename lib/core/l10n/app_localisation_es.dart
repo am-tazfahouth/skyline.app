@@ -183,6 +183,25 @@ class AppLocalisationEs extends AppLocalisation {
   String get locationSearchPrompt => 'Escribe para buscar una ciudad';
 
   @override
+  String get locationOnboardingTitle => 'Configura tu ubicación';
+
+  @override
+  String get locationOnboardingBody =>
+      'Permite el acceso a tu ubicación para ver el clima en tu posición actual.';
+
+  @override
+  String get locationOnboardingEnable => 'Activar ubicación';
+
+  @override
+  String get locationOnboardingLater => 'Más tarde';
+
+  @override
+  String get weatherEmptySearchMessage => 'Busca una ciudad para ver el clima.';
+
+  @override
+  String get weatherEmptySearchAction => 'Buscar';
+
+  @override
   String get errorNetwork => 'Sin conexión a internet. Compruebe su red.';
 
   @override

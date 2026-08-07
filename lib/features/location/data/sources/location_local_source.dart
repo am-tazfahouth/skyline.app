@@ -20,4 +20,8 @@ class LocationLocalSource {
   void saveLastLocation(LastLocationEntity location) => _dbHelper.saveLastLocation(location);
 
   void clearLastLocation() => _dbHelper.clearLastLocation();
+
+  bool loadOnboardingFlag() => _dbHelper.loadOnboardingFlag();
+
+  void saveOnboardingFlag(bool seen) => _dbHelper.saveOnboardingFlag(seen);
 }

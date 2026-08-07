@@ -7,6 +7,7 @@ import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/core/services/logger_sevices.dart';
 import 'package:sky_line/features/location/domain/repositories/location_repository.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
+import 'package:sky_line/features/location/presentation/blocs/location_onboarding_bloc.dart';
 import 'package:sky_line/features/location/presentation/screens/location_screen.dart';
 import 'package:sky_line/features/location/presentation/screens/location_search_screen.dart';
 import 'package:sky_line/features/settings/domain/entities/setting_entity.dart';
@@ -43,6 +44,8 @@ void main() {
     getSettings = MockGetSettingsUseCase();
 
     when(() => locationRepo.loadFavorites()).thenReturn([]);
+    when(() => locationRepo.hasSeenLocationOnboarding())
+        .thenAnswer((_) async => true);
     when(() => weatherRepo.loadCachedWeather()).thenAnswer((_) async => null);
     when(() => getSettings()).thenAnswer((_) async => SettingEntity.defaults);
     when(() => settingRepo.loadSettings())
@@ -66,6 +69,12 @@ void main() {
         ),
         BlocProvider<SettingsBloc>(
           create: (_) => SettingsBloc(logger: logger, repository: settingRepo),
+        ),
+        BlocProvider<LocationOnboardingBloc>(
+          create: (_) => LocationOnboardingBloc(
+            logger: logger,
+            repository: locationRepo,
+          ),
         ),
       ],
       child: child,

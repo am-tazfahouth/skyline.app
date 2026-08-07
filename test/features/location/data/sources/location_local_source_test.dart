@@ -47,4 +47,21 @@ void main() {
       expect(result!.cityName, 'Paris');
     });
   });
+
+  group('onboarding flag', () {
+    test('loadOnboardingFlag delegates to DbHelper', () {
+      when(() => mockDbHelper.loadOnboardingFlag()).thenReturn(true);
+      expect(source.loadOnboardingFlag(), isTrue);
+    });
+
+    test('saveOnboardingFlag(true) delegates to DbHelper', () {
+      source.saveOnboardingFlag(true);
+      verify(() => mockDbHelper.saveOnboardingFlag(true)).called(1);
+    });
+
+    test('saveOnboardingFlag(false) delegates to DbHelper', () {
+      source.saveOnboardingFlag(false);
+      verify(() => mockDbHelper.saveOnboardingFlag(false)).called(1);
+    });
+  });
 }

@@ -12,4 +12,6 @@ abstract class LocationRepository {
   Future<LocationEntity> detectCurrentLocation();
   Future<void> openLocationSettings();
   Future<void> openAppSettings();
+  Future<bool> hasSeenLocationOnboarding();
+  Future<void> markLocationOnboardingSeen();
 }

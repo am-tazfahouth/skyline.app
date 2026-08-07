@@ -183,6 +183,25 @@ class AppLocalisationAr extends AppLocalisation {
   String get locationSearchPrompt => 'اكتب للبحث عن مدينة';
 
   @override
+  String get locationOnboardingTitle => 'تعيين موقعك';
+
+  @override
+  String get locationOnboardingBody =>
+      'فعّل الوصول إلى موقعك لعرض الطقس في موقعك الحالي.';
+
+  @override
+  String get locationOnboardingEnable => 'تفعيل الموقع';
+
+  @override
+  String get locationOnboardingLater => 'لاحقًا';
+
+  @override
+  String get weatherEmptySearchMessage => 'ابحث عن مدينة لعرض الطقس.';
+
+  @override
+  String get weatherEmptySearchAction => 'بحث';
+
+  @override
   String get errorNetwork => 'لا يوجد اتصال بالإنترنت. يرجى التحقق من شبكتك.';
 
   @override

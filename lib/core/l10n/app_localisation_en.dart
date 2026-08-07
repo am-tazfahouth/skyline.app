@@ -183,6 +183,26 @@ class AppLocalisationEn extends AppLocalisation {
   String get locationSearchPrompt => 'Type to search for a city';
 
   @override
+  String get locationOnboardingTitle => 'Set your location';
+
+  @override
+  String get locationOnboardingBody =>
+      'Enable location access to see the weather for your current position.';
+
+  @override
+  String get locationOnboardingEnable => 'Enable location';
+
+  @override
+  String get locationOnboardingLater => 'Later';
+
+  @override
+  String get weatherEmptySearchMessage =>
+      'Search for a city to see the weather.';
+
+  @override
+  String get weatherEmptySearchAction => 'Search';
+
+  @override
   String get errorNetwork =>
       'No internet connection. Please check your network.';
 

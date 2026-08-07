@@ -18,6 +18,7 @@ import 'package:sky_line/features/location/data/sources/location_permission_sour
 import 'package:sky_line/features/location/data/repositories/location_repository_impl.dart';
 import 'package:sky_line/features/location/domain/repositories/location_repository.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
+import 'package:sky_line/features/location/presentation/blocs/location_onboarding_bloc.dart';
 
 class InjectionContainer {
   static late final Dio dio;
@@ -33,6 +34,7 @@ class InjectionContainer {
   static late final LocationPermissionSource locationPermissionSource;
   static late final LocationRepository locationRepository;
   static late final LocationBloc locationBloc;
+  static late final LocationOnboardingBloc locationOnboardingBloc;
 
   static Future<void> init() async {
     dio = Dio();
@@ -67,6 +69,10 @@ class InjectionContainer {
     );
     locationBloc =
         LocationBloc(logger: logger, repository: locationRepository);
+    locationOnboardingBloc = LocationOnboardingBloc(
+      logger: logger,
+      repository: locationRepository,
+    );
   }
 
   static void dispose() {
