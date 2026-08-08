@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sky_line/core/config/app_bootstrap.dart';
 import 'package:sky_line/core/config/app_routes.dart';
 import 'package:sky_line/core/config/app_theme.dart';
 import 'package:sky_line/core/enums/setting_lang.dart';
 import 'package:sky_line/core/enums/setting_theme.dart';
 import 'package:sky_line/core/utils/platform_utils.dart';
 import 'package:sky_line/features/settings/presentation/blocs/settings_bloc.dart';
-import 'package:sky_line/features/settings/presentation/blocs/settings_event.dart';
 import 'package:sky_line/features/settings/presentation/blocs/settings_state.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_event.dart';
-import 'package:sky_line/features/location/presentation/blocs/location_event.dart';
 import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/injection_container.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -21,6 +20,7 @@ void main() async {
 
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await InjectionContainer.init();
+  await AppBootstrap.hydrate();
   FlutterNativeSplash.remove();
 
   runApp(
@@ -30,10 +30,10 @@ void main() async {
           create: (_) => InjectionContainer.weatherBloc..add(FetchWeatherEvent()),
         ),
         BlocProvider(
-          create: (_) => InjectionContainer.settingsBloc..add(const LoadSettingsEvent()),
+          create: (_) => InjectionContainer.settingsBloc,
         ),
         BlocProvider(
-          create: (_) => InjectionContainer.locationBloc..add(LoadFavoritesEvent()),
+          create: (_) => InjectionContainer.locationBloc,
         ),
         BlocProvider(
           create: (_) => InjectionContainer.locationOnboardingBloc,
