@@ -244,6 +244,10 @@ class AppLocalisationEn extends AppLocalisation {
   String get weatherEmptySearchAction => 'Search';
 
   @override
+  String get weatherCachedDataMessage =>
+      'No internet connection. Showing cached data.';
+
+  @override
   String get errorNetwork =>
       'No internet connection. Please check your network.';
 

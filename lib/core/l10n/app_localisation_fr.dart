@@ -246,6 +246,10 @@ class AppLocalisationFr extends AppLocalisation {
   String get weatherEmptySearchAction => 'Rechercher';
 
   @override
+  String get weatherCachedDataMessage =>
+      'Connexion impossible. Données affichées depuis le cache.';
+
+  @override
   String get errorNetwork =>
       'Pas de connexion internet. Vérifiez votre réseau.';
 

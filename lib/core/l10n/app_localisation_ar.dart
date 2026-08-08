@@ -241,6 +241,10 @@ class AppLocalisationAr extends AppLocalisation {
   String get weatherEmptySearchAction => 'بحث';
 
   @override
+  String get weatherCachedDataMessage =>
+      'تعذّر الاتصال. عرض البيانات المخزّنة.';
+
+  @override
   String get errorNetwork => 'لا يوجد اتصال بالإنترنت. يرجى التحقق من شبكتك.';
 
   @override

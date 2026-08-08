@@ -516,6 +516,13 @@ abstract class AppLocalisation {
   /// **'Search'**
   String get weatherEmptySearchAction;
 
+  /// Informs the user that the displayed weather data comes from the cache
+  /// because the connection could not be established.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection. Showing cached data.'**
+  String get weatherCachedDataMessage;
+
   /// No description provided for @errorNetwork.
   ///
   /// In en, this message translates to:
