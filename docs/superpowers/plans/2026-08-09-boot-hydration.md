@@ -1,6 +1,6 @@
 # Boot Hydration Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Eliminate the empty-state flash on `LocationScreen` at startup by hydrating favorites, onboarding and settings *before* `runApp`.
 
@@ -38,11 +38,11 @@
 **Files:**
 - Create: `docs/superpowers/specs/2026-08-09-boot-hydration-design.md`
 
-- [ ] **Step 1: Write the design doc**
+- [x] **Step 1: Write the design doc**
 
 Content: objective (flash `LocationFavoritesLoaded`→`[]` on `LocationScreen`), chosen approach (pre-runApp hydration, native splash preserved), rejected alternatives (`LocationFavoritesLoading` state, hybrid), `AppBootstrap.hydrate()` architecture (3 predicates: `LocationFavoritesLoaded || LocationError`, `LocationOnboardingLoaded || LocationOnboardingError`, `SettingsLoadSuccess(isLoaded: true) || SettingsError`), `WeatherScreen` change (post-frame), error handling (never blocking, 5s timeout), tests.
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add docs/superpowers/specs/2026-08-09-boot-hydration-design.md
@@ -60,7 +60,7 @@ git commit -m "docs: add boot hydration design spec"
 **Interfaces:**
 - Produces: `Future<void> AppBootstrap.hydrate({SettingsBloc? settingsBloc, LocationBloc? locationBloc, LocationOnboardingBloc? onboardingBloc, Duration timeout = const Duration(seconds: 5)})` — leaves the 3 blocs in their loaded-or-error state, never throws.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```dart
 // test/core/config/app_bootstrap_test.dart
@@ -181,12 +181,12 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/core/config/app_bootstrap_test.dart`
 Expected: FAIL — compilation error, `AppBootstrap` not defined.
 
-- [ ] **Step 3: Write the minimal implementation**
+- [x] **Step 3: Write the minimal implementation**
 
 ```dart
 // lib/core/config/app_bootstrap.dart
@@ -250,12 +250,12 @@ abstract final class AppBootstrap {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/core/config/app_bootstrap_test.dart`
 Expected: PASS (3 tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add lib/core/config/app_bootstrap.dart test/core/config/app_bootstrap_test.dart
@@ -272,7 +272,7 @@ git commit -m "feat(core): add AppBootstrap pre-runApp hydration"
 **Interfaces:**
 - Consumes: `AppBootstrap.hydrate()` (Task 2).
 
-- [ ] **Step 1: Edit `lib/main.dart`**
+- [x] **Step 1: Edit `lib/main.dart`**
 
 Remove the `settings_event.dart` and `location_event.dart` imports; add `import 'package:sky_line/core/config/app_bootstrap.dart';` (sorted before `app_routes.dart`). Insert the hydration call and slim the providers:
 
@@ -303,17 +303,17 @@ Remove the `settings_event.dart` and `location_event.dart` imports; add `import 
   );
 ```
 
-- [ ] **Step 2: Run static analysis**
+- [x] **Step 2: Run static analysis**
 
 Run: `flutter analyze`
 Expected: 0 issues.
 
-- [ ] **Step 3: Run full test suite**
+- [x] **Step 3: Run full test suite**
 
 Run: `flutter test`
 Expected: PASS (existing suite). Onboarding is hydrated before `runApp`, so `MyApp` receives `SettingsLoadSuccess(isLoaded: true)` from the first frame.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add lib/main.dart
@@ -332,7 +332,7 @@ git commit -m "feat(core): hydrate blocs before runApp"
 - Consumes: `LocationOnboardingLoaded` hydrated before `runApp` (Tasks 2/3).
 - Produces: behavior — the sheet/snackbar triggers on the post-frame check, without re-fetching `hasSeenLocationOnboarding()`.
 
-- [ ] **Step 1: Update the test helper (tests-first)**
+- [x] **Step 1: Update the test helper (tests-first)**
 
 Add the import and helper in `weather_screen_test.dart`:
 
@@ -364,7 +364,7 @@ In `createTestScreen`, default branch: dispatch the event (mirror of hydration).
       )..add(const LoadOnboardingStatusEvent()));
 ```
 
-- [ ] **Step 2: Update the 5 onboarding tests to pre-hydrate**
+- [x] **Step 2: Update the 5 onboarding tests to pre-hydrate**
 
 In the tests `'shows onboarding sheet when onboarding not seen and weather is empty'`, `'sheet Later completes onboarding and shows fallback search snackbar'`, `'sheet close icon completes onboarding and shows fallback search snackbar'`, `'sheet enable location fetches weather for the GPS position'`, `'sheet enable location with GPS failure shows GPS error snackbar'`, replace:
 
@@ -380,7 +380,7 @@ final onboardingBloc = await buildHydratedOnboardingBloc(repo: onboardingRepo);
 
 (remove `buildOnboardingBloc`, now unused).
 
-- [ ] **Step 3: Add the determinism test**
+- [x] **Step 3: Add the determinism test**
 
 ```dart
 testWidgets('does not re-fetch onboarding status and shows sheet at first empty frame',
@@ -405,12 +405,12 @@ testWidgets('does not re-fetch onboarding status and shows sheet at first empty 
 });
 ```
 
-- [ ] **Step 4: Run tests to verify the new test fails (red)**
+- [x] **Step 4: Run tests to verify the new test fails (red)**
 
 Run: `flutter test test/features/weather_forecast/presentation/screens/weather_screen_test.dart`
 Expected: the new test FAILS — `hasSeenLocationOnboarding` called 2× (`initState` + pre-hydration).
 
-- [ ] **Step 5: Implement the post-frame check**
+- [x] **Step 5: Implement the post-frame check**
 
 In `weather_screen.dart`, replace the `initState` (lines 36-40). The `location_onboarding_event.dart` import (line 11) STAYS: `CompleteOnboardingEvent` (used in `_completeOnboarding`) also lives in that file — only the `LoadOnboardingStatusEvent` dispatch is removed:
 
@@ -428,12 +428,12 @@ In `weather_screen.dart`, replace the `initState` (lines 36-40). The `location_o
   }
 ```
 
-- [ ] **Step 6: Run the full weather screen suite (green)**
+- [x] **Step 6: Run the full weather screen suite (green)**
 
 Run: `flutter test test/features/weather_forecast/presentation/screens/weather_screen_test.dart`
 Expected: PASS — the new test passes (`hasSeen` called 1×), the 5 onboarding tests pass via the post-frame check.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add test/features/weather_forecast/presentation/screens/weather_screen_test.dart lib/features/weather_forecast/presentation/screens/weather_screen.dart
@@ -444,22 +444,22 @@ git commit -m "feat(weather): hydrate onboarding before first frame"
 
 ### Task 5: Full verification
 
-- [ ] **Step 1: Static analysis**
+- [x] **Step 1: Static analysis**
 
 Run: `flutter analyze`
 Expected: 0 issues.
 
-- [ ] **Step 2: Full test suite**
+- [x] **Step 2: Full test suite**
 
 Run: `flutter test`
 Expected: PASS (full suite).
 
-- [ ] **Step 3: Manual smoke check**
+- [x] **Step 3: Manual smoke check**
 
 Run: `flutter run`
 Expected: at startup, `LocationScreen` never shows the empty view by mistake; the onboarding sheet appears on the first frame when required.
 
-- [ ] **Step 4: Save the implementation plan**
+- [x] **Step 4: Save the implementation plan**
 
 Save this document in `docs/superpowers/plans/2026-08-09-boot-hydration.md` then commit:
 
