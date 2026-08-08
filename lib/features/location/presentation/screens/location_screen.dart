@@ -41,8 +41,9 @@ class LocationScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: bgColor,
         appBar: AppBar(
-          title: Text(l10n.locationTitle),
           backgroundColor: bgColor,
+          title: Text(l10n.locationTitle),
+          notificationPredicate: (_) => false,
           actions: [
             BlocBuilder<LocationBloc, LocationState>(
               builder: (context, state) {

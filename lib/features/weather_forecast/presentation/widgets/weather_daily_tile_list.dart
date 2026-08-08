@@ -7,6 +7,7 @@ import 'package:sky_line/core/utils/weather_format.dart';
 import 'package:sky_line/core/utils/weather_icon_mapper.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_state.dart';
+import 'package:sky_line/features/weather_forecast/presentation/widgets/section_header.dart';
 
 class WeatherDailyTileList extends StatelessWidget {
   const WeatherDailyTileList({super.key});
@@ -34,23 +35,10 @@ class WeatherDailyTileList extends StatelessWidget {
 
         return Column(
           children: [
-            Row(
-              children: [
-                Icon(
-                  size: 18,
-                  color: primaryText,
-                  Icons.calendar_month_outlined,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  l10n.weatherDailyTitle,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: primaryText,
-                  ),
-                ),
-              ],
+            WeatherSectionHeader(
+              icon: Icons.calendar_month_outlined,
+              title: l10n.weatherDailyTitle,
+              color: primaryText,
             ),
             const SizedBox(height: 5),
             ...items.map((item) {

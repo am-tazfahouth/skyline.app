@@ -8,6 +8,7 @@ import 'package:sky_line/core/utils/weather_format.dart';
 import 'package:sky_line/core/utils/weather_icon_mapper.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_state.dart';
+import 'package:sky_line/features/weather_forecast/presentation/widgets/section_header.dart';
 
 class WeatherHourlyTileList extends StatelessWidget {
   const WeatherHourlyTileList({super.key});
@@ -38,23 +39,10 @@ class WeatherHourlyTileList extends StatelessWidget {
 
         return Column(
           children: [
-            Row(
-              children: [
-                Icon(
-                  size: 18,
-                  color: primaryText,
-                  Icons.access_time_filled_outlined,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  l10n.weatherHourlyTitle,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: primaryText,
-                  ),
-                ),
-              ],
+            WeatherSectionHeader(
+              icon: Icons.access_time_filled_outlined,
+              title: l10n.weatherHourlyTitle,
+              color: primaryText,
             ),
             const SizedBox(height: 5),
             SingleChildScrollView(

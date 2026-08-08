@@ -3,40 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/features/weather_forecast/domain/entities/daily_weather_entity.dart';
 
-/// Color palette for the sun path chart, switching between day and night modes.
-class ChartStyle {
-  final Color past;
-  final Color future;
-  final Color dot;
-  final Color dotShadow;
-
-  const ChartStyle({
-    required this.past,
-    required this.future,
-    required this.dot,
-    required this.dotShadow,
-  });
-
-  /// Returns colors optimised for day (amber sun dot, primary past line)
-  /// or night (secondary dot, dimmer past line).
-  factory ChartStyle.forPeriod(bool isDay, ColorScheme colorScheme) {
-    if (isDay) {
-      return ChartStyle(
-        past: colorScheme.primary,
-        future: colorScheme.outlineVariant,
-        dot: Colors.amber,
-        dotShadow: Colors.amber.withValues(alpha: 0.6),
-      );
-    }
-    return ChartStyle(
-      past: colorScheme.secondary.withValues(alpha: 0.6),
-      future: colorScheme.outlineVariant,
-      dot: colorScheme.secondary,
-      dotShadow: colorScheme.secondary.withValues(alpha: 0.4),
-    );
-  }
-}
-
 /// Display data for a single time point (icon, label, formatted time).
 class TimePointData extends Equatable {
   final IconData icon;

@@ -4,6 +4,7 @@ import 'package:sky_line/core/config/app_theme.dart';
 import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_state.dart';
+import 'package:sky_line/features/weather_forecast/presentation/widgets/section_header.dart';
 import 'package:sky_line/features/weather_forecast/presentation/widgets/sun_time/sun_times_ui_model.dart';
 
 class WeatherSunTimes extends StatelessWidget {
@@ -54,23 +55,10 @@ class WeatherSunTimes extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Icon(
-                    size: 18,
-                    color: primaryText,
-                    config.titleIcon,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    config.title,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: primaryText,
-                    ),
-                  ),
-                ],
+              WeatherSectionHeader(
+                icon: config.titleIcon,
+                title: config.title,
+                color: primaryText,
               ),
               const SizedBox(height: 10),
               Row(
