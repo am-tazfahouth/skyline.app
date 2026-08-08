@@ -99,6 +99,8 @@ static Future<void> _waitFor<Event, State>(
 
 The `<Event, State>` generic keeps the helper reusable across the three bloc types without casting.
 
+Note: `Future.timeout` does not cancel the underlying `firstWhere` broadcast-stream subscription — after a timeout, the listener lingers until the done state eventually arrives or the bloc is closed. This is harmless in production (the blocs are app-lifetime singletons) and acceptable in the never-completing-read test case.
+
 ### 4.2 `lib/main.dart` — wiring
 
 Today `main()` dispatches `LoadSettingsEvent` and `LoadFavoritesEvent` through cascades on the `MultiBlocProvider` providers. New flow:
@@ -143,12 +145,17 @@ Because onboarding is hydrated before `runApp`, the `LocationOnboardingLoaded` e
 void initState() {
   super.initState();
   WidgetsBinding.instance.addPostFrameCallback((_) {
-    if (mounted) _maybeHandleEmptyState(context);
+    if (!mounted) return;
+    final weatherState = context.read<WeatherForecastBloc>().state;
+    if (weatherState is WeatherEmpty && !weatherState.isFetching) {
+      _maybeHandleEmptyState(context);
+    }
   });
 }
 ```
 
 - The post-frame callback runs after the first frame; `_maybeHandleEmptyState` reads the already-hydrated onboarding state and either schedules the onboarding sheet (not seen) or shows the fallback search snackbar (seen). This covers the **already-empty-at-first-build** case.
+- The weather guard mirrors every existing call site (weather_screen.dart:101-102, :109-112): at first frame the weather bloc is typically `WeatherInitial` or mid-fetch (`WeatherEmpty(isFetching: true)` / `WeatherLoaded(isFetching: true)`), and `_maybeHandleEmptyState` itself only inspects the onboarding state. Without the guard, a user who has seen onboarding would get the spurious fallback-search snackbar while weather is loading or loaded, and a new user could get the sheet even when data arrives. With it, the sheet/snackbar only appears on a genuinely empty, settled weather state.
 - It is guarded by `mounted` because the callback may fire after the widget is disposed.
 - The existing weather `BlocListener` (`listenWhen`: transition into `WeatherEmpty && !isFetching`) still covers the **transition-to-empty-after-fetch** case, so a late empty fetch still triggers the sheet or snackbar. No listener logic is removed.
 
@@ -187,7 +194,9 @@ main()
 
 - **Local read failures:** if `loadFavorites`, `loadSettings` or `hasSeenLocationOnboarding` throws, the bloc catches it and emits its error state (`LocationError`, `SettingsError`, `LocationOnboardingError`), which **satisfies the done predicate** — hydration completes normally. Error states are part of the predicates by design, not an afterthought.
 - **Never-completing reads / 5s timeout:** `_waitFor` wraps `firstWhere(done).timeout(timeout)` in a try/catch that swallows everything. After 5 seconds the `TimeoutException` is caught and hydration proceeds to `runApp`. The load event has already been dispatched, so the bloc finishes in the background and emits whenever ready.
-- **Best-available-state launch:** on any local failure or timeout, the app still starts with the best available state — empty favorites on `LocationScreen`, default settings (`isLoaded: false`), and onboarding in an error state, where `_maybeHandleEmptyState` returns early → **no sheet**. The existing per-screen error UIs (`LocationError`, `SettingsError`) are unchanged.
+- **Best-available-state launch:** on any local failure or timeout, the app still starts with the best available state — empty favorites on `LocationScreen`, and onboarding in an error state, where `_maybeHandleEmptyState` returns early → **no sheet**. The settings degradation differs by path:
+  - **Timeout:** the settings bloc stays in its initial `SettingsLoadSuccess(isLoaded: false)`; `MyApp` builds with default settings.
+  - **Read failure:** the settings bloc emits `SettingsError`, and `MyApp.build` renders `SizedBox.shrink()` for any non-`SettingsLoadSuccess` state (main.dart:54) — i.e. a blank app. This is **pre-existing behavior, unchanged by this plan**; the plan does not alter `SettingsBloc` or `MyApp`.
 - **Network:** `FetchWeatherEvent` is fire-and-forget after hydration, so a slow or hung network can never extend the splash.
 
 ---
