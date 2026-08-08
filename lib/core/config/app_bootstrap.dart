@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_event.dart';
@@ -19,7 +21,8 @@ abstract final class AppBootstrap {
   }) async {
     final settings = settingsBloc ?? InjectionContainer.settingsBloc;
     final location = locationBloc ?? InjectionContainer.locationBloc;
-    final onboarding = onboardingBloc ?? InjectionContainer.locationOnboardingBloc;
+    final onboarding =
+        onboardingBloc ?? InjectionContainer.locationOnboardingBloc;
 
     final settingsFuture = _waitFor(
       settings,
@@ -49,10 +52,19 @@ abstract final class AppBootstrap {
     bool Function(State) done,
     Duration timeout,
   ) async {
+    final completer = Completer<void>();
+    late final StreamSubscription<State> subscription;
+    subscription = bloc.stream.listen((state) {
+      if (done(state) && !completer.isCompleted) {
+        completer.complete();
+      }
+    });
     try {
-      await bloc.stream.firstWhere(done).timeout(timeout);
+      await completer.future.timeout(timeout);
     } catch (_) {
       // A local hydration failure or timeout must never block app launch.
+    } finally {
+      await subscription.cancel();
     }
   }
 }

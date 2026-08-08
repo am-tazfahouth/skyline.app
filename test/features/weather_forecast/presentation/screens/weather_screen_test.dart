@@ -732,7 +732,7 @@ void main() {
     expect(find.text('Search for a city to see the weather.'), findsNothing);
   });
 
-  testWidgets('does not re-fetch onboarding status and shows sheet at first empty frame',
+  testWidgets('does not re-fetch onboarding status and shows sheet after the first empty frame',
       (tester) async {
     final onboardingRepo = MockLocationRepository();
     when(() => onboardingRepo.hasSeenLocationOnboarding())

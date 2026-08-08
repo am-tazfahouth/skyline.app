@@ -68,19 +68,27 @@ void main() {
     final settingRepo = MockSettingRepository();
     when(() => settingRepo.loadSettings()).thenThrow(Exception('boom'));
 
+    final locationBloc =
+        LocationBloc(logger: MockAppLogger(), repository: locationRepo);
+    final onboardingBloc = LocationOnboardingBloc(
+      logger: MockAppLogger(),
+      repository: onboardingRepo,
+    );
+    final settingsBloc =
+        SettingsBloc(logger: MockAppLogger(), repository: settingRepo);
+
     await expectLater(
       AppBootstrap.hydrate(
-        locationBloc:
-            LocationBloc(logger: MockAppLogger(), repository: locationRepo),
-        onboardingBloc: LocationOnboardingBloc(
-          logger: MockAppLogger(),
-          repository: onboardingRepo,
-        ),
-        settingsBloc:
-            SettingsBloc(logger: MockAppLogger(), repository: settingRepo),
+        locationBloc: locationBloc,
+        onboardingBloc: onboardingBloc,
+        settingsBloc: settingsBloc,
       ),
       completes,
     );
+
+    expect(locationBloc.state, isA<LocationError>());
+    expect(onboardingBloc.state, isA<LocationOnboardingError>());
+    expect(settingsBloc.state, isA<SettingsError>());
   });
 
   test('hydrate never blocks launch when a read never completes', () async {
