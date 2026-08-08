@@ -30,6 +30,7 @@ import 'package:sky_line/features/location/domain/repositories/location_reposito
 import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_event.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_onboarding_bloc.dart';
+import 'package:sky_line/features/location/presentation/blocs/location_onboarding_event.dart';
 import 'package:sky_line/features/location/presentation/widgets/location_onboarding_sheet.dart';
 
 class MockWeatherRepository extends Mock implements WeatherRepository {}
@@ -54,13 +55,16 @@ const gpsLocation = LocationEntity(
   country: 'Switzerland',
 );
 
-LocationOnboardingBloc buildOnboardingBloc({
+Future<LocationOnboardingBloc> buildHydratedOnboardingBloc({
   required MockLocationRepository repo,
-}) {
-  return LocationOnboardingBloc(
+}) async {
+  final bloc = LocationOnboardingBloc(
     logger: MockAppLogger(),
     repository: repo,
   );
+  bloc.add(const LoadOnboardingStatusEvent());
+  await bloc.stream.first;
+  return bloc;
 }
 
 Widget createTestScreen(
@@ -75,10 +79,10 @@ Widget createTestScreen(
   when(() => onboardingRepo.hasSeenLocationOnboarding())
       .thenAnswer((_) async => true);
   final onboardingBloc = locationOnboardingBloc ??
-      LocationOnboardingBloc(
+      (LocationOnboardingBloc(
         logger: MockAppLogger(),
         repository: onboardingRepo,
-      );
+      )..add(const LoadOnboardingStatusEvent()));
   return MultiBlocProvider(
     providers: [
       BlocProvider<WeatherForecastBloc>.value(value: bloc),
@@ -571,7 +575,7 @@ void main() {
         .thenAnswer((_) async => false);
     when(() => onboardingRepo.markLocationOnboardingSeen())
         .thenAnswer((_) async {});
-    final onboardingBloc = buildOnboardingBloc(repo: onboardingRepo);
+    final onboardingBloc = await buildHydratedOnboardingBloc(repo: onboardingRepo);
 
     final bloc = buildEmptyBloc();
     await tester.pumpWidget(
@@ -595,7 +599,7 @@ void main() {
         .thenAnswer((_) async => false);
     when(() => onboardingRepo.markLocationOnboardingSeen())
         .thenAnswer((_) async {});
-    final onboardingBloc = buildOnboardingBloc(repo: onboardingRepo);
+    final onboardingBloc = await buildHydratedOnboardingBloc(repo: onboardingRepo);
 
     final bloc = buildEmptyBloc();
     await tester.pumpWidget(
@@ -621,7 +625,7 @@ void main() {
         .thenAnswer((_) async => false);
     when(() => onboardingRepo.markLocationOnboardingSeen())
         .thenAnswer((_) async {});
-    final onboardingBloc = buildOnboardingBloc(repo: onboardingRepo);
+    final onboardingBloc = await buildHydratedOnboardingBloc(repo: onboardingRepo);
 
     final bloc = buildEmptyBloc();
     await tester.pumpWidget(
@@ -652,7 +656,7 @@ void main() {
         .thenAnswer((_) async => false);
     when(() => onboardingRepo.markLocationOnboardingSeen())
         .thenAnswer((_) async {});
-    final onboardingBloc = buildOnboardingBloc(repo: onboardingRepo);
+    final onboardingBloc = await buildHydratedOnboardingBloc(repo: onboardingRepo);
 
     final locationRepo = MockLocationRepository();
     when(() => locationRepo.detectCurrentLocation())
@@ -698,7 +702,7 @@ void main() {
         .thenAnswer((_) async => false);
     when(() => onboardingRepo.markLocationOnboardingSeen())
         .thenAnswer((_) async {});
-    final onboardingBloc = buildOnboardingBloc(repo: onboardingRepo);
+    final onboardingBloc = await buildHydratedOnboardingBloc(repo: onboardingRepo);
 
     final locationRepo = MockLocationRepository();
     when(() => locationRepo.detectCurrentLocation())
@@ -726,6 +730,27 @@ void main() {
 
     expect(find.text('Location services are turned off.'), findsOneWidget);
     expect(find.text('Search for a city to see the weather.'), findsNothing);
+  });
+
+  testWidgets('does not re-fetch onboarding status and shows sheet at first empty frame',
+      (tester) async {
+    final onboardingRepo = MockLocationRepository();
+    when(() => onboardingRepo.hasSeenLocationOnboarding())
+        .thenAnswer((_) async => false);
+    when(() => onboardingRepo.markLocationOnboardingSeen())
+        .thenAnswer((_) async {});
+    final onboardingBloc = await buildHydratedOnboardingBloc(repo: onboardingRepo);
+
+    final bloc = buildEmptyBloc();
+    await tester.pumpWidget(
+      createTestScreen(bloc, locationOnboardingBloc: onboardingBloc),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(LocationOnboardingSheet), findsOneWidget);
+    verify(() => onboardingRepo.hasSeenLocationOnboarding()).called(1);
   });
 
   testWidgets('shows fallback search snackbar when onboarding seen and navigates to search',

@@ -36,7 +36,13 @@ class _WeatherScreenState extends State<WeatherScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<LocationOnboardingBloc>().add(const LoadOnboardingStatusEvent());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final weatherState = context.read<WeatherForecastBloc>().state;
+      if (weatherState is WeatherEmpty && !weatherState.isFetching) {
+        _maybeHandleEmptyState(context);
+      }
+    });
   }
 
   @override
