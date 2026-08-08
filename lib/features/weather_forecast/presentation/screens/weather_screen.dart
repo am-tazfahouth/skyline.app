@@ -16,6 +16,7 @@ import 'package:sky_line/features/location/presentation/widgets/location_onboard
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_event.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_state.dart';
+import 'package:sky_line/features/weather_forecast/presentation/utils/cached_weather_feedback.dart';
 import 'package:sky_line/features/weather_forecast/presentation/widgets/views/weather_content_view.dart';
 import 'package:sky_line/features/weather_forecast/presentation/widgets/views/weather_error_view.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -33,6 +34,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
   Timer? _sheetTimer;
   bool _gpsRequestFromOnboarding = false;
 
+  bool _showsCachedData(WeatherForecastState state) =>
+      state is WeatherLoaded && state.result.isCached && !state.isFetching;
+
   @override
   void initState() {
     super.initState();
@@ -41,6 +45,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
       final weatherState = context.read<WeatherForecastBloc>().state;
       if (weatherState is WeatherEmpty && !weatherState.isFetching) {
         _maybeHandleEmptyState(context);
+      }
+      if (_showsCachedData(weatherState)) {
+        showCachedWeatherSnackBar(context);
       }
     });
   }
@@ -112,49 +119,64 @@ class _WeatherScreenState extends State<WeatherScreen> {
           }
         },
         child: BlocListener<WeatherForecastBloc, WeatherForecastState>(
-          listenWhen: (previous, current) =>
-              current is WeatherEmpty &&
-              !current.isFetching &&
-              !(previous is WeatherEmpty && !previous.isFetching),
-          listener: (context, state) => _maybeHandleEmptyState(context),
-          child: BlocBuilder<WeatherForecastBloc, WeatherForecastState>(
-            builder: (context, state) {
-              final content = _contentFor(context, state);
-              if (state.hasData && state.isFetching) {
-                final theme = Theme.of(context);
-                final primary = theme.colorScheme.primary;
-                return Stack(
-                  children: [
-                    content,
-                    Positioned.fill(
-                      child: Container(
-                        color: theme.colorScheme.surface.withValues(alpha: 0.7),
-                        child: Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              LoadingAnimationWidget.staggeredDotsWave(
-                                key: const Key('loading_indicator'),
-                                size: 25,
-                                color: primary,
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                l10n.weatherRefreshing,
-                                style: theme.textTheme.bodyLarge?.copyWith(
+          listenWhen: (previous, current) {
+            if (!_showsCachedData(current)) return false;
+            if (previous is WeatherLoaded &&
+                current is WeatherLoaded &&
+                !previous.isFetching &&
+                previous.result == current.result) {
+              return false;
+            }
+            return true;
+          },
+          listener: (context, state) => showCachedWeatherSnackBar(context),
+          child: BlocListener<WeatherForecastBloc, WeatherForecastState>(
+            listenWhen: (previous, current) =>
+                current is WeatherEmpty &&
+                !current.isFetching &&
+                !(previous is WeatherEmpty && !previous.isFetching),
+            listener: (context, state) => _maybeHandleEmptyState(context),
+            child: BlocBuilder<WeatherForecastBloc, WeatherForecastState>(
+              builder: (context, state) {
+                final content = _contentFor(context, state);
+                if (state.hasData && state.isFetching) {
+                  final theme = Theme.of(context);
+                  final primary = theme.colorScheme.primary;
+                  return Stack(
+                    children: [
+                      content,
+                      Positioned.fill(
+                        child: Container(
+                          color: theme.colorScheme.surface.withValues(
+                            alpha: 0.7,
+                          ),
+                          child: Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                LoadingAnimationWidget.staggeredDotsWave(
+                                  key: const Key('loading_indicator'),
+                                  size: 25,
                                   color: primary,
                                 ),
-                              ),
-                            ],
+                                const SizedBox(height: 16),
+                                Text(
+                                  l10n.weatherRefreshing,
+                                  style: theme.textTheme.bodyLarge?.copyWith(
+                                    color: primary,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                );
-              }
-              return content;
-            },
+                    ],
+                  );
+                }
+                return content;
+              },
+            ),
           ),
         ),
       ),
@@ -164,8 +186,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
   Widget _contentFor(BuildContext context, WeatherForecastState state) {
     final l10n = AppLocalisation.of(context)!;
     return switch (state) {
-      WeatherError(errorCode: final code) =>
-        WeatherErrorView(message: AppError.getUserErrorMessage(code, l10n)),
+      WeatherError(errorCode: final code) => WeatherErrorView(
+        message: AppError.getUserErrorMessage(code, l10n),
+      ),
       _ => const WeatherContentView(),
     };
   }
@@ -201,7 +224,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
       isDismissible: false,
       enableDrag: false,
       builder: (_) => LocationOnboardingSheet(
-        onEnableLocation: () => _completeOnboarding(context, enableLocation: true),
+        onEnableLocation: () =>
+            _completeOnboarding(context, enableLocation: true),
         onLater: () => _completeOnboarding(context, enableLocation: false),
         onClose: () => _completeOnboarding(context, enableLocation: false),
       ),
@@ -242,7 +266,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
         content: Text(l10n.weatherEmptySearchMessage),
         action: SnackBarAction(
           label: l10n.weatherEmptySearchAction,
-          onPressed: () => Navigator.pushNamed(context, AppRoutes.locationSearch),
+          onPressed: () =>
+              Navigator.pushNamed(context, AppRoutes.locationSearch),
         ),
       ),
     );

@@ -134,6 +134,10 @@ void main() {
     );
   }
 
+  WeatherResult buildCachedWeatherResult() {
+    return buildWeatherResult().copyWith(isCached: true);
+  }
+
   setUpAll(() {
     registerFallbackValue(const LocationEntity(latitude: 0, longitude: 0, cityName: ''));
   });
@@ -811,5 +815,151 @@ void main() {
 
     expect(find.byType(LocationOnboardingSheet), findsNothing);
     expect(find.text('Search for a city to see the weather.'), findsNothing);
+  });
+
+  testWidgets('shows cached-data snackbar when offline with cached weather',
+      (tester) async {
+    when(() => mockRepository.loadCachedWeather())
+        .thenAnswer((_) async => buildCachedWeatherResult());
+
+    final bloc = WeatherForecastBloc(
+      logger: MockAppLogger(),
+      weatherRepository: mockRepository,
+      getSettings: mockGetSettings,
+      isConnected: () async => false,
+    );
+    bloc.add(const FetchWeatherEvent());
+    await tester.pumpWidget(createTestScreen(bloc));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('No internet connection. Showing cached data.'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('shows cached-data snackbar localized in French', (tester) async {
+    when(() => mockRepository.loadCachedWeather())
+        .thenAnswer((_) async => buildCachedWeatherResult());
+
+    final bloc = WeatherForecastBloc(
+      logger: MockAppLogger(),
+      weatherRepository: mockRepository,
+      getSettings: mockGetSettings,
+      isConnected: () async => false,
+    );
+    bloc.add(const FetchWeatherEvent());
+    await tester.pumpWidget(createTestScreen(bloc, locale: const Locale('fr')));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Connexion impossible. Données affichées depuis le cache.'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('does not show cached-data snackbar when weather is fresh',
+      (tester) async {
+    when(() => mockRepository.loadCachedWeather())
+        .thenAnswer((_) async => null);
+    when(() => mockRepository.fetchWeather(
+      latitude: any(named: 'latitude'),
+      longitude: any(named: 'longitude'),
+    )).thenAnswer((_) async => buildWeatherResult());
+
+    final bloc = WeatherForecastBloc(
+      logger: MockAppLogger(),
+      weatherRepository: mockRepository,
+      getSettings: mockGetSettings,
+      isConnected: () async => true,
+    );
+    bloc.add(const FetchWeatherEvent());
+    await tester.pumpWidget(createTestScreen(bloc));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('No internet connection. Showing cached data.'),
+      findsNothing,
+    );
+  });
+
+  testWidgets('shows cached-data snackbar again when refresh fails on cached data',
+      (tester) async {
+    when(() => mockRepository.loadCachedWeather())
+        .thenAnswer((_) async => buildCachedWeatherResult());
+    when(() => mockRepository.fetchWeather(
+      latitude: any(named: 'latitude'),
+      longitude: any(named: 'longitude'),
+    )).thenThrow(DioException(
+      requestOptions: RequestOptions(path: ''),
+      type: DioExceptionType.connectionError,
+    ));
+
+    final bloc = WeatherForecastBloc(
+      logger: MockAppLogger(),
+      weatherRepository: mockRepository,
+      getSettings: mockGetSettings,
+      isConnected: () async => false,
+    );
+    bloc.add(const FetchWeatherEvent());
+    await tester.pumpWidget(createTestScreen(bloc));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('No internet connection. Showing cached data.'),
+      findsOneWidget,
+    );
+
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('No internet connection. Showing cached data.'),
+      findsNothing,
+    );
+
+    bloc.add(const RefreshWeatherEvent());
+    await tester.pumpAndSettle();
+    expect(
+      find.text('No internet connection. Showing cached data.'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('does not re-show cached-data snackbar on settings change',
+      (tester) async {
+    when(() => mockRepository.loadCachedWeather())
+        .thenAnswer((_) async => buildCachedWeatherResult());
+
+    final bloc = WeatherForecastBloc(
+      logger: MockAppLogger(),
+      weatherRepository: mockRepository,
+      getSettings: mockGetSettings,
+      isConnected: () async => false,
+    );
+    bloc.add(const FetchWeatherEvent());
+    await tester.pumpWidget(createTestScreen(bloc));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('No internet connection. Showing cached data.'),
+      findsOneWidget,
+    );
+
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('No internet connection. Showing cached data.'),
+      findsNothing,
+    );
+
+    const newSettings = SettingEntity(
+      windUnit: SettingWindUnit.kmh,
+      heatUnit: SettingHeatUnit.fahrenheit,
+    );
+    bloc.add(ApplySettingsEvent(settings: newSettings));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('No internet connection. Showing cached data.'),
+      findsNothing,
+    );
   });
 }
