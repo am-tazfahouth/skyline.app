@@ -204,6 +204,11 @@
 
   "weatherEmptySearchAction": "Search",
 
+  "weatherCachedDataMessage": "No internet connection. Showing cached data.",
+  "@weatherCachedDataMessage": {
+    "description": "Informs the user that the displayed weather data comes from the cache because the connection could not be established."
+  },
+
   "errorNetwork": "No internet connection. Please check your network.",
   "errorFetch": "Could not load weather data. Please try again.",
   "errorCache": "Could not save weather data locally.",

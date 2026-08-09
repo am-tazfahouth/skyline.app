@@ -75,6 +75,10 @@
   "locationOnboardingLater": "Plus tard",
   "weatherEmptySearchMessage": "Recherchez une ville pour voir la météo.",
   "weatherEmptySearchAction": "Rechercher",
+  "weatherCachedDataMessage": "Connexion impossible. Données affichées depuis le cache.",
+  "@weatherCachedDataMessage": {
+    "description": "Informs the user that the displayed weather data comes from the cache because the connection could not be established."
+  },
   "errorNetwork": "Pas de connexion internet. Vérifiez votre réseau.",
   "errorFetch": "Impossible de charger les données météo. Veuillez réessayer.",
   "errorCache": "Impossible d'enregistrer les données météo localement.",

@@ -75,6 +75,10 @@
   "locationOnboardingLater": "لاحقًا",
   "weatherEmptySearchMessage": "ابحث عن مدينة لعرض الطقس.",
   "weatherEmptySearchAction": "بحث",
+  "weatherCachedDataMessage": "تعذّر الاتصال. عرض البيانات المخزّنة.",
+  "@weatherCachedDataMessage": {
+    "description": "Informs the user that the displayed weather data comes from the cache because the connection could not be established."
+  },
   "errorNetwork": "لا يوجد اتصال بالإنترنت. يرجى التحقق من شبكتك.",
   "errorFetch": "تعذّر تحميل بيانات الطقس. يرجى المحاولة مرة أخرى.",
   "errorCache": "تعذّر حفظ بيانات الطقس محلياً.",
