@@ -107,7 +107,8 @@ void main() {
             .having((s) => s.result.isCached, 'cached', true)
             .having((s) => s.isFetching, 'fetching', true),
         isA<WeatherLoaded>()
-            .having((s) => s.isFetching, 'done', false),
+            .having((s) => s.isFetching, 'done', false)
+            .having((s) => s.notice, 'notice', WeatherNotice.cachedData),
       ],
     );
 
@@ -135,7 +136,8 @@ void main() {
             .having((s) => s.isFetching, 'fetching', true),
         isA<WeatherLoaded>()
             .having((s) => s.isFetching, 'done', false)
-            .having((s) => s.result.isCached, 'fresh', false),
+            .having((s) => s.result.isCached, 'fresh', false)
+            .having((s) => s.notice, 'notice', WeatherNotice.none),
       ],
     );
 
@@ -162,7 +164,8 @@ void main() {
             .having((s) => s.result.isCached, 'cached', true)
             .having((s) => s.isFetching, 'fetching', true),
         isA<WeatherLoaded>()
-            .having((s) => s.isFetching, 'done', false),
+            .having((s) => s.isFetching, 'done', false)
+            .having((s) => s.notice, 'notice', WeatherNotice.cachedData),
       ],
     );
 
@@ -358,7 +361,8 @@ void main() {
             .having((s) => s.isFetching, 'fetching', true),
         isA<WeatherLoaded>()
             .having((s) => s.isFetching, 'done', false)
-            .having((s) => s.result.isCached, 'still cached', true),
+            .having((s) => s.result.isCached, 'still cached', true)
+            .having((s) => s.notice, 'notice', WeatherNotice.refreshError),
       ],
     );
 
@@ -486,7 +490,8 @@ void main() {
       expect: () => [
         isA<WeatherLoaded>()
             .having((s) => s.settings.windUnit, 'windUnit', SettingWindUnit.kmh)
-            .having((s) => s.settings.heatUnit, 'heatUnit', SettingHeatUnit.fahrenheit),
+            .having((s) => s.settings.heatUnit, 'heatUnit', SettingHeatUnit.fahrenheit)
+            .having((s) => s.notice, 'notice', WeatherNotice.none),
       ],
     );
 

@@ -17,24 +17,38 @@ class WeatherInitial extends WeatherForecastState {
   const WeatherInitial();
 }
 
+enum WeatherNotice { none, cachedData, refreshError }
+
 class WeatherLoaded extends WeatherForecastState {
   final WeatherResult result;
   final SettingEntity settings;
   @override
   final bool isFetching;
+  final WeatherNotice notice;
 
-  const WeatherLoaded(this.result, {this.isFetching = false, required this.settings});
+  const WeatherLoaded(
+    this.result, {
+    this.isFetching = false,
+    required this.settings,
+    this.notice = WeatherNotice.none,
+  });
 
-  WeatherLoaded copyWith({WeatherResult? result, SettingEntity? settings, bool? isFetching}) {
+  WeatherLoaded copyWith({
+    WeatherResult? result,
+    SettingEntity? settings,
+    bool? isFetching,
+    WeatherNotice? notice,
+  }) {
     return WeatherLoaded(
       result ?? this.result,
       isFetching: isFetching ?? this.isFetching,
       settings: settings ?? this.settings,
+      notice: notice ?? this.notice,
     );
   }
 
   @override
-  List<Object?> get props => [result, settings, isFetching];
+  List<Object?> get props => [result, settings, isFetching, notice];
 }
 
 class WeatherEmpty extends WeatherForecastState {

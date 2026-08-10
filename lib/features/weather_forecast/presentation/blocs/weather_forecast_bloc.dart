@@ -82,7 +82,11 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
 
     if (!online) {
       if (cached != null) {
-        emit(WeatherLoaded(cached, settings: settings));
+        emit(WeatherLoaded(
+          cached,
+          settings: settings,
+          notice: WeatherNotice.cachedData,
+        ));
       } else {
         emit(WeatherEmpty(settings: settings));
       }
@@ -101,7 +105,11 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
           : WeatherErrorCodes.fetch;
       logger.e(AppError.getDebugErrorMessage(code), error: dioError, stackTrace: stackTrace);
       if (cached != null) {
-        emit(WeatherLoaded(cached, settings: settings));
+        emit(WeatherLoaded(
+          cached,
+          settings: settings,
+          notice: WeatherNotice.cachedData,
+        ));
       } else {
         emit(WeatherError(errorCode: code));
       }
@@ -109,7 +117,11 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
     catch (e, stackTrace) {
       logger.e(AppError.getDebugErrorMessage(WeatherErrorCodes.unexpected), error: e, stackTrace: stackTrace);
       if (cached != null) {
-        emit(WeatherLoaded(cached, settings: settings));
+        emit(WeatherLoaded(
+          cached,
+          settings: settings,
+          notice: WeatherNotice.cachedData,
+        ));
       } else {
         emit(WeatherError(errorCode: WeatherErrorCodes.unexpected));
       }
@@ -154,7 +166,10 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
           : WeatherErrorCodes.fetch;
       logger.e(AppError.getDebugErrorMessage(code), error: dioError, stackTrace: stackTrace);
       if (state case WeatherLoaded loaded) {
-        emit(loaded.copyWith(isFetching: false));
+        emit(loaded.copyWith(
+          isFetching: false,
+          notice: WeatherNotice.refreshError,
+        ));
       } else {
         emit(WeatherEmpty(settings: currentSettings));
       }
@@ -162,7 +177,10 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
     catch (e, stackTrace) {
       logger.e(AppError.getDebugErrorMessage(WeatherErrorCodes.unexpected), error: e, stackTrace: stackTrace);
       if (state case WeatherLoaded loaded) {
-        emit(loaded.copyWith(isFetching: false));
+        emit(loaded.copyWith(
+          isFetching: false,
+          notice: WeatherNotice.refreshError,
+        ));
       } else {
         emit(WeatherError(errorCode: WeatherErrorCodes.unexpected));
       }
