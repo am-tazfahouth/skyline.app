@@ -22,6 +22,7 @@ class MockSettingRepository extends Mock implements SettingRepository {}
 class MockAppLogger extends Mock implements AppLogger {}
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   test('hydrate leaves location, onboarding and settings blocs loaded', () async {
     final locationRepo = MockLocationRepository();
     when(() => locationRepo.loadFavorites())

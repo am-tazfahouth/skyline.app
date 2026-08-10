@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/errors/app_error.dart';
 import 'package:sky_line/core/errors/location_error_codes.dart';
@@ -8,12 +9,14 @@ import 'package:sky_line/features/location/domain/repositories/location_reposito
 import 'package:sky_line/features/location/presentation/blocs/location_event.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_state.dart';
 
-class LocationBloc extends Bloc<LocationEvent, LocationState> {
+class LocationBloc extends Bloc<LocationEvent, LocationState>
+    with WidgetsBindingObserver {
   final AppLogger logger;
   final LocationRepository repository;
 
   LocationBloc({required this.logger, required this.repository})
       : super(const LocationInitial()) {
+    WidgetsBinding.instance.addObserver(this);
     on<DetectCurrentLocationEvent>(_onDetectCurrentLocation);
     on<OpenLocationSettingsEvent>(_onOpenLocationSettings);
     on<OpenAppSettingsEvent>(_onOpenAppSettings);
@@ -23,6 +26,20 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     on<RemoveFavoriteEvent>(_onRemoveFavorite);
     on<ReorderFavoritesEvent>(_onReorderFavorites);
     on<LoadFavoritesEvent>(_onLoadFavorites);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed &&
+        this.state is LocationWaitingForSettings) {
+      add(const DetectCurrentLocationEvent());
+    }
+  }
+
+  @override
+  Future<void> close() {
+    WidgetsBinding.instance.removeObserver(this);
+    return super.close();
   }
 
   Future<void> _onDetectCurrentLocation(
@@ -55,6 +72,7 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     OpenLocationSettingsEvent event,
     Emitter<LocationState> emit,
   ) async {
+    emit(const LocationWaitingForSettings());
     try {
       await repository.openLocationSettings();
     } catch (e, stackTrace) {
@@ -70,6 +88,7 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     OpenAppSettingsEvent event,
     Emitter<LocationState> emit,
   ) async {
+    emit(const LocationWaitingForSettings());
     try {
       await repository.openAppSettings();
     } catch (e, stackTrace) {

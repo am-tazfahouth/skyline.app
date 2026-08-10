@@ -16,6 +16,10 @@ class LocationDetecting extends LocationState {
   const LocationDetecting();
 }
 
+class LocationWaitingForSettings extends LocationState {
+  const LocationWaitingForSettings();
+}
+
 class LocationSearchLoading extends LocationState {
   const LocationSearchLoading();
 }

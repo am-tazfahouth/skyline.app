@@ -1,4 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:sky_line/core/errors/location_error_codes.dart';
@@ -19,6 +20,7 @@ void main() {
   late LocationBloc bloc;
 
   setUpAll(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
     registerFallbackValue(const LocationEntity(
       latitude: 0,
       longitude: 0,
@@ -358,6 +360,7 @@ void main() {
         return bloc;
       },
       act: (bloc) => bloc.add(const OpenLocationSettingsEvent()),
+      expect: () => [isA<LocationWaitingForSettings>()],
       verify: (_) {
         verify(() => mockRepo.openLocationSettings()).called(1);
       },
@@ -372,9 +375,54 @@ void main() {
         return bloc;
       },
       act: (bloc) => bloc.add(const OpenAppSettingsEvent()),
+      expect: () => [isA<LocationWaitingForSettings>()],
       verify: (_) {
         verify(() => mockRepo.openAppSettings()).called(1);
       },
     );
+  });
+
+  group('App lifecycle resume retry', () {
+    test('re-triggers detection when app resumes after opening location settings',
+        () async {
+      when(() => mockRepo.openLocationSettings()).thenAnswer((_) async {});
+      when(() => mockRepo.detectCurrentLocation()).thenAnswer(
+        (_) async => const LocationEntity(
+          latitude: -11.70,
+          longitude: 43.25,
+          cityName: 'Current Location',
+          isGpsLocation: true,
+        ),
+      );
+      when(() => mockRepo.saveLastLocation(any())).thenAnswer((_) async {});
+      when(() => mockRepo.loadFavorites()).thenReturn([]);
+
+      bloc.add(const OpenLocationSettingsEvent());
+      await pumpEventQueue();
+
+      expect(bloc.state, isA<LocationWaitingForSettings>());
+
+      bloc.didChangeAppLifecycleState(AppLifecycleState.resumed);
+      await pumpEventQueue();
+
+      expect(bloc.state, isA<LocationSelected>());
+      verify(() => mockRepo.detectCurrentLocation()).called(1);
+    });
+
+    test(
+        'does not re-trigger detection on resume when settings were not opened',
+        () async {
+      when(() => mockRepo.detectCurrentLocation())
+          .thenThrow(const LocationServiceDisabledException());
+
+      bloc.add(const DetectCurrentLocationEvent());
+      await pumpEventQueue();
+      expect(bloc.state, isA<LocationError>());
+
+      bloc.didChangeAppLifecycleState(AppLifecycleState.resumed);
+      await pumpEventQueue();
+
+      verify(() => mockRepo.detectCurrentLocation()).called(1);
+    });
   });
 }
