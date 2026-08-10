@@ -248,6 +248,10 @@ class AppLocalisationEn extends AppLocalisation {
       'No internet connection. Showing cached data.';
 
   @override
+  String get weatherRefreshErrorMessage =>
+      'Network error. Please try again later.';
+
+  @override
   String get errorNetwork =>
       'No internet connection. Please check your network.';
 

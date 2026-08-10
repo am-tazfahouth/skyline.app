@@ -246,6 +246,10 @@ class AppLocalisationEs extends AppLocalisation {
       'Sin conexión. Mostrando datos guardados.';
 
   @override
+  String get weatherRefreshErrorMessage =>
+      'Error de red. Inténtelo de nuevo más tarde.';
+
+  @override
   String get errorNetwork => 'Sin conexión a internet. Compruebe su red.';
 
   @override

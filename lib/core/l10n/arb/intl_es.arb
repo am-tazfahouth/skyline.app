@@ -79,6 +79,10 @@
   "@weatherCachedDataMessage": {
     "description": "Informs the user that the displayed weather data comes from the cache because the connection could not be established."
   },
+  "weatherRefreshErrorMessage": "Error de red. Inténtelo de nuevo más tarde.",
+  "@weatherRefreshErrorMessage": {
+    "description": "Shown when a manual weather refresh fails while existing data stays on screen."
+  },
   "errorNetwork": "Sin conexión a internet. Compruebe su red.",
   "errorFetch": "No se pudieron cargar los datos meteorológicos. Inténtelo de nuevo.",
   "errorCache": "No se pudieron guardar los datos meteorológicos localmente.",

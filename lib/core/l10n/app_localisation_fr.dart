@@ -250,6 +250,10 @@ class AppLocalisationFr extends AppLocalisation {
       'Connexion impossible. Données affichées depuis le cache.';
 
   @override
+  String get weatherRefreshErrorMessage =>
+      'Erreur réseau. Veuillez réessayer plus tard.';
+
+  @override
   String get errorNetwork =>
       'Pas de connexion internet. Vérifiez votre réseau.';
 

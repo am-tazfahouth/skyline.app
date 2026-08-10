@@ -245,6 +245,10 @@ class AppLocalisationAr extends AppLocalisation {
       'تعذّر الاتصال. عرض البيانات المخزّنة.';
 
   @override
+  String get weatherRefreshErrorMessage =>
+      'خطأ في الشبكة. يرجى المحاولة لاحقًا.';
+
+  @override
   String get errorNetwork => 'لا يوجد اتصال بالإنترنت. يرجى التحقق من شبكتك.';
 
   @override

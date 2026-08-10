@@ -522,6 +522,12 @@ abstract class AppLocalisation {
   /// **'No internet connection. Showing cached data.'**
   String get weatherCachedDataMessage;
 
+  /// Shown when a manual weather refresh fails while existing data stays on screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Network error. Please try again later.'**
+  String get weatherRefreshErrorMessage;
+
   /// No description provided for @errorNetwork.
   ///
   /// In en, this message translates to:
