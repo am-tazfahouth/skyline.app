@@ -895,13 +895,12 @@ void main() {
     );
   });
 
-  testWidgets('shows cached-data snackbar again when refresh fails on cached data',
+  testWidgets('shows network-error snackbar when refresh fails on cached data',
       (tester) async {
     when(() => mockRepository.loadCachedWeather(
       latitude: any(named: 'latitude'),
       longitude: any(named: 'longitude'),
-    ))
-        .thenAnswer((_) async => buildCachedWeatherResult());
+    )).thenAnswer((_) async => buildCachedWeatherResult());
     when(() => mockRepository.fetchWeather(
       latitude: any(named: 'latitude'),
       longitude: any(named: 'longitude'),
@@ -932,6 +931,54 @@ void main() {
     );
 
     bloc.add(const RefreshWeatherEvent());
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Network error. Please try again later.'),
+      findsOneWidget,
+    );
+    expect(
+      find.text('No internet connection. Showing cached data.'),
+      findsNothing,
+    );
+  });
+
+  testWidgets('shows cached-data snackbar when loading another city offline',
+      (tester) async {
+    when(() => mockRepository.loadCachedWeather(
+      latitude: any(named: 'latitude'),
+      longitude: any(named: 'longitude'),
+    )).thenAnswer((_) async => buildCachedWeatherResult());
+
+    final locationRepo = MockLocationRepository();
+    when(() => locationRepo.saveLastLocation(any())).thenAnswer((_) async {});
+    when(() => locationRepo.loadFavorites()).thenReturn([]);
+    final locationBloc = LocationBloc(
+      logger: MockAppLogger(),
+      repository: locationRepo,
+    );
+
+    final bloc = WeatherForecastBloc(
+      logger: MockAppLogger(),
+      weatherRepository: mockRepository,
+      getSettings: mockGetSettings,
+      isConnected: () async => false,
+    );
+    bloc.add(const FetchWeatherEvent());
+    await tester.pumpWidget(createTestScreen(bloc, locationBloc: locationBloc));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('No internet connection. Showing cached data.'),
+      findsOneWidget,
+    );
+
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('No internet connection. Showing cached data.'),
+      findsNothing,
+    );
+
+    locationBloc.add(const SelectLocationEvent(location: paris));
     await tester.pumpAndSettle();
     expect(
       find.text('No internet connection. Showing cached data.'),

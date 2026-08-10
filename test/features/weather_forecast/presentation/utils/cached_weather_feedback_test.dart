@@ -35,4 +35,35 @@ void main() {
     );
     expect(find.byType(SnackBarAction), findsNothing);
   });
+
+  group('showRefreshErrorSnackBar', () {
+    testWidgets('shows the localized refresh-error message with no action',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalisation.localizationsDelegates,
+          supportedLocales: AppLocalisation.supportedLocales,
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: Center(
+                child: ElevatedButton(
+                  onPressed: () => showRefreshErrorSnackBar(context),
+                  child: const Text('trigger'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('trigger'));
+      await tester.pump();
+
+      expect(
+        find.text('Network error. Please try again later.'),
+        findsOneWidget,
+      );
+      expect(find.byType(SnackBarAction), findsNothing);
+    });
+  });
 }

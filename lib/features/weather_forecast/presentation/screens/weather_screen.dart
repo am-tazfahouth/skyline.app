@@ -34,9 +34,6 @@ class _WeatherScreenState extends State<WeatherScreen> {
   Timer? _sheetTimer;
   bool _gpsRequestFromOnboarding = false;
 
-  bool _showsCachedData(WeatherForecastState state) =>
-      state is WeatherLoaded && state.result.isCached && !state.isFetching;
-
   @override
   void initState() {
     super.initState();
@@ -46,7 +43,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
       if (weatherState is WeatherEmpty && !weatherState.isFetching) {
         _maybeHandleEmptyState(context);
       }
-      if (_showsCachedData(weatherState)) {
+      if (weatherState is WeatherLoaded &&
+          weatherState.notice == WeatherNotice.cachedData) {
         showCachedWeatherSnackBar(context);
       }
     });
@@ -119,17 +117,22 @@ class _WeatherScreenState extends State<WeatherScreen> {
           }
         },
         child: BlocListener<WeatherForecastBloc, WeatherForecastState>(
-          listenWhen: (previous, current) {
-            if (!_showsCachedData(current)) return false;
-            if (previous is WeatherLoaded &&
-                current is WeatherLoaded &&
-                !previous.isFetching &&
-                previous.result == current.result) {
-              return false;
+          listenWhen: (previous, current) =>
+              current is WeatherLoaded &&
+              current.notice != WeatherNotice.none &&
+              (previous is! WeatherLoaded ||
+                  previous.notice != current.notice),
+          listener: (context, state) {
+            if (state is! WeatherLoaded) return;
+            switch (state.notice) {
+              case WeatherNotice.cachedData:
+                showCachedWeatherSnackBar(context);
+              case WeatherNotice.refreshError:
+                showRefreshErrorSnackBar(context);
+              case WeatherNotice.none:
+                break;
             }
-            return true;
           },
-          listener: (context, state) => showCachedWeatherSnackBar(context),
           child: BlocListener<WeatherForecastBloc, WeatherForecastState>(
             listenWhen: (previous, current) =>
                 current is WeatherEmpty &&
