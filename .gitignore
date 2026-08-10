@@ -10,6 +10,7 @@
 .history
 .svn/
 .superpowers/
+.serena/
 .swiftpm/
 migrate_working_dir/
 
@@ -47,4 +48,6 @@ app.*.map.json
 .prompt
 
 # Git worktrees
+.worktrees/
+
 .worktrees/
