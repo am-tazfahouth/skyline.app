@@ -146,7 +146,10 @@ void main() {
     mockRepository = MockWeatherRepository();
     mockGetSettings = MockGetSettingsUseCase();
     when(() => mockGetSettings()).thenAnswer((_) async => _defaultSettings);
-    when(() => mockRepository.loadCachedWeather())
+    when(() => mockRepository.loadCachedWeather(
+      latitude: any(named: 'latitude'),
+      longitude: any(named: 'longitude'),
+    ))
         .thenAnswer((_) async => null);
     when(() => mockRepository.clearCachedWeather()).thenAnswer((_) async {});
   });
@@ -819,7 +822,10 @@ void main() {
 
   testWidgets('shows cached-data snackbar when offline with cached weather',
       (tester) async {
-    when(() => mockRepository.loadCachedWeather())
+    when(() => mockRepository.loadCachedWeather(
+      latitude: any(named: 'latitude'),
+      longitude: any(named: 'longitude'),
+    ))
         .thenAnswer((_) async => buildCachedWeatherResult());
 
     final bloc = WeatherForecastBloc(
@@ -839,7 +845,10 @@ void main() {
   });
 
   testWidgets('shows cached-data snackbar localized in French', (tester) async {
-    when(() => mockRepository.loadCachedWeather())
+    when(() => mockRepository.loadCachedWeather(
+      latitude: any(named: 'latitude'),
+      longitude: any(named: 'longitude'),
+    ))
         .thenAnswer((_) async => buildCachedWeatherResult());
 
     final bloc = WeatherForecastBloc(
@@ -860,7 +869,10 @@ void main() {
 
   testWidgets('does not show cached-data snackbar when weather is fresh',
       (tester) async {
-    when(() => mockRepository.loadCachedWeather())
+    when(() => mockRepository.loadCachedWeather(
+      latitude: any(named: 'latitude'),
+      longitude: any(named: 'longitude'),
+    ))
         .thenAnswer((_) async => null);
     when(() => mockRepository.fetchWeather(
       latitude: any(named: 'latitude'),
@@ -885,7 +897,10 @@ void main() {
 
   testWidgets('shows cached-data snackbar again when refresh fails on cached data',
       (tester) async {
-    when(() => mockRepository.loadCachedWeather())
+    when(() => mockRepository.loadCachedWeather(
+      latitude: any(named: 'latitude'),
+      longitude: any(named: 'longitude'),
+    ))
         .thenAnswer((_) async => buildCachedWeatherResult());
     when(() => mockRepository.fetchWeather(
       latitude: any(named: 'latitude'),
@@ -926,7 +941,10 @@ void main() {
 
   testWidgets('does not re-show cached-data snackbar on settings change',
       (tester) async {
-    when(() => mockRepository.loadCachedWeather())
+    when(() => mockRepository.loadCachedWeather(
+      latitude: any(named: 'latitude'),
+      longitude: any(named: 'longitude'),
+    ))
         .thenAnswer((_) async => buildCachedWeatherResult());
 
     final bloc = WeatherForecastBloc(

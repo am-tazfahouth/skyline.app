@@ -89,7 +89,10 @@ void main() {
     blocTest<WeatherForecastBloc, WeatherForecastState>(
       'emits [Loaded(fetching), Loaded(done)] when cache valid + offline',
       setUp: () {
-        when(() => mockRepository.loadCachedWeather())
+        when(() => mockRepository.loadCachedWeather(
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+        ))
             .thenAnswer((_) async => _result(cached: true));
       },
       build: () => WeatherForecastBloc(
@@ -111,7 +114,10 @@ void main() {
     blocTest<WeatherForecastBloc, WeatherForecastState>(
       'emits [Loaded(cached,fetching), Loaded(fresh)] when cache + online + succeeds',
       setUp: () {
-        when(() => mockRepository.loadCachedWeather())
+        when(() => mockRepository.loadCachedWeather(
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+        ))
             .thenAnswer((_) async => _result(cached: true));
         when(() => mockRepository.fetchWeather(latitude: any(named: 'latitude'), longitude: any(named: 'longitude')))
             .thenAnswer((_) async => _result(cached: false));
@@ -136,7 +142,10 @@ void main() {
     blocTest<WeatherForecastBloc, WeatherForecastState>(
       'cache valid + fetch fails with DioException → stays Loaded(cached)',
       setUp: () {
-        when(() => mockRepository.loadCachedWeather())
+        when(() => mockRepository.loadCachedWeather(
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+        ))
             .thenAnswer((_) async => _result(cached: true));
         when(() => mockRepository.fetchWeather(latitude: any(named: 'latitude'), longitude: any(named: 'longitude')))
             .thenThrow(_dioException());
@@ -160,7 +169,10 @@ void main() {
     blocTest<WeatherForecastBloc, WeatherForecastState>(
       'emits [Empty(fetching), Loaded] when no cache + online + succeeds',
       setUp: () {
-        when(() => mockRepository.loadCachedWeather())
+        when(() => mockRepository.loadCachedWeather(
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+        ))
             .thenAnswer((_) async => null);
         when(() => mockRepository.fetchWeather(latitude: any(named: 'latitude'), longitude: any(named: 'longitude')))
             .thenAnswer((_) async => _result());
@@ -181,7 +193,10 @@ void main() {
     blocTest<WeatherForecastBloc, WeatherForecastState>(
       'emits [Empty(fetching), Empty()] when no cache + offline',
       setUp: () {
-        when(() => mockRepository.loadCachedWeather())
+        when(() => mockRepository.loadCachedWeather(
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+        ))
             .thenAnswer((_) async => null);
       },
       build: () => WeatherForecastBloc(
@@ -200,7 +215,10 @@ void main() {
     blocTest<WeatherForecastBloc, WeatherForecastState>(
       'emits [Empty(fetching), Error] when no cache + online + DioException',
       setUp: () {
-        when(() => mockRepository.loadCachedWeather())
+        when(() => mockRepository.loadCachedWeather(
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+        ))
             .thenAnswer((_) async => null);
         when(() => mockRepository.fetchWeather(latitude: any(named: 'latitude'), longitude: any(named: 'longitude')))
             .thenThrow(_dioException());
@@ -221,7 +239,10 @@ void main() {
     blocTest<WeatherForecastBloc, WeatherForecastState>(
       'no cache + online + unexpected error → Error',
       setUp: () {
-        when(() => mockRepository.loadCachedWeather())
+        when(() => mockRepository.loadCachedWeather(
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+        ))
             .thenAnswer((_) async => null);
         when(() => mockRepository.fetchWeather(latitude: any(named: 'latitude'), longitude: any(named: 'longitude')))
             .thenThrow(Exception('unknown'));
@@ -256,7 +277,10 @@ void main() {
       ],
       verify: (_) {
         verify(() => mockRepository.clearCachedWeather()).called(1);
-        verifyNever(() => mockRepository.loadCachedWeather());
+        verifyNever(() => mockRepository.loadCachedWeather(
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+        ));
         verifyNever(() => mockRepository.fetchWeather(
           latitude: any(named: 'latitude'), longitude: any(named: 'longitude')));
       },
@@ -265,7 +289,10 @@ void main() {
     blocTest<WeatherForecastBloc, WeatherForecastState>(
       'resolves coordinates from the last location when event has none',
       setUp: () {
-        when(() => mockRepository.loadCachedWeather())
+        when(() => mockRepository.loadCachedWeather(
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+        ))
             .thenAnswer((_) async => null);
         when(() => mockRepository.fetchWeather(latitude: 1.0, longitude: 2.0))
             .thenAnswer((_) async => _result());

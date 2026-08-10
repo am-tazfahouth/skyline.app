@@ -46,7 +46,10 @@ void main() {
     when(() => locationRepo.loadFavorites()).thenReturn([]);
     when(() => locationRepo.hasSeenLocationOnboarding())
         .thenAnswer((_) async => true);
-    when(() => weatherRepo.loadCachedWeather()).thenAnswer((_) async => null);
+    when(() => weatherRepo.loadCachedWeather(
+      latitude: any(named: 'latitude'),
+      longitude: any(named: 'longitude'),
+    )).thenAnswer((_) async => null);
     when(() => getSettings()).thenAnswer((_) async => SettingEntity.defaults);
     when(() => settingRepo.loadSettings())
         .thenAnswer((_) async => SettingEntity.defaults);

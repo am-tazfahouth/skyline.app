@@ -45,7 +45,10 @@ Widget createTestScreen(SettingsBloc bloc, WeatherForecastBloc weatherBloc) {
 
 WeatherForecastBloc _buildWeatherBloc() {
   final repository = MockWeatherRepository();
-  when(() => repository.loadCachedWeather())
+  when(() => repository.loadCachedWeather(
+    latitude: any(named: 'latitude'),
+    longitude: any(named: 'longitude'),
+  ))
       .thenAnswer((_) async => _weatherResult(cached: true));
   final getSettings = MockGetSettingsUseCase();
   when(() => getSettings()).thenAnswer((_) async => SettingEntity.defaults);

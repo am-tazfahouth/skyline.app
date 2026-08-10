@@ -12,8 +12,13 @@ class WeatherRepositoryImpl implements WeatherRepository {
   WeatherRepositoryImpl(this._remoteSource, this._dbHelper, [this._cacheMaxAgeDays = 6]);
 
   @override
-  Future<WeatherResult?> loadCachedWeather() async {
+  Future<WeatherResult?> loadCachedWeather({
+    required double latitude,
+    required double longitude,
+  }) async {
     final cached = _dbHelper.loadWeather(
+      latitude: latitude,
+      longitude: longitude,
       maxAgeMillis: _cacheMaxAgeDays * 24 * 60 * 60 * 1000,
     );
     if (cached == null) return null;
@@ -24,7 +29,7 @@ class WeatherRepositoryImpl implements WeatherRepository {
   Future<WeatherResult> fetchWeather({required double latitude, required double longitude}) async {
     final json = await _remoteSource.fetchWeather(latitude, longitude);
     final model = WeatherMapper.fromJson(json);
-    _dbHelper.saveWeather(model);
+    _dbHelper.saveWeather(model, latitude: latitude, longitude: longitude);
     return WeatherResult(weather: model.toEntity(), isCached: false);
   }
 

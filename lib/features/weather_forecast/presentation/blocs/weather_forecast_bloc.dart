@@ -71,7 +71,7 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
       lon = last.longitude;
     }
 
-    final cached = await weatherRepository.loadCachedWeather();
+    final cached = await weatherRepository.loadCachedWeather(latitude: lat, longitude: lon);
     final online = await isConnected();
 
     if (cached != null) {

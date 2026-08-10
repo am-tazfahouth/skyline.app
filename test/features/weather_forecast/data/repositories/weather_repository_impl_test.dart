@@ -11,6 +11,17 @@ class MockWeatherRemoteSource extends Mock implements WeatherRemoteSource {}
 class MockDbHelper extends Mock implements DbHelper {}
 
 void main() {
+  setUpAll(() {
+    registerFallbackValue(WeatherModel(
+      current: CurrentWeatherModel(
+        temperature: 0, humidity: 0, isDay: true,
+        windSpeed: 0, precipitation: 0, weatherCode: 0,
+      ),
+      hourly: [],
+      daily: [],
+    ));
+  });
+
   late MockWeatherRemoteSource mockRemoteSource;
   late MockDbHelper mockDbHelper;
   late WeatherRepositoryImpl repository;
@@ -58,6 +69,11 @@ void main() {
       expect(result.weather.current.temperature, 26.5);
       expect(result.weather.hourly.length, 1);
       expect(result.weather.daily.length, 1);
+      verify(() => mockDbHelper.saveWeather(
+        any(),
+        latitude: -11.7022,
+        longitude: 43.2551,
+      )).called(1);
     });
 
     test('throws Exception on unexpected error', () async {
@@ -75,6 +91,8 @@ void main() {
   group('loadCachedWeather', () {
     test('returns WeatherResult when cache is fresh', () async {
       when(() => mockDbHelper.loadWeather(
+        latitude: any(named: 'latitude'),
+        longitude: any(named: 'longitude'),
         maxAgeMillis: any(named: 'maxAgeMillis'),
       )).thenReturn(
         WeatherModel(
@@ -87,19 +105,28 @@ void main() {
         ),
       );
 
-      final result = await repository.loadCachedWeather();
+      final result = await repository.loadCachedWeather(
+          latitude: -11.7022, longitude: 43.2551);
 
       expect(result, isA<WeatherResult>());
       expect(result!.isCached, true);
       expect(result.weather.current.temperature, 26.5);
+      verify(() => mockDbHelper.loadWeather(
+        latitude: -11.7022,
+        longitude: 43.2551,
+        maxAgeMillis: any(named: 'maxAgeMillis'),
+      )).called(1);
     });
 
     test('returns null when cache is empty', () async {
       when(() => mockDbHelper.loadWeather(
+        latitude: any(named: 'latitude'),
+        longitude: any(named: 'longitude'),
         maxAgeMillis: any(named: 'maxAgeMillis'),
       )).thenReturn(null);
 
-      final result = await repository.loadCachedWeather();
+      final result = await repository.loadCachedWeather(
+          latitude: -11.7022, longitude: 43.2551);
       expect(result, isNull);
     });
   });
