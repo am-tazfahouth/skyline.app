@@ -132,7 +132,7 @@
     },
     {
       "id": "4:4340715015938654862",
-      "lastPropertyId": "3:6441129740558671251",
+      "lastPropertyId": "5:6352719757319263808",
       "name": "WeatherCacheEntity",
       "properties": [
         {
@@ -150,6 +150,16 @@
           "id": "3:6441129740558671251",
           "name": "savedAt",
           "type": 6
+        },
+        {
+          "id": "4:1049128360453806073",
+          "name": "latitude",
+          "type": 8
+        },
+        {
+          "id": "5:6352719757319263808",
+          "name": "longitude",
+          "type": 8
         }
       ],
       "relations": []

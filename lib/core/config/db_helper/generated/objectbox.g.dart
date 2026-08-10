@@ -176,7 +176,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(4, 4340715015938654862),
     name: 'WeatherCacheEntity',
-    lastPropertyId: const obx_int.IdUid(3, 6441129740558671251),
+    lastPropertyId: const obx_int.IdUid(5, 6352719757319263808),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -195,6 +195,18 @@ final _entities = <obx_int.ModelEntity>[
         id: const obx_int.IdUid(3, 6441129740558671251),
         name: 'savedAt',
         type: 6,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(4, 1049128360453806073),
+        name: 'latitude',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(5, 6352719757319263808),
+        name: 'longitude',
+        type: 8,
         flags: 0,
       ),
     ],
@@ -501,10 +513,12 @@ obx_int.ModelDefinition getObjectBoxModel() {
       },
       objectToFB: (WeatherCacheEntity object, fb.Builder fbb) {
         final jsonDataOffset = fbb.writeString(object.jsonData);
-        fbb.startTable(4);
+        fbb.startTable(6);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, jsonDataOffset);
         fbb.addInt64(2, object.savedAt);
+        fbb.addFloat64(3, object.latitude);
+        fbb.addFloat64(4, object.longitude);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -526,10 +540,24 @@ obx_int.ModelDefinition getObjectBoxModel() {
           8,
           0,
         );
+        final latitudeParam = const fb.Float64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          10,
+          0,
+        );
+        final longitudeParam = const fb.Float64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          12,
+          0,
+        );
         final object = WeatherCacheEntity(
           id: idParam,
           jsonData: jsonDataParam,
           savedAt: savedAtParam,
+          latitude: latitudeParam,
+          longitude: longitudeParam,
         );
 
         return object;
@@ -702,6 +730,16 @@ class WeatherCacheEntity_ {
   /// See [WeatherCacheEntity.savedAt].
   static final savedAt = obx.QueryIntegerProperty<WeatherCacheEntity>(
     _entities[3].properties[2],
+  );
+
+  /// See [WeatherCacheEntity.latitude].
+  static final latitude = obx.QueryDoubleProperty<WeatherCacheEntity>(
+    _entities[3].properties[3],
+  );
+
+  /// See [WeatherCacheEntity.longitude].
+  static final longitude = obx.QueryDoubleProperty<WeatherCacheEntity>(
+    _entities[3].properties[4],
   );
 }
 

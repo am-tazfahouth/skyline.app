@@ -36,13 +36,31 @@ class DbHelper {
     return _instance!;
   }
 
-  void saveWeather(WeatherModel model) {
-    _box.removeAll();
+  static double _roundCoordinate(double value) =>
+      (value * 10000).roundToDouble() / 10000;
+
+  void saveWeather(
+    WeatherModel model, {
+    required double latitude,
+    required double longitude,
+  }) {
+    final lat = _roundCoordinate(latitude);
+    final lon = _roundCoordinate(longitude);
+    final existing = _box
+        .query(WeatherCacheEntity_.latitude.between(lat, lat) &
+            WeatherCacheEntity_.longitude.between(lon, lon))
+        .build()
+        .find();
+    for (final entity in existing) {
+      _box.remove(entity.id);
+    }
     final jsonStr = jsonEncode(model.toJson());
     _box.put(WeatherCacheEntity(
       id: 0,
       jsonData: jsonStr,
       savedAt: DateTime.now().millisecondsSinceEpoch,
+      latitude: lat,
+      longitude: lon,
     ));
   }
 
@@ -50,8 +68,18 @@ class DbHelper {
     _box.removeAll();
   }
 
-  WeatherModel? loadWeather({int? maxAgeMillis}) {
-    final entities = _box.getAll();
+  WeatherModel? loadWeather({
+    required double latitude,
+    required double longitude,
+    int? maxAgeMillis,
+  }) {
+    final lat = _roundCoordinate(latitude);
+    final lon = _roundCoordinate(longitude);
+    final entities = _box
+        .query(WeatherCacheEntity_.latitude.between(lat, lat) &
+            WeatherCacheEntity_.longitude.between(lon, lon))
+        .build()
+        .find();
     if (entities.isEmpty) return null;
 
     final entity = entities.first;
