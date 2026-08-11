@@ -15,28 +15,33 @@ class MainActivity : FlutterActivity() {
             .setMethodCallHandler { call, result ->
                 when (call.method) {
                     "openLocationSettings" -> {
-                        openSettings(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                        result.success(true)
+                        result.success(openSettings(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                     }
                     "openAppSettings" -> {
-                        openSettings(
-                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                            Uri.parse("package:$packageName"),
+                        result.success(
+                            openSettings(
+                                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                Uri.parse("package:$packageName"),
+                            ),
                         )
-                        result.success(true)
                     }
                     else -> result.notImplemented()
                 }
             }
     }
 
-    private fun openSettings(action: String, data: Uri? = null) {
-        val intent = if (data != null) Intent(action, data) else Intent(action)
-        intent.addFlags(
-            Intent.FLAG_ACTIVITY_NEW_TASK or
-                Intent.FLAG_ACTIVITY_CLEAR_TASK or
-                Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED,
-        )
-        startActivity(intent)
+    private fun openSettings(action: String, data: Uri? = null): Boolean {
+        return try {
+            val intent = if (data != null) Intent(action, data) else Intent(action)
+            intent.addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TASK or
+                    Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED,
+            )
+            startActivity(intent)
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 }

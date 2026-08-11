@@ -51,6 +51,14 @@ void main() {
     expect(result, isFalse);
   });
 
+  test('openLocationSettings returns false when the channel returns null', () async {
+    mockChannel((call) async => null);
+
+    final result = await LocationPermissionSource().openLocationSettings();
+
+    expect(result, isFalse);
+  });
+
   test('openLocationSettings falls back to the geolocator plugin when the channel throws',
       () async {
     mockChannel((call) async => throw MissingPluginException());
