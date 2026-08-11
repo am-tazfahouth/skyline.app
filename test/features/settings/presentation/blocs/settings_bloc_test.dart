@@ -35,10 +35,16 @@ void main() {
           (_) async => SettingEntity.defaults,
         );
       },
-      build: () => SettingsBloc(logger: mockLogger, repository: mockRepository),
+      build: () => SettingsBloc(
+        logger: mockLogger,
+        repository: mockRepository,
+        getAppVersion: () async => '1.2.3',
+      ),
       act: (bloc) => bloc.add(const LoadSettingsEvent()),
       expect: () => [
-        isA<SettingsLoadSuccess>().having((s) => s.isLoaded, 'isLoaded', true),
+        isA<SettingsLoadSuccess>()
+            .having((s) => s.isLoaded, 'isLoaded', true)
+            .having((s) => s.appVersion, 'appVersion', '1.2.3'),
       ],
     );
 
@@ -51,12 +57,18 @@ void main() {
         );
       },
       build: () => SettingsBloc(logger: mockLogger, repository: mockRepository),
-      seed: () => const SettingsLoadSuccess(setting: SettingEntity.defaults, isLoaded: true),
+      seed: () => const SettingsLoadSuccess(
+        setting: SettingEntity.defaults,
+        isLoaded: true,
+        appVersion: '1.2.3',
+      ),
       act: (bloc) => bloc.add(const UpdateSettingsEvent(
         setting: SettingEntity(theme: SettingTheme.dark, lang: SettingLang.fr)
       )),
       expect: () => [
-        isA<SettingsLoadSuccess>().having((s) => s.setting.theme, 'theme', SettingTheme.dark),
+        isA<SettingsLoadSuccess>()
+            .having((s) => s.setting.theme, 'theme', SettingTheme.dark)
+            .having((s) => s.appVersion, 'appVersion', '1.2.3'),
       ],
     );
 

@@ -9,8 +9,13 @@ import 'package:sky_line/features/settings/presentation/blocs/settings_state.dar
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   final AppLogger logger;
   final SettingRepository repository;
+  final Future<String> Function() getAppVersion;
 
-  SettingsBloc({required this.logger , required this.repository}) : super(const SettingsLoadSuccess()) {
+  SettingsBloc({
+    required this.logger,
+    required this.repository,
+    this.getAppVersion = _defaultAppVersion,
+  }) : super(const SettingsLoadSuccess()) {
     on<LoadSettingsEvent>(_onLoadSettings);
     on<UpdateSettingsEvent>(_onUpdateSettings);
   }
@@ -21,7 +26,17 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   ) async {
     try {
       final setting = await repository.loadSettings();
-      emit(SettingsLoadSuccess(setting: setting, isLoaded: true));
+      String appVersion = '';
+      try {
+        appVersion = await getAppVersion();
+      } catch (_) {
+        appVersion = '';
+      }
+      emit(SettingsLoadSuccess(
+        setting: setting,
+        isLoaded: true,
+        appVersion: appVersion,
+      ));
     } catch (e, stackTrace) {
       logger.e(AppError.getDebugErrorMessage(SettingErrorCodes.load), error: e, stackTrace: stackTrace);
       emit(SettingsError(errorCode: SettingErrorCodes.load));
@@ -34,10 +49,19 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   ) async {
     try {
       await repository.saveSettings(event.setting);
-      emit(SettingsLoadSuccess(setting: event.setting, isLoaded: true));
+      final previousVersion = state is SettingsLoadSuccess
+          ? (state as SettingsLoadSuccess).appVersion
+          : '';
+      emit(SettingsLoadSuccess(
+        setting: event.setting,
+        isLoaded: true,
+        appVersion: previousVersion,
+      ));
     } catch (e, stackTrace) {
       logger.e(AppError.getDebugErrorMessage(SettingErrorCodes.update), error: e, stackTrace: stackTrace);
       emit(SettingsError(errorCode: SettingErrorCodes.update));
     }
   }
 }
+
+Future<String> _defaultAppVersion() async => '';

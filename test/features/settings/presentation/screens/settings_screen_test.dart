@@ -142,6 +142,19 @@ void main() {
     expect(find.text('Choose the unit of measurement of the temperature'), findsOneWidget);
   });
 
+  testWidgets('should display app version from the settings bloc', (tester) async {
+    final bloc = SettingsBloc(
+      logger: MockAppLogger(),
+      repository: mockRepository,
+      getAppVersion: () async => '1.2.3',
+    );
+    bloc.add(const LoadSettingsEvent());
+    await tester.pumpWidget(createTestScreen(bloc, _buildWeatherBloc()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('App version: 1.2.3'), findsOneWidget);
+  });
+
   testWidgets('should propagate updated settings to the weather bloc', (tester) async {
     final bloc = SettingsBloc(logger: MockAppLogger(), repository: mockRepository);
     bloc.add(const LoadSettingsEvent());

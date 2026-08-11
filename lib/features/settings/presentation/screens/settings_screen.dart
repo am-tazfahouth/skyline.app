@@ -111,13 +111,13 @@ class SettingsScreen extends StatelessWidget {
                       SettingItem(
                         title: l10n.settingsLicenses,
                         icon: Icons.info_outline_rounded,
-                        onClick: () => _showLicence(context, "0.6.4")
+                        onClick: () => _showLicence(context, state.appVersion)
                       ),
                       const SizedBox(
                         height: 5,
                       ),
                       SettingItem(
-                        title: l10n.settingsAppVersion('0.6.4'),
+                        title: l10n.settingsAppVersion(state.appVersion.isEmpty ? '—' : state.appVersion),
                         icon: Icons.android,
                         onClick: null
                       ),
