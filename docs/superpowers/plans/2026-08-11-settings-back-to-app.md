@@ -31,6 +31,8 @@
   - `LocationPermissionSource.openLocationSettings()` → `Future<bool>` — Android: invokes channel method `openLocationSettings`; on `MissingPluginException` falls back to `Geolocator.openLocationSettings()`.
   - `LocationPermissionSource.openAppSettings()` → `Future<bool>` — Android: invokes channel method `openAppSettings`; on `MissingPluginException` falls back to `ph.openAppSettings()`.
   - `static bool Function() isAndroidPlatform` (test seam, default `() => Platform.isAndroid`), annotated `@visibleForTesting`.
+  - `static Future<bool> Function() geolocatorOpenLocationSettings` (test seam, default `Geolocator.openLocationSettings`), annotated `@visibleForTesting`.
+  - `static Future<bool> Function() permissionHandlerOpenAppSettings` (test seam, default `ph.openAppSettings`), annotated `@visibleForTesting`.
 - Test: `test/features/location/data/sources/location_permission_source_test.dart` (new file).
 
 - [ ] **Step 1: Write the failing test**
@@ -42,6 +44,8 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart' as ph;
 import 'package:sky_line/features/location/data/sources/location_permission_source.dart';
 
 void main() {
@@ -56,10 +60,14 @@ void main() {
 
   setUp(() {
     LocationPermissionSource.isAndroidPlatform = () => true;
+    LocationPermissionSource.geolocatorOpenLocationSettings = () async => true;
+    LocationPermissionSource.permissionHandlerOpenAppSettings = () async => true;
   });
 
   tearDown(() {
     LocationPermissionSource.isAndroidPlatform = () => Platform.isAndroid;
+    LocationPermissionSource.geolocatorOpenLocationSettings = Geolocator.openLocationSettings;
+    LocationPermissionSource.permissionHandlerOpenAppSettings = ph.openAppSettings;
     mockChannel(null);
   });
 
@@ -85,12 +93,19 @@ void main() {
     expect(result, isFalse);
   });
 
-  test('openLocationSettings falls back to the geolocator plugin when the channel is missing',
+  test('openLocationSettings falls back to the geolocator plugin when the channel throws',
       () async {
-    expect(
-      () => LocationPermissionSource().openLocationSettings(),
-      throwsA(isA<MissingPluginException>()),
-    );
+    mockChannel((call) async => throw MissingPluginException());
+    var fallbackCalled = false;
+    LocationPermissionSource.geolocatorOpenLocationSettings = () async {
+      fallbackCalled = true;
+      return true;
+    };
+
+    final result = await LocationPermissionSource().openLocationSettings();
+
+    expect(result, isTrue);
+    expect(fallbackCalled, isTrue);
   });
 
   test('openAppSettings invokes the native channel on Android and returns true', () async {
@@ -106,27 +121,67 @@ void main() {
     expect(calls, ['openAppSettings']);
   });
 
-  test('openAppSettings falls back to the permission_handler plugin when the channel is missing',
+  test('openAppSettings returns false when the channel reports false', () async {
+    mockChannel((call) async => false);
+
+    final result = await LocationPermissionSource().openAppSettings();
+
+    expect(result, isFalse);
+  });
+
+  test('openAppSettings falls back to the permission_handler plugin when the channel throws',
       () async {
-    expect(
-      () => LocationPermissionSource().openAppSettings(),
-      throwsA(isA<MissingPluginException>()),
-    );
+    mockChannel((call) async => throw MissingPluginException());
+    var fallbackCalled = false;
+    LocationPermissionSource.permissionHandlerOpenAppSettings = () async {
+      fallbackCalled = true;
+      return true;
+    };
+
+    final result = await LocationPermissionSource().openAppSettings();
+
+    expect(result, isTrue);
+    expect(fallbackCalled, isTrue);
   });
 
   test('openLocationSettings skips the channel on non-Android platforms', () async {
     LocationPermissionSource.isAndroidPlatform = () => false;
+    var fallbackCalled = false;
+    LocationPermissionSource.geolocatorOpenLocationSettings = () async {
+      fallbackCalled = true;
+      return true;
+    };
     final calls = <String>[];
     mockChannel((call) async {
       calls.add(call.method);
       return true;
     });
 
-    expect(
-      () => LocationPermissionSource().openLocationSettings(),
-      throwsA(isA<MissingPluginException>()),
-    );
+    final result = await LocationPermissionSource().openLocationSettings();
+
+    expect(result, isTrue);
     expect(calls, isEmpty);
+    expect(fallbackCalled, isTrue);
+  });
+
+  test('openAppSettings skips the channel on non-Android platforms', () async {
+    LocationPermissionSource.isAndroidPlatform = () => false;
+    var fallbackCalled = false;
+    LocationPermissionSource.permissionHandlerOpenAppSettings = () async {
+      fallbackCalled = true;
+      return true;
+    };
+    final calls = <String>[];
+    mockChannel((call) async {
+      calls.add(call.method);
+      return true;
+    });
+
+    final result = await LocationPermissionSource().openAppSettings();
+
+    expect(result, isTrue);
+    expect(calls, isEmpty);
+    expect(fallbackCalled, isTrue);
   });
 }
 ```
@@ -135,7 +190,6 @@ void main() {
 
 Run: `flutter test test/features/location/data/sources/location_permission_source_test.dart`
 Expected: FAIL — the channel is never invoked (current `openLocationSettings` calls `Geolocator.openLocationSettings()`, which throws `MissingPluginException` in tests, so the `expect(result, isTrue)` assertions fail).
-
 - [ ] **Step 3: Implement the channel-backed source**
 
 Replace the body of `lib/features/location/data/sources/location_permission_source.dart` with:
@@ -153,6 +207,13 @@ class LocationPermissionSource {
 
   @visibleForTesting
   static bool Function() isAndroidPlatform = () => Platform.isAndroid;
+
+  @visibleForTesting
+  static Future<bool> Function() geolocatorOpenLocationSettings =
+      Geolocator.openLocationSettings;
+
+  @visibleForTesting
+  static Future<bool> Function() permissionHandlerOpenAppSettings = ph.openAppSettings;
 
   Future<ph.PermissionStatus> requestLocationPermission() {
     return ph.Permission.locationWhenInUse.request();
@@ -176,7 +237,7 @@ class LocationPermissionSource {
         // Fall through to the plugin fallback below.
       }
     }
-    return Geolocator.openLocationSettings();
+    return geolocatorOpenLocationSettings();
   }
 
   Future<bool> openAppSettings() async {
@@ -187,7 +248,7 @@ class LocationPermissionSource {
         // Fall through to the plugin fallback below.
       }
     }
-    return ph.openAppSettings();
+    return permissionHandlerOpenAppSettings();
   }
 }
 ```
@@ -195,7 +256,7 @@ class LocationPermissionSource {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `flutter test test/features/location/data/sources/location_permission_source_test.dart`
-Expected: PASS (6 tests).
+Expected: PASS (8 tests).
 
 - [ ] **Step 5: Static analysis + full regression + commit**
 
@@ -203,7 +264,7 @@ Run: `flutter analyze`
 Expected: No issues found.
 
 Run: `flutter test`
-Expected: All tests pass (existing suite + the 6 new ones).
+Expected: All tests pass (existing suite + the 8 new ones).
 
 ```bash
 git add lib/features/location/data/sources/location_permission_source.dart test/features/location/data/sources/location_permission_source_test.dart
