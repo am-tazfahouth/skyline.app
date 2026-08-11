@@ -49,7 +49,7 @@ void main() {
 
   const channel = MethodChannel('sky_line/platform');
 
-  void mockChannel(MethodCall? Function(MethodCall call)? handler) {
+  void mockChannel(Future<Object?>? Function(MethodCall call)? handler) {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, handler);
   }
