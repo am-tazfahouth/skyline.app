@@ -10,15 +10,19 @@
 
 When a GPS error occurs (service disabled or permission permanently denied), the app shows a
 SnackBar whose action opens the relevant system settings page. On Android, both libraries used
-for that redirection launch the settings intent with **only** `FLAG_ACTIVITY_NEW_TASK`:
+for that redirection launch the settings intent with `FLAG_ACTIVITY_NEW_TASK` combined with
+`FLAG_ACTIVITY_NO_HISTORY` and `FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS` (no back-stack-clearing
+flags):
 
-- `geolocator_android` `openLocationSettings` → `Utils.java:31`
-- `permission_handler_android` `openAppSettings` → `AppSettingsManager.java:28`
+- `geolocator_android` `openLocationSettings` → `Utils.java:14-16, 31-33`
+- `permission_handler_android` `openAppSettings` → `AppSettingsManager.java:28-30`
 
 If the Settings app is **already running** in its own task (e.g. the user has a separate Settings
 window open), `FLAG_ACTIVITY_NEW_TASK` alone reuses that existing task and pushes the target
-settings page onto its back stack. Pressing the system back button therefore returns to the
-previously-open settings page instead of the app.
+settings page onto its back stack. `NO_HISTORY`/`EXCLUDE_FROM_RECENTS` only affect the launched
+page's presence in recents — they do not evict the stale page already beneath it in the task.
+Pressing the system back button therefore returns to the previously-open settings page instead of
+the app.
 
 This defect affects both GPS-error flows:
 
@@ -47,10 +51,11 @@ the SnackBar actions defined in
 `lib/features/location/data/sources/location_permission_source.dart` is a thin adapter over the
 two packages; neither package lets the caller set intent flags.
 
-Android task semantics: with `FLAG_ACTIVITY_NEW_TASK` only, the system looks for an existing task
-whose affinity matches the Settings app. When one exists (Settings already open), the new activity
-is added to that task's existing back stack. Back then pops the stack within Settings instead of
-returning to the app.
+Android task semantics: with `FLAG_ACTIVITY_NEW_TASK` and no task-clearing flag, the system looks
+for an existing task whose affinity matches the Settings app. When one exists (Settings already
+open), the new activity is added to that task's existing back stack; `NO_HISTORY`/
+`EXCLUDE_FROM_RECENTS` do not remove the page already beneath it. Back then pops the stack within
+Settings instead of returning to the app.
 
 ---
 
@@ -88,31 +93,40 @@ override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         .setMethodCallHandler { call, result ->
             when (call.method) {
                 "openLocationSettings" -> {
-                    openSettings(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                    result.success(true)
+                    result.success(openSettings(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                 }
                 "openAppSettings" -> {
-                    openSettings(
-                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                        Uri.parse("package:$packageName"),
+                    result.success(
+                        openSettings(
+                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.parse("package:$packageName"),
+                        ),
                     )
-                    result.success(true)
                 }
                 else -> result.notImplemented()
             }
         }
 }
 
-private fun openSettings(action: String, data: Uri? = null) {
-    val intent = if (data != null) Intent(action, data) else Intent(action)
-    intent.addFlags(
-        Intent.FLAG_ACTIVITY_NEW_TASK or
-            Intent.FLAG_ACTIVITY_CLEAR_TASK or
-            Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED,
-    )
-    startActivity(intent)
+private fun openSettings(action: String, data: Uri? = null): Boolean {
+    return try {
+        val intent = if (data != null) Intent(action, data) else Intent(action)
+        intent.addFlags(
+            Intent.FLAG_ACTIVITY_NEW_TASK or
+                Intent.FLAG_ACTIVITY_CLEAR_TASK or
+                Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED,
+        )
+        startActivity(intent)
+        true
+    } catch (e: Exception) {
+        false
+    }
 }
 ```
+
+`openSettings` never throws: an unresolvable intent returns `false` to the Dart side instead of
+leaving the `MethodChannel` call unanswered (which would hang the BLoC in
+`LocationWaitingForSettings` forever).
 
 ### 4.2 `lib/features/location/data/sources/location_permission_source.dart`
 

@@ -93,6 +93,14 @@ void main() {
     expect(result, isFalse);
   });
 
+  test('openLocationSettings returns false when the channel returns null', () async {
+    mockChannel((call) async => null);
+
+    final result = await LocationPermissionSource().openLocationSettings();
+
+    expect(result, isFalse);
+  });
+
   test('openLocationSettings falls back to the geolocator plugin when the channel throws',
       () async {
     mockChannel((call) async => throw MissingPluginException());
@@ -256,7 +264,7 @@ class LocationPermissionSource {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `flutter test test/features/location/data/sources/location_permission_source_test.dart`
-Expected: PASS (8 tests).
+Expected: PASS (9 tests).
 
 - [ ] **Step 5: Static analysis + full regression + commit**
 
@@ -264,7 +272,7 @@ Run: `flutter analyze`
 Expected: No issues found.
 
 Run: `flutter test`
-Expected: All tests pass (existing suite + the 8 new ones).
+Expected: All tests pass (existing suite + the 9 new ones).
 
 ```bash
 git add lib/features/location/data/sources/location_permission_source.dart test/features/location/data/sources/location_permission_source_test.dart
@@ -279,8 +287,8 @@ git commit -m "feat(location): open system settings via native channel on Androi
 - Modify: `android/app/src/main/kotlin/com/example/sky_line/MainActivity.kt`
 
 **Interfaces:**
-- Consumes: channel methods produced in Task 1 — `openLocationSettings` and `openAppSettings` on channel `sky_line/platform`, both returning `success(true)`; any other method answers `result.notImplemented()`.
-- Produces: native handling that starts `Settings.ACTION_LOCATION_SOURCE_SETTINGS` (no data) and `Settings.ACTION_APPLICATION_DETAILS_SETTINGS` (data `package:$packageName`), both with flags `NEW_TASK | CLEAR_TASK | RESET_TASK_IF_NEEDED`.
+- Consumes: channel methods produced in Task 1 — `openLocationSettings` and `openAppSettings` on channel `sky_line/platform`, each answering `success(true/false)`; any other method answers `result.notImplemented()`.
+- Produces: native handling that starts `Settings.ACTION_LOCATION_SOURCE_SETTINGS` (no data) and `Settings.ACTION_APPLICATION_DETAILS_SETTINGS` (data `package:$packageName`), both with flags `NEW_TASK | CLEAR_TASK | RESET_TASK_IF_NEEDED`; returns `false` (never throws) if `startActivity` fails so the Dart call always resolves.
 
 - [ ] **Step 1: Register the channel in `MainActivity`**
 
@@ -304,29 +312,34 @@ class MainActivity : FlutterActivity() {
             .setMethodCallHandler { call, result ->
                 when (call.method) {
                     "openLocationSettings" -> {
-                        openSettings(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                        result.success(true)
+                        result.success(openSettings(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                     }
                     "openAppSettings" -> {
-                        openSettings(
-                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                            Uri.parse("package:$packageName"),
+                        result.success(
+                            openSettings(
+                                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                Uri.parse("package:$packageName"),
+                            ),
                         )
-                        result.success(true)
                     }
                     else -> result.notImplemented()
                 }
             }
     }
 
-    private fun openSettings(action: String, data: Uri? = null) {
-        val intent = if (data != null) Intent(action, data) else Intent(action)
-        intent.addFlags(
-            Intent.FLAG_ACTIVITY_NEW_TASK or
-                Intent.FLAG_ACTIVITY_CLEAR_TASK or
-                Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED,
-        )
-        startActivity(intent)
+    private fun openSettings(action: String, data: Uri? = null): Boolean {
+        return try {
+            val intent = if (data != null) Intent(action, data) else Intent(action)
+            intent.addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TASK or
+                    Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED,
+            )
+            startActivity(intent)
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 }
 ```
