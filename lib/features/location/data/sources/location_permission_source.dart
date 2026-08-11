@@ -11,6 +11,13 @@ class LocationPermissionSource {
   @visibleForTesting
   static bool Function() isAndroidPlatform = () => Platform.isAndroid;
 
+  @visibleForTesting
+  static Future<bool> Function() geolocatorOpenLocationSettings =
+      Geolocator.openLocationSettings;
+
+  @visibleForTesting
+  static Future<bool> Function() permissionHandlerOpenAppSettings = ph.openAppSettings;
+
   Future<ph.PermissionStatus> requestLocationPermission() {
     return ph.Permission.locationWhenInUse.request();
   }
@@ -33,7 +40,7 @@ class LocationPermissionSource {
         // Fall through to the plugin fallback below.
       }
     }
-    return Geolocator.openLocationSettings();
+    return geolocatorOpenLocationSettings();
   }
 
   Future<bool> openAppSettings() async {
@@ -44,6 +51,6 @@ class LocationPermissionSource {
         // Fall through to the plugin fallback below.
       }
     }
-    return ph.openAppSettings();
+    return permissionHandlerOpenAppSettings();
   }
 }
