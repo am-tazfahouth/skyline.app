@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:sky_line/core/constants/app_text_styles.dart";
 
 class AppTheme {
   final TextTheme textTheme;
@@ -389,7 +390,10 @@ class AppTheme {
         shadowColor: Colors.grey,
         color: colorScheme.surfaceContainerLowest,
         surfaceTintColor: colorScheme.onInverseSurface
-      )
+      ),
+      extensions: [
+        TextStyleCatalog.fromColorScheme(colorScheme),
+      ]
     );
   }
 
