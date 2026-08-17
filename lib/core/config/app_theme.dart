@@ -355,7 +355,7 @@ class AppTheme {
       appBarTheme: AppBarTheme(
         elevation: 0.5,
         scrolledUnderElevation: 1,
-        shadowColor: Colors.grey,
+        shadowColor: colorScheme.outlineVariant,
         surfaceTintColor: colorScheme.surface,
         backgroundColor: colorScheme.surface,
       ),
@@ -387,7 +387,7 @@ class AppTheme {
       canvasColor: colorScheme.surface,
       bottomAppBarTheme: BottomAppBarThemeData(
         elevation: 1,
-        shadowColor: Colors.grey,
+        shadowColor: colorScheme.outlineVariant,
         color: colorScheme.surfaceContainerLowest,
         surfaceTintColor: colorScheme.onInverseSurface
       ),
