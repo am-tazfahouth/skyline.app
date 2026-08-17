@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sky_line/core/constants/app_spacing.dart';
 
 class SettingTile extends StatelessWidget {
   final String label;
@@ -16,7 +17,7 @@ class SettingTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xs),
       child: ListTile(
         title: Text(
           label,
@@ -31,7 +32,7 @@ class SettingTile extends StatelessWidget {
                 color: theme.colorScheme.primary,
               ),
             ),
-            const SizedBox(width: 4),
+            SizedBox(width: AppSpacing.xs),
             Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
           ],
         ),

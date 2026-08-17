@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sky_line/core/constants/app_spacing.dart';
+import 'package:sky_line/core/constants/app_text_styles.dart';
 
 class SettingItem extends StatelessWidget {
   final String title; 
@@ -9,34 +11,32 @@ class SettingItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final styles = Theme.of(context).extension<TextStyleCatalog>()!;
+    final primaryText = Theme.of(context).colorScheme.onSurface;
+    final secondaryText = Theme.of(context).colorScheme.onSurfaceVariant;
     return InkWell(
       onTap: onClick != null ? () =>  onClick!() : null,
       child: Padding(
-        padding: const EdgeInsets.only(top: 10, bottom: 10),
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
         child: Row(
           children: [
             Icon(
               icon,
               size: 25,
             ),
-            const SizedBox(width: 15,),
+            SizedBox(width: AppSpacing.md,),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500
-                  ),
+                  style: styles.titleSmall.copyWith(color: primaryText),
                 ),
-                const SizedBox(height: 2,),
+                SizedBox(height: AppSpacing.xs,),
                 description != null ? 
                   Text(
                     description!,
-                    style: const TextStyle(
-                      fontSize: 12
-                    ),
+                    style: styles.bodyMedium.copyWith(color: secondaryText),
                   ) : 
                   const SizedBox()
               ],

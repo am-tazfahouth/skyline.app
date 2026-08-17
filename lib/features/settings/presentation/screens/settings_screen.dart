@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/config/app_theme.dart';
+import 'package:sky_line/core/constants/app_spacing.dart';
 import 'package:sky_line/core/errors/app_error.dart';
 import 'package:sky_line/features/settings/presentation/blocs/settings_bloc.dart';
 import 'package:sky_line/features/settings/presentation/blocs/settings_state.dart';
@@ -57,7 +58,7 @@ class SettingsScreen extends StatelessWidget {
               final setting = state.setting;
               return Column(
                 children: [
-                  const SizedBox(height: 20),
+                  SizedBox(height: AppSpacing.xl),
                   SettingCard(
                     title: l10n.settingsSectionGeneral, 
                     options: [
@@ -67,7 +68,7 @@ class SettingsScreen extends StatelessWidget {
                         icon: Icons.light_mode_outlined,
                         onClick: () => selectThemeDialog(context, setting)
                       ),
-                      SizedBox(height: 5),
+                      SizedBox(height: AppSpacing.xs),
                       SettingItem(
                         title: l10n.settingsLanguage,
                         description: l10n.settingsLanguageDescription,
@@ -76,7 +77,7 @@ class SettingsScreen extends StatelessWidget {
                       ),
                     ]
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: AppSpacing.xl),
                   SettingCard(
                     title: l10n.settingsSectionPreference, 
                     options: [
@@ -86,7 +87,7 @@ class SettingsScreen extends StatelessWidget {
                         icon: Icons.air_outlined,
                         onClick: () => selectWindUnitDialog(context, setting)
                       ),
-                      SizedBox(height: 5),
+                      SizedBox(height: AppSpacing.xs),
                       SettingItem(
                         title: l10n.settingsTemperatureUnit,
                         description: l10n.settingsTemperatureUnitDescription,
@@ -95,7 +96,7 @@ class SettingsScreen extends StatelessWidget {
                       ),
                     ]
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: AppSpacing.xl),
                   SettingCard(
                     title: l10n.settingsSectionAbout, 
                     options: [
@@ -105,17 +106,13 @@ class SettingsScreen extends StatelessWidget {
                         icon: Icons.share, 
                         onClick: () {}
                       ),
-                      const SizedBox(
-                        height: 5,
-                      ),
+                      SizedBox(height: AppSpacing.xs),
                       SettingItem(
                         title: l10n.settingsLicenses,
                         icon: Icons.info_outline_rounded,
                         onClick: () => _showLicence(context, state.appVersion)
                       ),
-                      const SizedBox(
-                        height: 5,
-                      ),
+                      SizedBox(height: AppSpacing.xs),
                       SettingItem(
                         title: l10n.settingsAppVersion(state.appVersion.isEmpty ? '—' : state.appVersion),
                         icon: Icons.android,
@@ -123,7 +120,7 @@ class SettingsScreen extends StatelessWidget {
                       ),
                     ]
                   ),
-                  const SizedBox(height: 100),
+                  SizedBox(height: AppSpacing.xxl),
                 ],
               );
             },
