@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sky_line/core/constants/app_spacing.dart';
 import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/features/location/domain/entities/location_entity.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
@@ -40,9 +41,9 @@ class FavoritesListWidget extends StatelessWidget {
           direction: DismissDirection.endToStart,
           background: Container(
             alignment: Alignment.centerRight,
-            padding: const EdgeInsets.only(right: 16),
-            color: Colors.red,
-            child: const Icon(Icons.delete, color: Colors.white),
+            padding: const EdgeInsets.only(right: AppSpacing.lg),
+            color: Theme.of(context).colorScheme.error,
+            child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
           ),
           onDismissed: (_) {
             context.read<LocationBloc>().add(

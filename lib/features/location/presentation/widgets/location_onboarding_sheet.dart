@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sky_line/core/constants/app_spacing.dart';
 import 'package:sky_line/core/l10n/app_localisation.dart';
 
 class LocationOnboardingSheet extends StatelessWidget {
@@ -28,7 +29,7 @@ class LocationOnboardingSheet extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+          padding: const EdgeInsets.fromLTRB(AppSpacing.xl, AppSpacing.lg, AppSpacing.xl, AppSpacing.lg),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -36,7 +37,7 @@ class LocationOnboardingSheet extends StatelessWidget {
               Row(
                 children: [
                   const Icon(Icons.location_on_outlined),
-                  const SizedBox(width: 8),
+                  SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
                       l10n.locationOnboardingTitle,
@@ -49,18 +50,18 @@ class LocationOnboardingSheet extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: AppSpacing.sm),
               Text(
                 l10n.locationOnboardingBody,
                 style: theme.textTheme.bodyLarge,
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: AppSpacing.xl),
               FilledButton.icon(
                 icon: const Icon(Icons.my_location),
                 label: Text(l10n.locationOnboardingEnable),
                 onPressed: onEnableLocation,
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: AppSpacing.sm),
               TextButton(
                 onPressed: onLater,
                 child: Text(l10n.locationOnboardingLater),
