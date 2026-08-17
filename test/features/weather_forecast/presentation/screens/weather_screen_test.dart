@@ -246,7 +246,58 @@ void main() {
     expect(find.text('28°C'), findsOneWidget);
     expect(find.text('12 m/s'), findsOneWidget);
     expect(find.text('65%'), findsOneWidget);
+    expect(find.text('10%'), findsOneWidget);
     expect(find.text('SkyLine'), findsOneWidget);
+  });
+
+  testWidgets('shows precipitation probability from hourly data', (tester) async {
+    final now = DateTime.now();
+    final weather = WeatherEntity(
+      current: const CurrentWeatherEntity(
+        temperature: 15.0,
+        humidity: 80,
+        isDay: true,
+        windSpeed: 5.0,
+        precipitation: 0.3,
+        weatherCode: 61,
+      ),
+      hourly: [
+        HourlyWeatherEntity(
+          time: now,
+          temperature: 15.0,
+          precipitationProbability: 75,
+          weatherCode: 61,
+        ),
+      ],
+      daily: [
+        DailyWeatherEntity(
+          date: now,
+          tempMax: 16.0,
+          tempMin: 10.0,
+          weatherCode: 61,
+          sunrise: DateTime(now.year, now.month, now.day, 6, 0),
+          sunset: DateTime(now.year, now.month, now.day, 20, 0),
+        ),
+      ],
+    );
+
+    when(() => mockRepository.fetchWeather(
+      latitude: any(named: 'latitude'),
+      longitude: any(named: 'longitude'),
+    )).thenAnswer((_) async => WeatherResult(weather: weather, isCached: false));
+
+    final bloc = WeatherForecastBloc(
+      logger: MockAppLogger(),
+      weatherRepository: mockRepository,
+      getSettings: mockGetSettings,
+      isConnected: () async => true,
+    );
+    bloc.add(const FetchWeatherEvent());
+    await tester.pumpWidget(createTestScreen(bloc));
+    await tester.pumpAndSettle();
+
+    expect(find.text('75%'), findsOneWidget);
+    expect(find.text('Chance of rain'), findsOneWidget);
   });
 
   testWidgets('shows localized weather content in French', (tester) async {

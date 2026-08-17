@@ -4,6 +4,7 @@ import 'package:sky_line/core/config/app_theme.dart';
 import 'package:sky_line/core/enums/setting_wind_unit.dart';
 import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/core/utils/weather_format.dart';
+import 'package:sky_line/features/weather_forecast/domain/entities/hourly_weather_entity.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_state.dart';
 
@@ -26,7 +27,7 @@ class WeatherStatsCard extends StatelessWidget {
             ? WeatherFormat.wind(weather.current.windSpeed, unit: settings?.windUnit ?? SettingWindUnit.ms)
             : '-- m/s';
         final rain = weather != null
-            ? WeatherFormat.percent(weather.current.precipitation)
+            ? WeatherFormat.percentInt(_findCurrentHourPrecipitationProbability(weather.hourly))
             : '--%';
         final humidity = weather != null
             ? WeatherFormat.percentInt(weather.current.humidity)
@@ -98,5 +99,13 @@ class WeatherStatsCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  int _findCurrentHourPrecipitationProbability(List<HourlyWeatherEntity> hourly) {
+    if (hourly.isEmpty) return 0;
+    final now = DateTime.now();
+    final closest = hourly.reduce((a, b) =>
+        a.time.difference(now).abs() < b.time.difference(now).abs() ? a : b);
+    return closest.precipitationProbability;
   }
 }
