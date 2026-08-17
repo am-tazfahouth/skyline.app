@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/config/app_theme.dart';
+import 'package:sky_line/core/constants/app_radius.dart';
+import 'package:sky_line/core/constants/app_spacing.dart';
+import 'package:sky_line/core/constants/app_text_styles.dart';
 import 'package:sky_line/core/enums/setting_wind_unit.dart';
 import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/core/utils/weather_format.dart';
@@ -16,6 +19,7 @@ class WeatherStatsCard extends StatelessWidget {
     return BlocBuilder<WeatherForecastBloc, WeatherForecastState>(
       builder: (context, state) {
         final surface = AppTheme.surfaceFor(Theme.of(context).brightness);
+        final styles = Theme.of(context).extension<TextStyleCatalog>()!;
         final l10n = AppLocalisation.of(context)!;
         final cardColor = surface.colorContainer;
         final primaryText = surface.onColor;
@@ -36,6 +40,7 @@ class WeatherStatsCard extends StatelessWidget {
         return Row(
           children: [
             Expanded(child: _buildStatCard(
+              styles: styles,
               icon: Icons.air_rounded,
               value: wind,
               label: l10n.weatherStatsWind,
@@ -43,8 +48,9 @@ class WeatherStatsCard extends StatelessWidget {
               primaryText: primaryText,
               secondaryText: secondaryText,
             )),
-            const SizedBox(width: 10),
+            SizedBox(width: AppSpacing.sm),
             Expanded(child: _buildStatCard(
+              styles: styles,
               icon: Icons.umbrella_rounded,
               value: rain,
               label: l10n.weatherStatsChanceOfRain,
@@ -52,8 +58,9 @@ class WeatherStatsCard extends StatelessWidget {
               primaryText: primaryText,
               secondaryText: secondaryText,
             )),
-            const SizedBox(width: 10),
+            SizedBox(width: AppSpacing.sm),
             Expanded(child: _buildStatCard(
+              styles: styles,
               icon: Icons.water_drop_outlined,
               value: humidity,
               label: l10n.weatherStatsHumidity,
@@ -68,6 +75,7 @@ class WeatherStatsCard extends StatelessWidget {
   }
 
   Widget _buildStatCard({
+    required TextStyleCatalog styles,
     required IconData icon,
     required String value,
     required String label,
@@ -76,26 +84,22 @@ class WeatherStatsCard extends StatelessWidget {
     required Color secondaryText,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg, horizontal: AppSpacing.sm),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, color: secondaryText, size: 20),
-          const SizedBox(height: 8),
+          SizedBox(height: AppSpacing.sm),
           Text(
             value,
-            style: TextStyle(
-              color: primaryText,
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ),
+            style: styles.titleMedium.copyWith(color: primaryText),
           ),
-          const SizedBox(height: 3),
-          Text(label, style: TextStyle(color: secondaryText, fontSize: 11)),
+          SizedBox(height: AppSpacing.xs),
+          Text(label, style: styles.labelSmall.copyWith(color: secondaryText)),
         ],
       ),
     );

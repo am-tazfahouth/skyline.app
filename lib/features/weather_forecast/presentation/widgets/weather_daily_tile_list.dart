@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/config/app_theme.dart';
+import 'package:sky_line/core/constants/app_radius.dart';
+import 'package:sky_line/core/constants/app_spacing.dart';
+import 'package:sky_line/core/constants/app_text_styles.dart';
 import 'package:sky_line/core/enums/setting_heat_unit.dart';
 import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/core/utils/weather_format.dart';
@@ -17,6 +20,7 @@ class WeatherDailyTileList extends StatelessWidget {
     return BlocBuilder<WeatherForecastBloc, WeatherForecastState>(
       builder: (context, state) {
         final surface = AppTheme.surfaceFor(Theme.of(context).brightness);
+        final styles = Theme.of(context).extension<TextStyleCatalog>()!;
         final primaryText = surface.onColor;
         final secondaryText = surface.onColorContainer;
         final colorScheme = Theme.of(context).colorScheme;
@@ -27,7 +31,7 @@ class WeatherDailyTileList extends StatelessWidget {
         final weather = state.weatherOrNull;
         final settings = state.settingsOrNull;
         if (weather == null) {
-          return _buildPlaceholder(primaryText, secondaryText, gradientCold, gradientHot);
+          return _buildPlaceholder(styles, primaryText, secondaryText, gradientCold, gradientHot);
         }
 
         final items = weather.daily.take(7).toList();
@@ -40,13 +44,14 @@ class WeatherDailyTileList extends StatelessWidget {
               title: l10n.weatherDailyTitle,
               color: primaryText,
             ),
-            const SizedBox(height: 5),
+            SizedBox(height: AppSpacing.xs),
             ...items.map((item) {
               final dayLabel = _formatDayLabel(item.date, l10n);
               final condition = WeatherFormat.condition(item.weatherCode, l10n);
               final tempMin = WeatherFormat.temperature(item.tempMin, unit: settings?.heatUnit ?? SettingHeatUnit.celsius);
               final tempMax = WeatherFormat.temperature(item.tempMax, unit: settings?.heatUnit ?? SettingHeatUnit.celsius);
               return _buildRowTile(
+                styles: styles,
                 dayLabel: dayLabel,
                 condition: condition,
                 icon: WeatherIconMapper.fromWeatherCode(item.weatherCode),
@@ -74,11 +79,12 @@ class WeatherDailyTileList extends StatelessWidget {
     return l10n.weatherDayLabel(date);
   }
 
-  Widget _buildPlaceholder(Color primaryText, Color secondaryText, Color gradientCold, Color gradientHot) {
+  Widget _buildPlaceholder(TextStyleCatalog styles, Color primaryText, Color secondaryText, Color gradientCold, Color gradientHot) {
     return Column(
       children: List.generate(
         5,
         (_) => _buildRowTile(
+          styles: styles,
           dayLabel: '--',
           condition: '--',
           icon: Icons.cloud_rounded,
@@ -94,6 +100,7 @@ class WeatherDailyTileList extends StatelessWidget {
   }
 
   Widget _buildRowTile({
+    required TextStyleCatalog styles,
     required String dayLabel,
     required String condition,
     required IconData icon,
@@ -105,30 +112,25 @@ class WeatherDailyTileList extends StatelessWidget {
     required Color gradientHot,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm, horizontal: AppSpacing.sm),
       child: Row(
         children: [
           Icon(icon, color: secondaryText, size: 22),
-          const SizedBox(width: 30),
+          SizedBox(width: AppSpacing.xl),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 dayLabel,
-                style: TextStyle(
-                  color: primaryText,
-                  fontSize: 14,
+                style: styles.labelLarge.copyWith(
                   fontWeight: FontWeight.w700,
+                  color: primaryText,
                 ),
               ),
-              const SizedBox(height: 2),
+              SizedBox(height: AppSpacing.xs),
               Text(
                 condition,
-                style: TextStyle(
-                  color: secondaryText,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                ),
+                style: styles.bodyMedium.copyWith(color: secondaryText),
               ),
             ],
           ),
@@ -141,28 +143,20 @@ class WeatherDailyTileList extends StatelessWidget {
                   children: [
                     Text(
                       tempMin,
-                      style: TextStyle(
-                        color: primaryText,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: styles.labelLarge.copyWith(color: primaryText),
                     ),
                     const Spacer(),
                     Text(
                       tempMax,
-                      style: TextStyle(
-                        color: primaryText,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: styles.labelLarge.copyWith(color: primaryText),
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: AppSpacing.xs),
                 Container(
                   height: 3,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(AppRadius.xxs),
                     gradient: LinearGradient(
                       colors: [gradientCold, gradientHot],
                     ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/config/app_theme.dart';
+import 'package:sky_line/core/constants/app_spacing.dart';
+import 'package:sky_line/core/constants/app_text_styles.dart';
 import 'package:sky_line/core/enums/setting_heat_unit.dart';
 import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/core/utils/weather_format.dart';
@@ -16,6 +18,7 @@ class WeatherMainCard extends StatelessWidget {
     return BlocBuilder<WeatherForecastBloc, WeatherForecastState>(
       builder: (context, state) {
         final surface = AppTheme.surfaceFor(Theme.of(context).brightness);
+        final styles = Theme.of(context).extension<TextStyleCatalog>()!;
         final l10n = AppLocalisation.of(context)!;
         final primaryText = surface.onColor;
         final secondaryText = surface.onColorContainer;
@@ -41,33 +44,24 @@ class WeatherMainCard extends StatelessWidget {
 
         return Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 22),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.xl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Icon(iconData, color: primaryText, size: iconSize),
-            const SizedBox(height: 12),
+            SizedBox(height: AppSpacing.md),
             Text(
               temperature,
-              style: TextStyle(
-                fontSize: 52,
-                fontWeight: FontWeight.bold,
-                color: primaryText,
-                height: 1,
-              ),
+              style: styles.displayLarge.copyWith(color: primaryText),
             ),
-            const SizedBox(height: 6),
+            SizedBox(height: AppSpacing.sm),
             Text(
               condition,
-              style: TextStyle(
-                fontSize: 15,
-                color: primaryText,
-                fontWeight: FontWeight.w500,
-              ),
+              style: styles.titleSmall.copyWith(color: primaryText),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: AppSpacing.xs),
             Text(date,
-                style: TextStyle(fontSize: 12, color: secondaryText)),
+                style: styles.bodyMedium.copyWith(color: secondaryText)),
           ],
         ),
         );

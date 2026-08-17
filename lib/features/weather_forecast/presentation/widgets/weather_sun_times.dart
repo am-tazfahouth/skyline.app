@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/config/app_theme.dart';
+import 'package:sky_line/core/constants/app_radius.dart';
+import 'package:sky_line/core/constants/app_spacing.dart';
+import 'package:sky_line/core/constants/app_text_styles.dart';
 import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_state.dart';
@@ -13,6 +16,7 @@ class WeatherSunTimes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final surface = AppTheme.surfaceFor(Theme.of(context).brightness);
+    final styles = Theme.of(context).extension<TextStyleCatalog>()!;
     final cardColor = surface.colorContainer;
     final primaryText = surface.onColor;
     final secondaryText = surface.onColorContainer;
@@ -25,6 +29,7 @@ class WeatherSunTimes extends StatelessWidget {
         final daily = weather?.daily ?? [];
         if (daily.isEmpty) {
           return _buildPlaceholder(
+            styles: styles,
             cardColor: cardColor,
             primaryText: primaryText,
             secondaryText: secondaryText,
@@ -47,10 +52,10 @@ class WeatherSunTimes extends StatelessWidget {
         );
 
         return Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           decoration: BoxDecoration(
             color: cardColor,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppRadius.lg),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,10 +65,11 @@ class WeatherSunTimes extends StatelessWidget {
                 title: config.title,
                 color: primaryText,
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: AppSpacing.sm),
               Row(
                 children: [
                   _TimePoint(
+                    styles: styles,
                     data: config.start,
                     primaryText: primaryText,
                     secondaryText: secondaryText,
@@ -72,11 +78,12 @@ class WeatherSunTimes extends StatelessWidget {
                     child: Center(
                       child: Text(
                         '—',
-                        style: TextStyle(color: secondaryText, fontSize: 20),
+                        style: styles.headlineMedium.copyWith(color: secondaryText),
                       ),
                     ),
                   ),
                   _TimePoint(
+                    styles: styles,
                     data: config.middle,
                     primaryText: primaryText,
                     secondaryText: secondaryText,
@@ -85,11 +92,12 @@ class WeatherSunTimes extends StatelessWidget {
                     child: Center(
                       child: Text(
                         '—',
-                        style: TextStyle(color: secondaryText, fontSize: 20),
+                        style: styles.headlineMedium.copyWith(color: secondaryText),
                       ),
                     ),
                   ),
                   _TimePoint(
+                    styles: styles,
                     data: config.end,
                     primaryText: primaryText,
                     secondaryText: secondaryText,
@@ -104,23 +112,25 @@ class WeatherSunTimes extends StatelessWidget {
   }
 
   Widget _buildPlaceholder({
+    required TextStyleCatalog styles,
     required Color cardColor,
     required Color primaryText,
     required Color secondaryText,
     required AppLocalisation l10n,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
       ),
       child: Row(
         children: [
           _TimePoint(
+            styles: styles,
             data: TimePointData(
               icon: Icons.wb_sunny_outlined,
-              iconColor: Colors.grey,
+              iconColor: secondaryText,
               label: l10n.weatherSunSunrise,
               time: '--:--',
             ),
@@ -131,14 +141,15 @@ class WeatherSunTimes extends StatelessWidget {
             child: Center(
               child: Text(
                 '—',
-                style: TextStyle(color: secondaryText, fontSize: 20),
+                style: styles.headlineMedium.copyWith(color: secondaryText),
               ),
             ),
           ),
           _TimePoint(
+            styles: styles,
             data: TimePointData(
               icon: Icons.wb_sunny,
-              iconColor: Colors.grey,
+              iconColor: secondaryText,
               label: l10n.weatherSunZenith,
               time: '--:--',
             ),
@@ -149,14 +160,15 @@ class WeatherSunTimes extends StatelessWidget {
             child: Center(
               child: Text(
                 '—',
-                style: TextStyle(color: secondaryText, fontSize: 20),
+                style: styles.headlineMedium.copyWith(color: secondaryText),
               ),
             ),
           ),
           _TimePoint(
+            styles: styles,
             data: TimePointData(
               icon: Icons.nightlight_round_outlined,
-              iconColor: Colors.grey,
+              iconColor: secondaryText,
               label: l10n.weatherSunSunset,
               time: '--:--',
             ),
@@ -170,11 +182,13 @@ class WeatherSunTimes extends StatelessWidget {
 }
 
 class _TimePoint extends StatelessWidget {
+  final TextStyleCatalog styles;
   final TimePointData data;
   final Color primaryText;
   final Color secondaryText;
 
   const _TimePoint({
+    required this.styles,
     required this.data,
     required this.primaryText,
     required this.secondaryText,
@@ -186,17 +200,16 @@ class _TimePoint extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(data.icon, color: data.iconColor, size: 20),
-        const SizedBox(height: 4),
+        SizedBox(height: AppSpacing.xs),
         Text(
           data.label,
-          style: TextStyle(color: secondaryText, fontSize: 11),
+          style: styles.labelSmall.copyWith(color: secondaryText),
         ),
-        const SizedBox(height: 2),
+        SizedBox(height: AppSpacing.xs),
         Text(
           data.time,
-          style: TextStyle(
+          style: styles.titleMedium.copyWith(
             color: primaryText,
-            fontSize: 15,
             fontWeight: FontWeight.w700,
           ),
         ),

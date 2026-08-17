@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:sky_line/core/config/app_theme.dart';
+import 'package:sky_line/core/constants/app_radius.dart';
+import 'package:sky_line/core/constants/app_spacing.dart';
+import 'package:sky_line/core/constants/app_text_styles.dart';
 import 'package:sky_line/core/enums/setting_heat_unit.dart';
 import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/core/utils/weather_format.dart';
@@ -18,6 +21,7 @@ class WeatherHourlyTileList extends StatelessWidget {
     return BlocBuilder<WeatherForecastBloc, WeatherForecastState>(
       builder: (context, state) {
         final surface = AppTheme.surfaceFor(Theme.of(context).brightness);
+        final styles = Theme.of(context).extension<TextStyleCatalog>()!;
         final l10n = AppLocalisation.of(context)!;
         final cardColor = surface.colorContainer;
         final primaryText = surface.onColor;
@@ -26,7 +30,7 @@ class WeatherHourlyTileList extends StatelessWidget {
         final weather = state.weatherOrNull;
         final settings = state.settingsOrNull;
         if (weather == null) {
-          return _buildPlaceholder(cardColor, primaryText, secondaryText);
+          return _buildPlaceholder(styles, cardColor, primaryText, secondaryText);
         }
 
         final now = DateTime.now();
@@ -44,7 +48,7 @@ class WeatherHourlyTileList extends StatelessWidget {
               title: l10n.weatherHourlyTitle,
               color: primaryText,
             ),
-            const SizedBox(height: 5),
+            SizedBox(height: AppSpacing.xs),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               clipBehavior: Clip.antiAlias,
@@ -54,6 +58,7 @@ class WeatherHourlyTileList extends StatelessWidget {
                   final temp = WeatherFormat.temperature(item.temperature, unit: settings?.heatUnit ?? SettingHeatUnit.celsius);
                   final isDay = item.time.hour >= 6 && item.time.hour < 18;
                   return _buildTile(
+                    styles: styles,
                     time: time,
                     icon: WeatherIconMapper.fromWeatherCode(
                     item.weatherCode, isDay: isDay),
@@ -71,7 +76,7 @@ class WeatherHourlyTileList extends StatelessWidget {
     );
   }
 
-  Widget _buildPlaceholder(Color cardColor, Color primaryText, Color secondaryText) {
+  Widget _buildPlaceholder(TextStyleCatalog styles, Color cardColor, Color primaryText, Color secondaryText) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       clipBehavior: Clip.none,
@@ -79,6 +84,7 @@ class WeatherHourlyTileList extends StatelessWidget {
         children: List.generate(
           6,
           (_) => _buildTile(
+            styles: styles,
             time: '--:--',
             icon: Icons.cloud_rounded,
             temp: '--°',
@@ -92,6 +98,7 @@ class WeatherHourlyTileList extends StatelessWidget {
   }
 
   Widget _buildTile({
+    required TextStyleCatalog styles,
     required String time,
     required IconData icon,
     required String temp,
@@ -100,25 +107,21 @@ class WeatherHourlyTileList extends StatelessWidget {
     required Color secondaryText,
   }) {
     return Container(
-      margin: const EdgeInsets.only(right: 14),
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      margin: const EdgeInsets.only(right: AppSpacing.md),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm, horizontal: AppSpacing.sm),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppRadius.xl),
       ),
       child: Column(
         children: [
-          Text(time, style: TextStyle(color: secondaryText, fontSize: 12)),
-          const SizedBox(height: 10),
+          Text(time, style: styles.bodyMedium.copyWith(color: secondaryText)),
+          SizedBox(height: AppSpacing.sm),
           Icon(icon, color: secondaryText, size: 22),
-          const SizedBox(height: 10),
+          SizedBox(height: AppSpacing.sm),
           Text(
             temp,
-            style: TextStyle(
-              color: primaryText,
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ),
+            style: styles.titleMedium.copyWith(color: primaryText),
           ),
         ],
       ),
