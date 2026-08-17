@@ -110,7 +110,7 @@ class AppLocalisationAr extends AppLocalisation {
   @override
   String weatherDateLong(DateTime date) {
     final intl.DateFormat dateDateFormat = intl.DateFormat(
-      'dMMMMy',
+      'd MMMM y',
       localeName,
     );
     final String dateString = dateDateFormat.format(date);

@@ -97,7 +97,7 @@
     "placeholders": {
       "date": {
         "type": "DateTime",
-        "format": "dMMMMy",
+        "format": "d MMMM y",
         "isCustomDateFormat": true
       }
     }
