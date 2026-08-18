@@ -123,7 +123,7 @@ class AppLocalisationEn extends AppLocalisation {
   @override
   String weatherDayLabel(DateTime date) {
     final intl.DateFormat dateDateFormat = intl.DateFormat(
-      'E dMMM',
+      'E d MMM',
       localeName,
     );
     final String dateString = dateDateFormat.format(date);
