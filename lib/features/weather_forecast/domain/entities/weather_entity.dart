@@ -26,6 +26,24 @@ class WeatherEntity extends Equatable {
     );
   }
 
+  WeatherEntity withCurrentFromHourly(DateTime now) {
+    if (hourly.isEmpty) return this;
+    final closest = hourly.reduce((a, b) =>
+        a.time.difference(now).abs() < b.time.difference(now).abs()
+            ? a
+            : b);
+    return copyWith(
+      current: CurrentWeatherEntity(
+        temperature: closest.temperature,
+        humidity: current.humidity,
+        isDay: closest.time.hour >= 6 && closest.time.hour < 18,
+        windSpeed: current.windSpeed,
+        precipitation: current.precipitation,
+        weatherCode: closest.weatherCode,
+      ),
+    );
+  }
+
   @override
   List<Object?> get props => [current, hourly, daily];
 }

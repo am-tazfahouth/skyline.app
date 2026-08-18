@@ -22,7 +22,10 @@ class WeatherRepositoryImpl implements WeatherRepository {
       maxAgeMillis: _cacheMaxAgeDays * 24 * 60 * 60 * 1000,
     );
     if (cached == null) return null;
-    return WeatherResult(weather: cached.toEntity(), isCached: true);
+    return WeatherResult(
+      weather: cached.toEntity().withCurrentFromHourly(DateTime.now()),
+      isCached: true,
+    );
   }
 
   @override
