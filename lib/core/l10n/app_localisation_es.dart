@@ -64,6 +64,19 @@ class AppLocalisationEs extends AppLocalisation {
   String get settingsCopyright => '© 2026 TzfLab';
 
   @override
+  String get settingsCreatorRole => 'Creador y Desarrollador';
+
+  @override
+  String get settingsCreatorBio =>
+      'Construyendo SkyLine con pasión por experiencias climáticas limpias y profesionales.';
+
+  @override
+  String get settingsCreatorGithub => 'GitHub';
+
+  @override
+  String get settingsCreatorContact => 'Contacto';
+
+  @override
   String get settingsThemeLight => 'Claro';
 
   @override

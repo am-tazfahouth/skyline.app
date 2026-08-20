@@ -204,6 +204,30 @@ abstract class AppLocalisation {
   /// **'© 2026 TzfLab'**
   String get settingsCopyright;
 
+  /// Role label for the app creator
+  ///
+  /// In en, this message translates to:
+  /// **'Creator & Developer'**
+  String get settingsCreatorRole;
+
+  /// Short bio of the app creator
+  ///
+  /// In en, this message translates to:
+  /// **'Building SkyLine with passion for clean, professional weather experiences.'**
+  String get settingsCreatorBio;
+
+  /// Label for the GitHub social link
+  ///
+  /// In en, this message translates to:
+  /// **'GitHub'**
+  String get settingsCreatorGithub;
+
+  /// Label for the email contact link
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get settingsCreatorContact;
+
   /// No description provided for @settingsThemeLight.
   ///
   /// In en, this message translates to:

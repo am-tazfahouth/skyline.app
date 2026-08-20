@@ -67,6 +67,23 @@
     "description": "Copyright line shown on the licenses page"
   },
 
+  "settingsCreatorRole": "Creator & Developer",
+  "@settingsCreatorRole": {
+    "description": "Role label for the app creator"
+  },
+  "settingsCreatorBio": "Building SkyLine with passion for clean, professional weather experiences.",
+  "@settingsCreatorBio": {
+    "description": "Short bio of the app creator"
+  },
+  "settingsCreatorGithub": "GitHub",
+  "@settingsCreatorGithub": {
+    "description": "Label for the GitHub social link"
+  },
+  "settingsCreatorContact": "Contact",
+  "@settingsCreatorContact": {
+    "description": "Label for the email contact link"
+  },
+
   "settingsThemeLight": "Light",
   "settingsThemeDark": "Dark",
   "settingsThemeSystem": "System",

@@ -19,6 +19,11 @@
   "settingsAppVersion": "Versión de la aplicación: {version}",
   "settingsCopyright": "© 2026 TzfLab",
 
+  "settingsCreatorRole": "Creador y Desarrollador",
+  "settingsCreatorBio": "Construyendo SkyLine con pasión por experiencias climáticas limpias y profesionales.",
+  "settingsCreatorGithub": "GitHub",
+  "settingsCreatorContact": "Contacto",
+
   "settingsThemeLight": "Claro",
   "settingsThemeDark": "Oscuro",
   "settingsThemeSystem": "Sistema",
