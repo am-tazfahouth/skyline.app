@@ -11,6 +11,7 @@ import 'package:sky_line/features/settings/presentation/widgets/select_theme_dia
 import 'package:sky_line/features/settings/presentation/widgets/select_wind_unit_dialog.dart';
 import 'package:sky_line/features/settings/presentation/widgets/setting_card.dart';
 import 'package:sky_line/features/settings/presentation/widgets/setting_item.dart';
+import 'package:sky_line/features/settings/presentation/widgets/creator_card.dart';
 import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_event.dart';
@@ -120,6 +121,8 @@ class SettingsScreen extends StatelessWidget {
                       ),
                     ]
                   ),
+                  const SizedBox(height: AppSpacing.xl),
+                  const CreatorCard(),
                   SizedBox(height: AppSpacing.xxl),
                 ],
               );
