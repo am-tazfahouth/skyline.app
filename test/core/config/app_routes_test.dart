@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:sky_line/core/config/app_routes.dart';
+import 'package:sky_line/core/config/app_theme.dart';
 import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/core/services/logger_sevices.dart';
 import 'package:sky_line/features/location/domain/repositories/location_repository.dart';
@@ -88,6 +89,7 @@ void main() {
     await tester.pumpWidget(
       wrap(
         MaterialApp(
+          theme: AppTheme(ThemeData().textTheme).light(),
           localizationsDelegates: AppLocalisation.localizationsDelegates,
           supportedLocales: AppLocalisation.supportedLocales,
           initialRoute: routeName,
@@ -133,6 +135,7 @@ void main() {
     await tester.pumpWidget(
       wrap(
         MaterialApp(
+          theme: AppTheme(ThemeData().textTheme).light(),
           localizationsDelegates: AppLocalisation.localizationsDelegates,
           supportedLocales: AppLocalisation.supportedLocales,
           home: Builder(

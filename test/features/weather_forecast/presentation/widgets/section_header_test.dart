@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sky_line/core/config/app_theme.dart';
 import 'package:sky_line/features/weather_forecast/presentation/widgets/section_header.dart';
 
 void main() {
@@ -9,6 +10,7 @@ void main() {
     Color color = Colors.white,
   }) {
     return MaterialApp(
+      theme: AppTheme(ThemeData().textTheme).light(),
       home: Scaffold(
         body: WeatherSectionHeader(icon: icon, title: title, color: color),
       ),

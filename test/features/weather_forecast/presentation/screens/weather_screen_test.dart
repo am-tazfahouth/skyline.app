@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:sky_line/core/config/app_routes.dart';
+import 'package:sky_line/core/config/app_theme.dart';
 import 'package:sky_line/core/enums/setting_heat_unit.dart';
 import 'package:sky_line/core/enums/setting_wind_unit.dart';
 import 'package:sky_line/core/errors/location_exceptions.dart';
@@ -96,6 +97,7 @@ Widget createTestScreen(
       BlocProvider<LocationOnboardingBloc>.value(value: onboardingBloc),
     ],
     child: MaterialApp(
+      theme: AppTheme(ThemeData().textTheme).light(),
       onGenerateRoute: RouteGenerator.generateRoute,
       locale: locale,
       supportedLocales: AppLocalisation.supportedLocales,
