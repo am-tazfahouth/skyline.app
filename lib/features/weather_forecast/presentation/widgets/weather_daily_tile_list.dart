@@ -136,7 +136,7 @@ class WeatherDailyTileList extends StatelessWidget {
           ),
           const Spacer(),
           SizedBox(
-            width: 130,
+            width: 110,
             child: Column(
               children: [
                 Row(
