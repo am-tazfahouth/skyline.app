@@ -12,6 +12,14 @@ class CreatorCard extends StatelessWidget {
   static const String _githubUrl = 'https://github.com/PLACEHOLDER_USERNAME';
   static const String _emailAddress = 'PLACEHOLDER_EMAIL';
 
+  Future<void> _launchSafe(Uri uri) async {
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } on Exception {
+      // Silently ignore — no handler available on device
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalisation.of(context)!;
@@ -74,14 +82,14 @@ class CreatorCard extends StatelessWidget {
                   _SocialLink(
                     icon: Icons.code_rounded,
                     label: l10n.settingsCreatorGithub,
-                    onTap: () => launchUrl(Uri.parse(_githubUrl)),
+                    onTap: () => _launchSafe(Uri.parse(_githubUrl)),
                     color: secondaryText,
                   ),
                   const SizedBox(width: AppSpacing.md),
                   _SocialLink(
                     icon: Icons.email_outlined,
                     label: l10n.settingsCreatorContact,
-                    onTap: () => launchUrl(Uri.parse('mailto:$_emailAddress')),
+                    onTap: () => _launchSafe(Uri.parse('mailto:$_emailAddress')),
                     color: secondaryText,
                   ),
                 ],
