@@ -47,7 +47,7 @@ void main() {
     await tester.pumpWidget(createTestWidget());
     await tester.pumpAndSettle();
 
-    expect(find.text('TzfLab'), findsOneWidget);
+    expect(find.text('Ali Mohamed Tazfahouth'), findsOneWidget);
     expect(find.text('Creator & Developer'), findsOneWidget);
   });
 
@@ -98,7 +98,7 @@ void main() {
 
     expect(
       mockPlatform.lastLaunchedUrl,
-      'https://github.com/PLACEHOLDER_USERNAME',
+      'https://github.com/am-tazfahouth',
     );
   });
 
@@ -111,7 +111,7 @@ void main() {
 
     expect(
       mockPlatform.lastLaunchedUrl,
-      'mailto:PLACEHOLDER_EMAIL',
+      'mailto:am.tazfahouth@gmail.com',
     );
   });
 
@@ -120,7 +120,7 @@ void main() {
     await tester.pumpWidget(createTestWidget(theme: appTheme.dark()));
     await tester.pumpAndSettle();
 
-    expect(find.text('TzfLab'), findsOneWidget);
+    expect(find.text('Ali Mohamed Tazfahouth'), findsOneWidget);
     expect(find.text('Creator & Developer'), findsOneWidget);
     expect(find.text('GitHub'), findsOneWidget);
     expect(find.text('Contact'), findsOneWidget);
