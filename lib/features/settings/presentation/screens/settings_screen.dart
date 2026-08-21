@@ -144,7 +144,7 @@ class SettingsScreen extends StatelessWidget {
         height: 70,
         width: 70,
       ),
-      applicationLegalese: l10n.settingsCopyright
+      applicationLegalese: 'Copyright © 2026 Ali Mohamed Tazfahouth'
     );
   }
 }

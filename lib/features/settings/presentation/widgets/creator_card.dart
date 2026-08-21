@@ -9,8 +9,8 @@ import 'package:url_launcher/url_launcher.dart';
 class CreatorCard extends StatelessWidget {
   const CreatorCard({super.key});
 
-  static const String _githubUrl = 'https://github.com/PLACEHOLDER_USERNAME';
-  static const String _emailAddress = 'PLACEHOLDER_EMAIL';
+  static const String _githubUrl = 'https://github.com/am-tazfahouth';
+  static const String _emailAddress = 'am.tazfahouth@gmail.com';
 
   Future<void> _launchSafe(Uri uri) async {
     try {
@@ -57,14 +57,12 @@ class CreatorCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'TzfLab',
-                          style: styles.headlineMedium
-                              .copyWith(color: primaryText),
+                          'Ali Mohamed Tazfahouth',
+                          style: styles.headlineMedium.copyWith(color: primaryText),
                         ),
                         Text(
                           l10n.settingsCreatorRole,
-                          style: styles.bodyMedium
-                              .copyWith(color: secondaryText),
+                          style: styles.bodyMedium.copyWith(color: secondaryText),
                         ),
                       ],
                     ),
