@@ -58,14 +58,7 @@ class LocationSearchScreen extends StatelessWidget {
                     location: location,
                     onTap: () {
                       final bloc = context.read<LocationBloc>();
-                      final favorites = bloc.repository.loadFavorites();
-                      final isAlreadyFavorite = favorites.any(
-                        (f) => f.latitude == location.latitude &&
-                            f.longitude == location.longitude,
-                      );
-                      if (!isAlreadyFavorite) {
-                        bloc.add(AddFavoriteEvent(location: location));
-                      }
+                      bloc.add(AddFavoriteEvent(location: location));
                       bloc.add(SelectLocationEvent(location: location));
                       Navigator.pop(context);
                     },

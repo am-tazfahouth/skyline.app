@@ -36,11 +36,7 @@ class _LocationScreenState extends State<LocationScreen> {
       listener: (context, state) {
         if (state is LocationSelected) {
           final location = state.location;
-          final alreadyFavorite = state.favorites.any(
-            (f) => f.latitude == location.latitude &&
-                f.longitude == location.longitude,
-          );
-          if (location.isGpsLocation && !alreadyFavorite) {
+          if (location.isGpsLocation) {
             context
                 .read<LocationBloc>()
                 .add(AddFavoriteEvent(location: location));

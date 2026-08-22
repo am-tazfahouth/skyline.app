@@ -89,9 +89,11 @@ void main() {
     expect(find.text('open'), findsOneWidget);
   });
 
-  testWidgets('tapping a result skips add when already a favorite',
+  testWidgets('tapping an already-favorited result still adds and selects it',
       (tester) async {
     createBloc();
+    // Duplicate protection lives in the repository layer, not in the screen:
+    // the tap flow must stay identical whether or not the city is favorited.
     when(() => repo.loadFavorites()).thenReturn([paris]);
     when(() => repo.saveFavorite(any())).thenAnswer((_) async {});
     when(() => repo.saveLastLocation(any())).thenAnswer((_) async {});
@@ -100,7 +102,7 @@ void main() {
     await tester.tap(find.text('Paris'));
     await tester.pumpAndSettle();
 
-    verifyNever(() => repo.saveFavorite(any()));
+    verify(() => repo.saveFavorite(paris)).called(1);
     verify(() => repo.saveLastLocation(paris)).called(1);
     expect(find.text('open'), findsOneWidget);
   });

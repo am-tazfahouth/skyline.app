@@ -68,10 +68,52 @@ void main() {
   });
 
   group('saveFavorite', () {
-    test('saves to local source', () async {
+    test('saves to local source when no duplicate exists', () async {
+      when(() => mockLocal.loadFavorites()).thenReturn([]);
       when(() => mockLocal.saveFavorite(any())).thenReturn(null);
 
       const entity = LocationEntity(latitude: 48.85, longitude: 2.35, cityName: 'Paris');
+      await repo.saveFavorite(entity);
+
+      verify(() => mockLocal.saveFavorite(any())).called(1);
+    });
+
+    test('skips saving when an existing favorite has the same rounded coordinates', () async {
+      when(() => mockLocal.loadFavorites()).thenReturn([
+        LocationCacheEntity(
+          id: 1,
+          latitude: 48.8566149,
+          longitude: 2.3522087,
+          cityName: 'Paris',
+        ),
+      ]);
+
+      const entity = LocationEntity(
+        latitude: 48.8566,
+        longitude: 2.3522,
+        cityName: 'Paris',
+      );
+      await repo.saveFavorite(entity);
+
+      verifyNever(() => mockLocal.saveFavorite(any()));
+    });
+
+    test('saves when coordinates differ beyond the rounding tolerance', () async {
+      when(() => mockLocal.loadFavorites()).thenReturn([
+        LocationCacheEntity(
+          id: 1,
+          latitude: 45.7640,
+          longitude: 4.8357,
+          cityName: 'Lyon',
+        ),
+      ]);
+      when(() => mockLocal.saveFavorite(any())).thenReturn(null);
+
+      const entity = LocationEntity(
+        latitude: 48.8566,
+        longitude: 2.3522,
+        cityName: 'Paris',
+      );
       await repo.saveFavorite(entity);
 
       verify(() => mockLocal.saveFavorite(any())).called(1);

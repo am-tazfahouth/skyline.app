@@ -29,19 +29,16 @@ class LocationRepositoryImpl implements LocationRepository {
 
   @override
   List<LocationEntity> loadFavorites() {
-    return _localSource.loadFavorites().map((e) => LocationEntity(
-      latitude: e.latitude,
-      longitude: e.longitude,
-      cityName: e.cityName,
-      country: e.country,
-      admin1: e.admin1,
-      isGpsLocation: e.isGpsLocation,
-      sortOrder: e.sortOrder,
-    )).toList();
+    return _localSource.loadFavorites().map(_mapToEntity).toList();
   }
 
   @override
   Future<void> saveFavorite(LocationEntity location) async {
+    final alreadySaved = _localSource.loadFavorites().any(
+          (favorite) => location.isAtSamePointAs(_mapToEntity(favorite)),
+        );
+    if (alreadySaved) return;
+
     _localSource.saveFavorite(LocationCacheEntity(
       latitude: location.latitude,
       longitude: location.longitude,
@@ -52,6 +49,16 @@ class LocationRepositoryImpl implements LocationRepository {
       sortOrder: location.sortOrder,
     ));
   }
+
+  LocationEntity _mapToEntity(LocationCacheEntity cache) => LocationEntity(
+        latitude: cache.latitude,
+        longitude: cache.longitude,
+        cityName: cache.cityName,
+        country: cache.country,
+        admin1: cache.admin1,
+        isGpsLocation: cache.isGpsLocation,
+        sortOrder: cache.sortOrder,
+      );
 
   @override
   Future<void> removeFavorite(LocationEntity location) async {

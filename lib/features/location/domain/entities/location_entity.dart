@@ -53,4 +53,15 @@ class LocationEntity extends Equatable {
   String get title => [cityName, country]
       .where((e) => e != null && e.isNotEmpty)
       .join(', ');
+
+  /// Returns true when [other] refers to the same geographic point as this
+  /// location. Coordinates are compared after rounding to 4 decimals
+  /// (~11 m precision) so that a GPS fix and a geocoding result for the same
+  /// place are considered equal regardless of their precision.
+  bool isAtSamePointAs(LocationEntity other) =>
+      _roundCoordinate(latitude) == _roundCoordinate(other.latitude) &&
+      _roundCoordinate(longitude) == _roundCoordinate(other.longitude);
+
+  static double _roundCoordinate(double value) =>
+      (value * 10000).roundToDouble() / 10000;
 }

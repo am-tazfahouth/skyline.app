@@ -28,6 +28,53 @@ void main() {
     });
   });
 
+  group('isAtSamePointAs', () {
+    test('returns true for identical coordinates', () {
+      const a = LocationEntity(latitude: 48.8566, longitude: 2.3522, cityName: 'Paris');
+      const b = LocationEntity(latitude: 48.8566, longitude: 2.3522, cityName: 'Paris');
+      expect(a.isAtSamePointAs(b), isTrue);
+    });
+
+    test('returns true when coordinates differ only below the 4th decimal', () {
+      const searched = LocationEntity(
+        latitude: 48.8566,
+        longitude: 2.3522,
+        cityName: 'Paris',
+      );
+      const gpsFix = LocationEntity(
+        latitude: 48.8566149,
+        longitude: 2.3522087,
+        cityName: 'Paris',
+        isGpsLocation: true,
+      );
+      expect(searched.isAtSamePointAs(gpsFix), isTrue);
+    });
+
+    test('returns true even when city names differ', () {
+      const a = LocationEntity(latitude: 48.8566, longitude: 2.3522, cityName: 'Paris');
+      const b = LocationEntity(latitude: 48.8566, longitude: 2.3522, cityName: 'Random');
+      expect(a.isAtSamePointAs(b), isTrue);
+    });
+
+    test('returns false when latitude differs by more than ~11 meters', () {
+      const a = LocationEntity(latitude: 48.8566, longitude: 2.3522, cityName: 'Paris');
+      const b = LocationEntity(latitude: 48.8571, longitude: 2.3522, cityName: 'Paris');
+      expect(a.isAtSamePointAs(b), isFalse);
+    });
+
+    test('returns false when longitude differs by more than ~11 meters', () {
+      const a = LocationEntity(latitude: 48.8566, longitude: 2.3522, cityName: 'Paris');
+      const b = LocationEntity(latitude: 48.8566, longitude: 2.3533, cityName: 'Paris');
+      expect(a.isAtSamePointAs(b), isFalse);
+    });
+
+    test('handles negative coordinates consistently', () {
+      const a = LocationEntity(latitude: 40.7128, longitude: -74.00601, cityName: 'New York');
+      const b = LocationEntity(latitude: 40.7128, longitude: -74.006049, cityName: 'New York');
+      expect(a.isAtSamePointAs(b), isTrue);
+    });
+  });
+
   group('title', () {
     test('joins city and country with a comma', () {
       const loc = LocationEntity(
