@@ -17,7 +17,10 @@ class MockAppLogger extends Mock implements AppLogger {}
 class MockGetSettingsUseCase extends Mock implements GetSettingsUseCase {}
 
 void main() {
-  Widget buildScreen({Locale locale = const Locale('en')}) {
+  Widget buildScreen({
+    Locale locale = const Locale('en'),
+    TextScaler textScaler = TextScaler.noScaling,
+  }) {
     final bloc = WeatherForecastBloc(
       logger: MockAppLogger(),
       weatherRepository: MockWeatherRepository(),
@@ -30,6 +33,10 @@ void main() {
       locale: locale,
       supportedLocales: AppLocalisation.supportedLocales,
       localizationsDelegates: AppLocalisation.localizationsDelegates,
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(context).copyWith(textScaler: textScaler),
+        child: child!,
+      ),
       home: Scaffold(
         body: SingleChildScrollView(
           child: Column(
@@ -70,6 +77,21 @@ void main() {
     expect(find.text('Lever du soleil'), findsOneWidget);
     expect(find.text('Zénith'), findsOneWidget);
     expect(find.text('Coucher du soleil'), findsOneWidget);
+  });
+
+  testWidgets('placeholder survives narrow screens with large system text',
+      (tester) async {
+    tester.view.physicalSize = const Size(280, 640);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(buildScreen(
+      locale: const Locale('fr'),
+      textScaler: const TextScaler.linear(1.4),
+    ));
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('--:--'), findsNWidgets(3));
   });
 }
 

@@ -141,11 +141,14 @@ class WeatherDailyTileList extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text(
-                      tempMin,
-                      style: styles.labelLarge.copyWith(color: primaryText),
+                    Expanded(
+                      child: Text(
+                        tempMin,
+                        style: styles.labelLarge.copyWith(color: primaryText),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
                     ),
-                    const Spacer(),
                     Text(
                       tempMax,
                       style: styles.labelLarge.copyWith(color: primaryText),

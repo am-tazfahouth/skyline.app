@@ -68,11 +68,13 @@ class WeatherSunTimes extends StatelessWidget {
               SizedBox(height: AppSpacing.sm),
               Row(
                 children: [
-                  _TimePoint(
-                    styles: styles,
-                    data: config.start,
-                    primaryText: primaryText,
-                    secondaryText: secondaryText,
+                  Expanded(
+                    child: _TimePoint(
+                      styles: styles,
+                      data: config.start,
+                      primaryText: primaryText,
+                      secondaryText: secondaryText,
+                    ),
                   ),
                   Expanded(
                     child: Center(
@@ -82,11 +84,13 @@ class WeatherSunTimes extends StatelessWidget {
                       ),
                     ),
                   ),
-                  _TimePoint(
-                    styles: styles,
-                    data: config.middle,
-                    primaryText: primaryText,
-                    secondaryText: secondaryText,
+                  Expanded(
+                    child: _TimePoint(
+                      styles: styles,
+                      data: config.middle,
+                      primaryText: primaryText,
+                      secondaryText: secondaryText,
+                    ),
                   ),
                   Expanded(
                     child: Center(
@@ -96,11 +100,13 @@ class WeatherSunTimes extends StatelessWidget {
                       ),
                     ),
                   ),
-                  _TimePoint(
-                    styles: styles,
-                    data: config.end,
-                    primaryText: primaryText,
-                    secondaryText: secondaryText,
+                  Expanded(
+                    child: _TimePoint(
+                      styles: styles,
+                      data: config.end,
+                      primaryText: primaryText,
+                      secondaryText: secondaryText,
+                    ),
                   ),
                 ],
               ),
@@ -126,16 +132,18 @@ class WeatherSunTimes extends StatelessWidget {
       ),
       child: Row(
         children: [
-          _TimePoint(
-            styles: styles,
-            data: TimePointData(
-              icon: Icons.wb_sunny_outlined,
-              iconColor: secondaryText,
-              label: l10n.weatherSunSunrise,
-              time: '--:--',
+          Expanded(
+            child: _TimePoint(
+              styles: styles,
+              data: TimePointData(
+                icon: Icons.wb_sunny_outlined,
+                iconColor: secondaryText,
+                label: l10n.weatherSunSunrise,
+                time: '--:--',
+              ),
+              primaryText: primaryText,
+              secondaryText: secondaryText,
             ),
-            primaryText: primaryText,
-            secondaryText: secondaryText,
           ),
           Expanded(
             child: Center(
@@ -145,16 +153,18 @@ class WeatherSunTimes extends StatelessWidget {
               ),
             ),
           ),
-          _TimePoint(
-            styles: styles,
-            data: TimePointData(
-              icon: Icons.wb_sunny,
-              iconColor: secondaryText,
-              label: l10n.weatherSunZenith,
-              time: '--:--',
+          Expanded(
+            child: _TimePoint(
+              styles: styles,
+              data: TimePointData(
+                icon: Icons.wb_sunny,
+                iconColor: secondaryText,
+                label: l10n.weatherSunZenith,
+                time: '--:--',
+              ),
+              primaryText: primaryText,
+              secondaryText: secondaryText,
             ),
-            primaryText: primaryText,
-            secondaryText: secondaryText,
           ),
           Expanded(
             child: Center(
@@ -164,16 +174,18 @@ class WeatherSunTimes extends StatelessWidget {
               ),
             ),
           ),
-          _TimePoint(
-            styles: styles,
-            data: TimePointData(
-              icon: Icons.nightlight_round_outlined,
-              iconColor: secondaryText,
-              label: l10n.weatherSunSunset,
-              time: '--:--',
+          Expanded(
+            child: _TimePoint(
+              styles: styles,
+              data: TimePointData(
+                icon: Icons.nightlight_round_outlined,
+                iconColor: secondaryText,
+                label: l10n.weatherSunSunset,
+                time: '--:--',
+              ),
+              primaryText: primaryText,
+              secondaryText: secondaryText,
             ),
-            primaryText: primaryText,
-            secondaryText: secondaryText,
           ),
         ],
       ),
@@ -204,6 +216,7 @@ class _TimePoint extends StatelessWidget {
         Text(
           data.label,
           style: styles.labelSmall.copyWith(color: secondaryText),
+          textAlign: TextAlign.center,
         ),
         SizedBox(height: AppSpacing.xs),
         Text(

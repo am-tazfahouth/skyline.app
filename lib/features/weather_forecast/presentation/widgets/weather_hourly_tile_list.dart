@@ -79,7 +79,7 @@ class WeatherHourlyTileList extends StatelessWidget {
   Widget _buildPlaceholder(TextStyleCatalog styles, Color cardColor, Color primaryText, Color secondaryText) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      clipBehavior: Clip.none,
+      clipBehavior: Clip.antiAlias,
       child: Row(
         children: List.generate(
           6,
