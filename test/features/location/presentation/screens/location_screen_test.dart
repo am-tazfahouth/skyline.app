@@ -163,6 +163,33 @@ void main() {
     verify(() => repo.saveLastLocation(paris)).called(1);
   });
 
+  testWidgets('reopening the picker allows re-selecting the same favorite',
+      (tester) async {
+    bloc = createBloc();
+    when(() => repo.loadFavorites()).thenReturn([paris]);
+    when(() => repo.loadLastLocation()).thenReturn(null);
+    when(() => repo.saveLastLocation(any())).thenAnswer((_) async {});
+
+    // First visit: select Paris and pop back to the previous screen.
+    await pumpLocationScreen(tester);
+    bloc.add(const LoadFavoritesEvent());
+    await tester.pumpAndSettle();
+    expect(find.text('Paris'), findsOneWidget);
+    await tester.tap(find.text('Paris'));
+    await tester.pumpAndSettle();
+    expect(find.text('open'), findsOneWidget);
+
+    // Second visit: the bloc still holds LocationSelected(paris), so
+    // re-emitting it must not be swallowed as a duplicate state.
+    await pumpLocationScreen(tester);
+    await tester.pumpAndSettle();
+    expect(find.text('Paris'), findsOneWidget);
+    await tester.tap(find.text('Paris'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('open'), findsOneWidget);
+  });
+
   testWidgets('GPS error keeps the favorites list visible', (tester) async {
     bloc = createBloc();
     when(() => repo.loadFavorites()).thenReturn([paris]);

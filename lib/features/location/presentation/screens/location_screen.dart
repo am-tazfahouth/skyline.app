@@ -10,8 +10,22 @@ import 'package:sky_line/features/location/presentation/blocs/location_state.dar
 import 'package:sky_line/features/location/presentation/utils/gps_error_feedback.dart';
 import 'package:sky_line/features/location/presentation/widgets/favorites_list_widget.dart';
 
-class LocationScreen extends StatelessWidget {
+class LocationScreen extends StatefulWidget {
   const LocationScreen({super.key});
+
+  @override
+  State<LocationScreen> createState() => _LocationScreenState();
+}
+
+class _LocationScreenState extends State<LocationScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Reload favorites on every visit so that re-selecting the location that
+    // is already current produces a genuine LocationSelected transition
+    // instead of an equal-state emission suppressed by flutter_bloc.
+    context.read<LocationBloc>().add(const LoadFavoritesEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
