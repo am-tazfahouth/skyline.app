@@ -32,6 +32,11 @@ class LocationSearchScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: BlocBuilder<LocationBloc, LocationState>(
+          buildWhen: (previous, current) => 
+            current is LocationSearchLoading || 
+            current is LocationSearchLoaded  ||
+            current is LocationSearchError 
+          ,
           builder: (context, state) {
             if (state is LocationSearchLoading) {
               return Center(
@@ -72,8 +77,9 @@ class LocationSearchScreen extends StatelessWidget {
               return Center(
                 child: Text(
                   AppError.getUserErrorMessage(state.errorCode, l10n),
+                  textAlign: TextAlign.center,
                   style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.error,
+                    color: theme.colorScheme.error
                   ),
                 ),
               );
