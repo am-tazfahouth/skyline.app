@@ -377,6 +377,7 @@ class AppTheme {
           fontWeight: FontWeight.w500
         ),
         behavior: SnackBarBehavior.floating,
+        actionOverflowThreshold: 1,
         closeIconColor: colorScheme.surface,
         dismissDirection: DismissDirection.horizontal,
         backgroundColor: colorScheme.inverseSurface,
