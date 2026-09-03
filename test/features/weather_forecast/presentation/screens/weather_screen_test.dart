@@ -418,6 +418,37 @@ void main() {
     expect(find.text('Retry'), findsOneWidget);
   });
 
+  testWidgets('shows error snackbar when a fetch fails after the screen is loaded', (tester) async {
+    when(() => mockRepository.fetchWeather(
+      latitude: any(named: 'latitude'),
+      longitude: any(named: 'longitude'),
+    )).thenAnswer((_) async => buildWeatherResult());
+
+    final bloc = WeatherForecastBloc(
+      logger: MockAppLogger(),
+      weatherRepository: mockRepository,
+      getSettings: mockGetSettings,
+      isConnected: () async => true,
+    );
+    bloc.add(const FetchWeatherEvent());
+    await tester.pumpWidget(createTestScreen(bloc));
+    await tester.pumpAndSettle();
+
+    // Now make subsequent fetches fail and trigger a new fetch after mount.
+    when(() => mockRepository.fetchWeather(
+      latitude: any(named: 'latitude'),
+      longitude: any(named: 'longitude'),
+    )).thenThrow(DioException(
+      requestOptions: RequestOptions(path: ''),
+      type: DioExceptionType.connectionError,
+    ));
+    bloc.add(const FetchWeatherEvent());
+    await tester.pumpAndSettle();
+
+    expect(find.text('No internet connection. Please check your network.'), findsOneWidget);
+    expect(find.text('Retry'), findsOneWidget);
+  });
+
   testWidgets('header shows the selected location title', (tester) async {
     when(() => mockRepository.fetchWeather(
       latitude: any(named: 'latitude'),
