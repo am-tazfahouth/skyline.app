@@ -45,6 +45,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
           weatherState.notice == WeatherNotice.cachedData) {
         showCachedWeatherSnackBar(context);
       }
+      if (weatherState is WeatherError) {
+        showWeatherErrorSnackBar(context, weatherState.errorCode);
+      }
     });
   }
 

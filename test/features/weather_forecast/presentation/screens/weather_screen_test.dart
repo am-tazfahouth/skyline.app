@@ -397,7 +397,7 @@ void main() {
     expect(find.text('--°C'), findsOneWidget);
   });
 
-  testWidgets('shows error view on error state', (tester) async {
+  testWidgets('shows error snackbar with retry on error state', (tester) async {
     when(() => mockRepository.fetchWeather(latitude: any(named: 'latitude'), longitude: any(named: 'longitude')))
         .thenThrow(DioException(
           requestOptions: RequestOptions(path: ''),
@@ -414,6 +414,7 @@ void main() {
     await tester.pumpWidget(createTestScreen(bloc));
     await tester.pumpAndSettle();
 
+    expect(find.text('No internet connection. Please check your network.'), findsOneWidget);
     expect(find.text('Retry'), findsOneWidget);
   });
 
