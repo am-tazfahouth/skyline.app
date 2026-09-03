@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/config/app_routes.dart';
-import 'package:sky_line/core/errors/app_error.dart';
 import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_event.dart';
@@ -18,7 +17,6 @@ import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_fo
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_state.dart';
 import 'package:sky_line/features/weather_forecast/presentation/utils/cached_weather_feedback.dart';
 import 'package:sky_line/features/weather_forecast/presentation/widgets/views/weather_content_view.dart';
-import 'package:sky_line/features/weather_forecast/presentation/widgets/views/weather_error_view.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class WeatherScreen extends StatefulWidget {
@@ -139,46 +137,58 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 !current.isFetching &&
                 !(previous is WeatherEmpty && !previous.isFetching),
             listener: (context, state) => _maybeHandleEmptyState(context),
-            child: BlocBuilder<WeatherForecastBloc, WeatherForecastState>(
-              builder: (context, state) {
-                final content = _contentFor(context, state);
-                if (state.hasData && state.isFetching) {
-                  final theme = Theme.of(context);
-                  final primary = theme.colorScheme.primary;
-                  return Stack(
-                    children: [
-                      content,
-                      Positioned.fill(
-                        child: Container(
-                          color: theme.colorScheme.surface.withValues(
-                            alpha: 0.7,
-                          ),
-                          child: Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                LoadingAnimationWidget.staggeredDotsWave(
-                                  key: const Key('loading_indicator'),
-                                  size: 25,
-                                  color: primary,
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  l10n.weatherRefreshing,
-                                  style: theme.textTheme.bodyLarge?.copyWith(
+            child: BlocListener<WeatherForecastBloc, WeatherForecastState>(
+              listenWhen: (previous, current) =>
+                  current is WeatherError &&
+                  (previous is! WeatherError ||
+                      previous.errorCode != current.errorCode),
+              listener: (context, state) {
+                if (state is WeatherError) {
+                  showWeatherErrorSnackBar(context, state.errorCode);
+                }
+              },
+              child: BlocBuilder<WeatherForecastBloc, WeatherForecastState>(
+                builder: (context, state) {
+                  final content = _contentFor(context, state);
+                  if (state.hasData && state.isFetching) {
+                    final theme = Theme.of(context);
+                    final primary = theme.colorScheme.primary;
+                    return Stack(
+                      children: [
+                        content,
+                        Positioned.fill(
+                          child: Container(
+                            color: theme.colorScheme.surface.withValues(
+                              alpha: 0.7,
+                            ),
+                            child: Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  LoadingAnimationWidget.staggeredDotsWave(
+                                    key: const Key('loading_indicator'),
+                                    size: 25,
                                     color: primary,
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    l10n.weatherRefreshing,
+                                    style:
+                                        theme.textTheme.bodyLarge?.copyWith(
+                                          color: primary,
+                                        ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  );
-                }
-                return content;
-              },
+                      ],
+                    );
+                  }
+                  return content;
+                },
+              ),
             ),
           ),
         ),
@@ -187,13 +197,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
   }
 
   Widget _contentFor(BuildContext context, WeatherForecastState state) {
-    final l10n = AppLocalisation.of(context)!;
-    return switch (state) {
-      WeatherError(errorCode: final code) => WeatherErrorView(
-        message: AppError.getUserErrorMessage(code, l10n),
-      ),
-      _ => const WeatherContentView(),
-    };
+    return const WeatherContentView();
   }
 
   void _maybeHandleEmptyState(BuildContext context) {
