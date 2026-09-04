@@ -12,7 +12,7 @@ class LocationRemoteSource {
       ApiConstants.openMeteoGeocodingUrl,
       queryParameters: {
         'name': query,
-        'count': 10,
+        'count': ApiConstants.searchResultLimit,
         'language': language,
         'format': 'json',
       },

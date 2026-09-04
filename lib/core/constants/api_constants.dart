@@ -10,6 +10,8 @@ class ApiConstants {
   static const String bigDataCloudReverseGeocodeUrl =
       'https://api.bigdatacloud.net/data/reverse-geocode-client';
 
+  static const int searchResultLimit = 10;
+
   static const String _dailyParams =
       'temperature_2m_max,temperature_2m_min,weather_code,sunset,sunrise';
   static const String _hourlyParams =
