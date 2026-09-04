@@ -32,12 +32,41 @@ void main() {
         requestOptions: RequestOptions(path: ''),
       ));
 
-      final result = await source.search('Paris');
+      final result = await source.search('Paris', language: 'fr');
 
       expect(result, equals(responseData));
       verify(() => mockDio.get(
         any(),
         queryParameters: any(named: 'queryParameters'),
+      )).called(1);
+    });
+
+    test('passes language parameter to the API', () async {
+      final responseData = {
+        'results': [
+          {'name': 'Paris', 'latitude': 48.85, 'longitude': 2.35},
+        ],
+      };
+
+      when(() => mockDio.get(
+        any(),
+        queryParameters: any(named: 'queryParameters'),
+      )).thenAnswer((_) async => Response(
+        data: responseData,
+        statusCode: 200,
+        requestOptions: RequestOptions(path: ''),
+      ));
+
+      await source.search('Paris', language: 'en');
+
+      verify(() => mockDio.get(
+        any(),
+        queryParameters: {
+          'name': 'Paris',
+          'count': 10,
+          'language': 'en',
+          'format': 'json',
+        },
       )).called(1);
     });
 
@@ -50,7 +79,7 @@ void main() {
         type: DioExceptionType.connectionTimeout,
       ));
 
-      expect(() => source.search('Paris'), throwsA(isA<DioException>()));
+      expect(() => source.search('Paris', language: 'fr'), throwsA(isA<DioException>()));
     });
   });
 
@@ -76,7 +105,7 @@ void main() {
     test('calls Dio with the BigDataCloud URL and parses the response', () async {
       stubSuccess();
 
-      final result = await source.reverseGeocode(latitude: -11.70, longitude: 43.25);
+      final result = await source.reverseGeocode(latitude: -11.70, longitude: 43.25, language: 'fr');
 
       expect(result, isA<ReverseGeocodeModel>());
       expect(result.city, 'Moroni');
@@ -86,17 +115,17 @@ void main() {
       )).called(1);
     });
 
-    test('passes latitude, longitude and localityLanguage=fr', () async {
+    test('passes latitude, longitude and localityLanguage from parameter', () async {
       stubSuccess();
 
-      await source.reverseGeocode(latitude: -11.70, longitude: 43.25);
+      await source.reverseGeocode(latitude: -11.70, longitude: 43.25, language: 'en');
 
       verify(() => mockDio.get(
         any(),
         queryParameters: {
           'latitude': -11.70,
           'longitude': 43.25,
-          'localityLanguage': 'fr',
+          'localityLanguage': 'en',
         },
       )).called(1);
     });
@@ -111,7 +140,7 @@ void main() {
       ));
 
       expect(
-        () => source.reverseGeocode(latitude: -11.70, longitude: 43.25),
+        () => source.reverseGeocode(latitude: -11.70, longitude: 43.25, language: 'fr'),
         throwsA(isA<DioException>()),
       );
     });

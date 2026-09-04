@@ -22,7 +22,7 @@ class LocationRepositoryImpl implements LocationRepository {
 
   @override
   Future<List<LocationEntity>> searchLocations(String query) async {
-    final json = await _remoteSource.search(query);
+    final json = await _remoteSource.search(query, language: 'fr');
     final models = LocationMapper.fromJsonList(json);
     return models.map((m) => m.toEntity()).toList();
   }
@@ -141,7 +141,7 @@ class LocationRepositoryImpl implements LocationRepository {
   ) async {
     try {
       final place =
-          await _remoteSource.reverseGeocode(latitude: latitude, longitude: longitude);
+          await _remoteSource.reverseGeocode(latitude: latitude, longitude: longitude, language: 'fr');
       final city = _firstNonEmpty([place.city, place.locality]);
       if (city == null) return _gpsFallback(latitude, longitude);
       return LocationEntity(

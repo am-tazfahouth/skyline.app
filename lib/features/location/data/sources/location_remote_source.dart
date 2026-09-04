@@ -7,13 +7,13 @@ class LocationRemoteSource {
 
   LocationRemoteSource(this._dio);
 
-  Future<Map<String, dynamic>> search(String query) async {
+  Future<Map<String, dynamic>> search(String query, {required String language}) async {
     final response = await _dio.get(
       ApiConstants.openMeteoGeocodingUrl,
       queryParameters: {
         'name': query,
         'count': 10,
-        'language': 'fr',
+        'language': language,
         'format': 'json',
       },
     );
@@ -23,13 +23,14 @@ class LocationRemoteSource {
   Future<ReverseGeocodeModel> reverseGeocode({
     required double latitude,
     required double longitude,
+    required String language,
   }) async {
     final response = await _dio.get(
       ApiConstants.bigDataCloudReverseGeocodeUrl,
       queryParameters: {
         'latitude': latitude,
         'longitude': longitude,
-        'localityLanguage': 'fr',
+        'localityLanguage': language,
       },
     );
     return ReverseGeocodeModel.fromJson(response.data as Map<String, dynamic>);

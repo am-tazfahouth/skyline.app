@@ -33,7 +33,7 @@ void main() {
 
   group('searchLocations', () {
     test('returns list of LocationEntity from API', () async {
-      when(() => mockRemote.search('Paris')).thenAnswer((_) async => {
+      when(() => mockRemote.search('Paris', language: 'fr')).thenAnswer((_) async => {
         'results': [
           {'name': 'Paris', 'latitude': 48.85, 'longitude': 2.35, 'country': 'France'},
         ],
@@ -46,7 +46,7 @@ void main() {
     });
 
     test('returns empty list when no results', () async {
-      when(() => mockRemote.search('xyz')).thenAnswer((_) async => {
+      when(() => mockRemote.search('xyz', language: 'fr')).thenAnswer((_) async => {
         'results': <dynamic>[],
       });
 
@@ -299,7 +299,7 @@ void main() {
 
     test('requests permission, checks service, returns GPS location', () async {
       stubPermissions();
-      when(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25))
+      when(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25, language: 'fr'))
           .thenAnswer((_) async => const ReverseGeocodeModel(city: 'Moroni'));
 
       final result = await repo.detectCurrentLocation();
@@ -310,12 +310,12 @@ void main() {
       verify(() => mockPermission.requestLocationPermission()).called(1);
       verify(() => mockPermission.isLocationServiceEnabled()).called(1);
       verify(() => mockPermission.getCurrentPosition()).called(1);
-      verify(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25)).called(1);
+      verify(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25, language: 'fr')).called(1);
     });
 
     test('returns enriched location when reverse geocoding succeeds', () async {
       stubPermissions();
-      when(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25))
+      when(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25, language: 'fr'))
           .thenAnswer((_) async => const ReverseGeocodeModel(
                 city: 'Moroni',
                 principalSubdivision: 'Grande Comore',
@@ -334,7 +334,7 @@ void main() {
 
     test('uses locality when city is empty', () async {
       stubPermissions();
-      when(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25))
+      when(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25, language: 'fr'))
           .thenAnswer((_) async => const ReverseGeocodeModel(locality: 'Saint-Merri'));
 
       final result = await repo.detectCurrentLocation();
@@ -344,7 +344,7 @@ void main() {
 
     test('falls back to Current Location when reverse geocoding throws', () async {
       stubPermissions();
-      when(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25))
+      when(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25, language: 'fr'))
           .thenThrow(Exception('network error'));
 
       final result = await repo.detectCurrentLocation();
@@ -357,7 +357,7 @@ void main() {
 
     test('falls back to Current Location when no city or locality is returned', () async {
       stubPermissions();
-      when(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25))
+      when(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25, language: 'fr'))
           .thenAnswer((_) async => const ReverseGeocodeModel());
 
       final result = await repo.detectCurrentLocation();
