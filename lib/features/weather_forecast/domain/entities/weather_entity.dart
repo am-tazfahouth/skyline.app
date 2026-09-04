@@ -26,6 +26,19 @@ class WeatherEntity extends Equatable {
     );
   }
 
+  bool isDayAt(DateTime time) {
+    final dayEntry = daily.cast<DailyWeatherEntity?>().firstWhere(
+      (d) => d != null && d.sunrise.year == time.year &&
+          d.sunrise.month == time.month &&
+          d.sunrise.day == time.day,
+      orElse: () => null,
+    );
+    if (dayEntry == null) {
+      return time.hour >= 6 && time.hour < 18;
+    }
+    return time.isAfter(dayEntry.sunrise) && time.isBefore(dayEntry.sunset);
+  }
+
   WeatherEntity withCurrentFromHourly(DateTime now) {
     if (hourly.isEmpty) return this;
     final closest = hourly.reduce((a, b) =>
@@ -36,7 +49,7 @@ class WeatherEntity extends Equatable {
       current: CurrentWeatherEntity(
         temperature: closest.temperature,
         humidity: current.humidity,
-        isDay: closest.time.hour >= 6 && closest.time.hour < 18,
+        isDay: isDayAt(closest.time),
         windSpeed: current.windSpeed,
         precipitation: current.precipitation,
         weatherCode: closest.weatherCode,

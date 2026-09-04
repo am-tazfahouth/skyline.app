@@ -56,7 +56,7 @@ class WeatherHourlyTileList extends StatelessWidget {
                 children: filtered.map((item) {
                   final time = DateFormat('HH:mm').format(item.time);
                   final temp = WeatherFormat.temperature(item.temperature, unit: settings?.heatUnit ?? SettingHeatUnit.celsius);
-                  final isDay = item.time.hour >= 6 && item.time.hour < 18;
+                  final isDay = weather.isDayAt(item.time);
                   return _buildTile(
                     styles: styles,
                     time: time,
