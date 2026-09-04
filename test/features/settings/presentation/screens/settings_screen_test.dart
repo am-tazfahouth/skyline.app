@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -30,6 +32,8 @@ class MockWeatherRepository extends Mock implements WeatherRepository {}
 
 class MockGetSettingsUseCase extends Mock implements GetSettingsUseCase {}
 
+FutureOr<({double latitude, double longitude})?> _defaultLastLocation() => (latitude: 0.0, longitude: 0.0);
+
 Widget createTestScreen(SettingsBloc bloc, WeatherForecastBloc weatherBloc) {
   return MaterialApp(
     theme: AppTheme(ThemeData().textTheme).light(),
@@ -58,6 +62,7 @@ WeatherForecastBloc _buildWeatherBloc() {
     logger: MockAppLogger(),
     weatherRepository: repository,
     getSettings: getSettings,
+    getLastLocation: _defaultLastLocation,
     isConnected: () async => false,
   );
 }

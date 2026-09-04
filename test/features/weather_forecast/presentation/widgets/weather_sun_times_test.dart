@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,6 +18,8 @@ class MockAppLogger extends Mock implements AppLogger {}
 
 class MockGetSettingsUseCase extends Mock implements GetSettingsUseCase {}
 
+FutureOr<({double latitude, double longitude})?> _defaultLastLocation() => (latitude: 0.0, longitude: 0.0);
+
 void main() {
   Widget buildScreen({
     Locale locale = const Locale('en'),
@@ -25,6 +29,7 @@ void main() {
       logger: MockAppLogger(),
       weatherRepository: MockWeatherRepository(),
       getSettings: MockGetSettingsUseCase(),
+      getLastLocation: _defaultLastLocation,
       isConnected: () async => true,
     );
 

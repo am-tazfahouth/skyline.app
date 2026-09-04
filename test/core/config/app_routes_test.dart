@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -29,6 +31,8 @@ class MockSettingRepository extends Mock implements SettingRepository {}
 class MockAppLogger extends Mock implements AppLogger {}
 
 class MockGetSettingsUseCase extends Mock implements GetSettingsUseCase {}
+
+FutureOr<({double latitude, double longitude})?> _defaultLastLocation() => (latitude: 0.0, longitude: 0.0);
 
 void main() {
   late MockLocationRepository locationRepo;
@@ -68,6 +72,7 @@ void main() {
             logger: logger,
             weatherRepository: weatherRepo,
             getSettings: getSettings,
+            getLastLocation: _defaultLastLocation,
             isConnected: () async => true,
           ),
         ),

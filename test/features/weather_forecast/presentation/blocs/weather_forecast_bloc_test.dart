@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -73,6 +75,8 @@ DioException _dioException({DioExceptionType type = DioExceptionType.badResponse
   );
 }
 
+FutureOr<({double latitude, double longitude})?> _defaultLastLocation() => (latitude: 0.0, longitude: 0.0);
+
 void main() {
   late MockWeatherRepository mockRepository;
   late MockAppLogger mockLogger;
@@ -99,6 +103,7 @@ void main() {
         logger: mockLogger,
         weatherRepository: mockRepository,
         getSettings: mockGetSettings,
+        getLastLocation: _defaultLastLocation,
         isConnected: () async => false,
       ),
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
@@ -127,6 +132,7 @@ void main() {
         logger: mockLogger,
         weatherRepository: mockRepository,
         getSettings: mockGetSettings,
+        getLastLocation: _defaultLastLocation,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
@@ -156,6 +162,7 @@ void main() {
         logger: mockLogger,
         weatherRepository: mockRepository,
         getSettings: mockGetSettings,
+        getLastLocation: _defaultLastLocation,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
@@ -184,6 +191,7 @@ void main() {
         logger: mockLogger,
         weatherRepository: mockRepository,
         getSettings: mockGetSettings,
+        getLastLocation: _defaultLastLocation,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
@@ -206,6 +214,7 @@ void main() {
         logger: mockLogger,
         weatherRepository: mockRepository,
         getSettings: mockGetSettings,
+        getLastLocation: _defaultLastLocation,
         isConnected: () async => false,
       ),
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
@@ -230,6 +239,7 @@ void main() {
         logger: mockLogger,
         weatherRepository: mockRepository,
         getSettings: mockGetSettings,
+        getLastLocation: _defaultLastLocation,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
@@ -254,6 +264,7 @@ void main() {
         logger: mockLogger,
         weatherRepository: mockRepository,
         getSettings: mockGetSettings,
+        getLastLocation: _defaultLastLocation,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
@@ -330,6 +341,7 @@ void main() {
         logger: mockLogger,
         weatherRepository: mockRepository,
         getSettings: mockGetSettings,
+        getLastLocation: _defaultLastLocation,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(const RefreshWeatherEvent()),
@@ -353,6 +365,7 @@ void main() {
         logger: mockLogger,
         weatherRepository: mockRepository,
         getSettings: mockGetSettings,
+        getLastLocation: _defaultLastLocation,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(const RefreshWeatherEvent()),
@@ -377,6 +390,7 @@ void main() {
         logger: mockLogger,
         weatherRepository: mockRepository,
         getSettings: mockGetSettings,
+        getLastLocation: _defaultLastLocation,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(const RefreshWeatherEvent()),
@@ -397,6 +411,7 @@ void main() {
         logger: mockLogger,
         weatherRepository: mockRepository,
         getSettings: mockGetSettings,
+        getLastLocation: _defaultLastLocation,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(const RefreshWeatherEvent()),
@@ -417,6 +432,7 @@ void main() {
         logger: mockLogger,
         weatherRepository: mockRepository,
         getSettings: mockGetSettings,
+        getLastLocation: _defaultLastLocation,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(const RefreshWeatherEvent()),
@@ -473,6 +489,7 @@ void main() {
         logger: mockLogger,
         weatherRepository: mockRepository,
         getSettings: mockGetSettings,
+        getLastLocation: _defaultLastLocation,
         isConnected: () async => true,
       ),
       act: (bloc) async {
@@ -517,6 +534,7 @@ void main() {
         logger: mockLogger,
         weatherRepository: mockRepository,
         getSettings: mockGetSettings,
+        getLastLocation: _defaultLastLocation,
         isConnected: () async => true,
       ),
       act: (bloc) async {
@@ -545,6 +563,7 @@ void main() {
         logger: mockLogger,
         weatherRepository: mockRepository,
         getSettings: mockGetSettings,
+        getLastLocation: _defaultLastLocation,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(const ResetWeatherEvent()),
@@ -570,6 +589,7 @@ void main() {
         logger: mockLogger,
         weatherRepository: mockRepository,
         getSettings: mockGetSettings,
+        getLastLocation: _defaultLastLocation,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(ApplySettingsEvent(settings: newSettings)),
@@ -588,6 +608,7 @@ void main() {
         logger: mockLogger,
         weatherRepository: mockRepository,
         getSettings: mockGetSettings,
+        getLastLocation: _defaultLastLocation,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(ApplySettingsEvent(settings: newSettings)),
@@ -603,6 +624,7 @@ void main() {
         logger: mockLogger,
         weatherRepository: mockRepository,
         getSettings: mockGetSettings,
+        getLastLocation: _defaultLastLocation,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(ApplySettingsEvent(settings: newSettings)),
@@ -616,6 +638,7 @@ void main() {
         logger: mockLogger,
         weatherRepository: mockRepository,
         getSettings: mockGetSettings,
+        getLastLocation: _defaultLastLocation,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(ApplySettingsEvent(settings: newSettings)),
@@ -633,6 +656,7 @@ void main() {
         logger: mockLogger,
         weatherRepository: mockRepository,
         getSettings: mockGetSettings,
+        getLastLocation: _defaultLastLocation,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(ApplySettingsEvent(settings: newSettings)),
@@ -650,6 +674,7 @@ void main() {
         logger: mockLogger,
         weatherRepository: mockRepository,
         getSettings: mockGetSettings,
+        getLastLocation: _defaultLastLocation,
         isConnected: () async => true,
       ),
       act: (bloc) => bloc.add(ApplySettingsEvent(settings: newSettings)),

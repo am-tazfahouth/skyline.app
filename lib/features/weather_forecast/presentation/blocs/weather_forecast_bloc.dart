@@ -13,12 +13,6 @@ import 'package:sky_line/features/weather_forecast/domain/usecases/get_settings_
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_event.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_state.dart';
 
-const double _defaultLatitude = -11.7022;
-const double _defaultLongitude = 43.2551;
-
-FutureOr<({double latitude, double longitude})?> _defaultLastLocation() =>
-    (latitude: _defaultLatitude, longitude: _defaultLongitude);
-
 class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastState> {
   final AppLogger logger;
   final WeatherRepository weatherRepository;
@@ -30,8 +24,8 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
     required this.logger,
     required this.weatherRepository,
     required this.getSettings,
+    required this.getLastLocation,
     this.isConnected = PlatformUtils.isConnected,
-    this.getLastLocation = _defaultLastLocation,
   }) : super(const WeatherInitial()) {
     on<FetchWeatherEvent>(_onFetchWeather);
     on<RefreshWeatherEvent>(_onRefreshWeather);
