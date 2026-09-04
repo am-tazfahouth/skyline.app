@@ -245,7 +245,7 @@ void main() {
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
       expect: () => [
         WeatherEmpty(isFetching: true, settings: _defaultSettings),
-        isA<WeatherError>(),
+        WeatherError(errorCode: WeatherErrorCodes.fetch, settings: _defaultSettings),
       ],
     );
 
@@ -270,7 +270,7 @@ void main() {
       act: (bloc) => bloc.add(const FetchWeatherEvent()),
       expect: () => [
         WeatherEmpty(isFetching: true, settings: _defaultSettings),
-        isA<WeatherError>(),
+        WeatherError(errorCode: WeatherErrorCodes.unexpected, settings: _defaultSettings),
       ],
     );
     blocTest<WeatherForecastBloc, WeatherForecastState>(
@@ -438,7 +438,7 @@ void main() {
       act: (bloc) => bloc.add(const RefreshWeatherEvent()),
       expect: () => [
         WeatherEmpty(isFetching: true, settings: _defaultSettings),
-        isA<WeatherError>(),
+        WeatherError(errorCode: WeatherErrorCodes.unexpected, settings: _defaultSettings),
       ],
     );
 

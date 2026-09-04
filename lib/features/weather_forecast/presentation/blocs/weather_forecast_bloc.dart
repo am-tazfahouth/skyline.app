@@ -112,7 +112,7 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
           notice: WeatherNotice.cachedData,
         ));
       } else if (state == loadingAnchor) {
-        emit(WeatherError(errorCode: code));
+        emit(WeatherError(errorCode: code, settings: settings));
       }
     }
     on WeatherParseException catch (e, stackTrace) {
@@ -125,7 +125,7 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
           notice: WeatherNotice.cachedData,
         ));
       } else if (state == loadingAnchor) {
-        emit(WeatherError(errorCode: code));
+        emit(WeatherError(errorCode: code, settings: settings));
       }
     }
     catch (e, stackTrace) {
@@ -137,7 +137,7 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
           notice: WeatherNotice.cachedData,
         ));
       } else if (state == loadingAnchor) {
-        emit(WeatherError(errorCode: WeatherErrorCodes.unexpected));
+        emit(WeatherError(errorCode: WeatherErrorCodes.unexpected, settings: settings));
       }
     }
   }
@@ -222,7 +222,7 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
           emit(WeatherLoaded(capturedResult, isFetching: false,
               settings: currentSettings, notice: WeatherNotice.refreshError));
         } else {
-          emit(WeatherError(errorCode: WeatherErrorCodes.unexpected));
+          emit(WeatherError(errorCode: WeatherErrorCodes.unexpected, settings: currentSettings));
         }
       } else if (state case WeatherLoaded loaded) {
         emit(loaded.copyWith(isFetching: false));

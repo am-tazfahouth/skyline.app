@@ -64,16 +64,16 @@ class WeatherEmpty extends WeatherForecastState {
 
 class WeatherError extends WeatherForecastState {
   final AppErrorCode errorCode;
+  final SettingEntity settings;
 
-  const WeatherError({required this.errorCode});
+  const WeatherError({required this.errorCode, this.settings = const SettingEntity()});
 
   @override
-  List<Object?> get props => [errorCode];
+  List<Object?> get props => [errorCode, settings];
 }
 
 extension WeatherStateX on WeatherForecastState {
   bool get hasData => this is WeatherLoaded || this is WeatherEmpty;
-  bool get hasWeather => this is WeatherLoaded;
   WeatherEntity? get weatherOrNull => switch (this) {
     WeatherLoaded(result: final r) => r.weather,
     _ => null,
@@ -81,6 +81,7 @@ extension WeatherStateX on WeatherForecastState {
   SettingEntity? get settingsOrNull => switch (this) {
     WeatherLoaded(settings: final s) => s,
     WeatherEmpty(settings: final s) => s,
+    WeatherError(settings: final s) => s,
     _ => null,
   };
 }
