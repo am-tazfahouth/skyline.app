@@ -44,24 +44,26 @@ class DbHelper {
     required double latitude,
     required double longitude,
   }) {
-    final lat = _roundCoordinate(latitude);
-    final lon = _roundCoordinate(longitude);
-    final existing = _box
-        .query(WeatherCacheEntity_.latitude.between(lat, lat) &
-            WeatherCacheEntity_.longitude.between(lon, lon))
-        .build()
-        .find();
-    for (final entity in existing) {
-      _box.remove(entity.id);
-    }
-    final jsonStr = jsonEncode(model.toJson());
-    _box.put(WeatherCacheEntity(
-      id: 0,
-      jsonData: jsonStr,
-      savedAt: DateTime.now().millisecondsSinceEpoch,
-      latitude: lat,
-      longitude: lon,
-    ));
+    _store.runInTransaction(TxMode.write, () {
+      final lat = _roundCoordinate(latitude);
+      final lon = _roundCoordinate(longitude);
+      final existing = _box
+          .query(WeatherCacheEntity_.latitude.between(lat, lat) &
+              WeatherCacheEntity_.longitude.between(lon, lon))
+          .build()
+          .find();
+      for (final entity in existing) {
+        _box.remove(entity.id);
+      }
+      final jsonStr = jsonEncode(model.toJson());
+      _box.put(WeatherCacheEntity(
+        id: 0,
+        jsonData: jsonStr,
+        savedAt: DateTime.now().millisecondsSinceEpoch,
+        latitude: lat,
+        longitude: lon,
+      ));
+    });
   }
 
   void clearWeather() {
@@ -100,14 +102,16 @@ class DbHelper {
   }
 
   void saveSettings(SettingModel model) {
-    _settingsBox.removeAll();
-    _settingsBox.put(SettingCacheEntity(
-      id: 0,
-      themeValue: SettingTheme.getStringFromTheme(model.theme),
-      langValue: getStringFromLang(model.lang),
-      windUnitValue: SettingWindUnit.getStringFromWindUnit(model.windUnit),
-      heatUnitValue: SettingHeatUnit.getStringFromHeatUnit(model.heatUnit),
-    ));
+    _store.runInTransaction(TxMode.write, () {
+      _settingsBox.removeAll();
+      _settingsBox.put(SettingCacheEntity(
+        id: 0,
+        themeValue: SettingTheme.getStringFromTheme(model.theme),
+        langValue: getStringFromLang(model.lang),
+        windUnitValue: SettingWindUnit.getStringFromWindUnit(model.windUnit),
+        heatUnitValue: SettingHeatUnit.getStringFromHeatUnit(model.heatUnit),
+      ));
+    });
   }
 
   List<LocationCacheEntity> loadFavorites() {
@@ -125,10 +129,12 @@ class DbHelper {
   }
 
   void saveAllFavorites(List<LocationCacheEntity> favorites) {
-    _locationBox.removeAll();
-    for (final f in favorites) {
-      _locationBox.put(f);
-    }
+    _store.runInTransaction(TxMode.write, () {
+      _locationBox.removeAll();
+      for (final f in favorites) {
+        _locationBox.put(f);
+      }
+    });
   }
 
   LastLocationEntity? loadLastLocation() {
@@ -137,8 +143,10 @@ class DbHelper {
   }
 
   void saveLastLocation(LastLocationEntity location) {
-    _lastLocationBox.removeAll();
-    _lastLocationBox.put(location);
+    _store.runInTransaction(TxMode.write, () {
+      _lastLocationBox.removeAll();
+      _lastLocationBox.put(location);
+    });
   }
 
   void clearLastLocation() {
@@ -152,11 +160,13 @@ class DbHelper {
   }
 
   void saveOnboardingFlag(bool seen) {
-    _onboardingBox.removeAll();
-    _onboardingBox.put(OnboardingCacheEntity(
-      id: 0,
-      hasSeenLocationOnboarding: seen,
-    ));
+    _store.runInTransaction(TxMode.write, () {
+      _onboardingBox.removeAll();
+      _onboardingBox.put(OnboardingCacheEntity(
+        id: 0,
+        hasSeenLocationOnboarding: seen,
+      ));
+    });
   }
 
   void dispose() {
