@@ -2,6 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:sky_line/core/enums/setting_lang.dart';
 import 'package:sky_line/core/errors/location_error_codes.dart';
 import 'package:sky_line/core/errors/location_exceptions.dart';
 import 'package:sky_line/core/services/logger_sevices.dart';
@@ -356,6 +357,54 @@ void main() {
         isA<LocationError>()
             .having((s) => s.errorCode, 'code', LocationErrorCodes.gpsDisabled),
       ],
+    );
+  });
+
+  group('language propagation', () {
+    blocTest<LocationBloc, LocationState>(
+      'passes settings language to detectCurrentLocation',
+      build: () {
+        when(() => mockSettingRepo.loadSettings())
+            .thenAnswer((_) async => const SettingEntity(lang: SettingLang.fr));
+        when(() => mockRepo.detectCurrentLocation(any())).thenAnswer(
+          (_) async => const LocationEntity(
+            latitude: -11.70,
+            longitude: 43.25,
+            cityName: 'Current Location',
+            isGpsLocation: true,
+          ),
+        );
+        when(() => mockRepo.saveLastLocation(any())).thenAnswer((_) async {});
+        when(() => mockRepo.loadFavorites()).thenReturn([]);
+        return bloc;
+      },
+      act: (bloc) => bloc.add(DetectCurrentLocationEvent()),
+      expect: () => [
+        isA<LocationDetecting>(),
+        isA<LocationSelected>(),
+      ],
+      verify: (_) {
+        verify(() => mockRepo.detectCurrentLocation('fr')).called(1);
+      },
+    );
+
+    blocTest<LocationBloc, LocationState>(
+      'passes settings language to searchLocations',
+      build: () {
+        when(() => mockSettingRepo.loadSettings())
+            .thenAnswer((_) async => const SettingEntity(lang: SettingLang.fr));
+        when(() => mockRepo.searchLocations(any(), any()))
+            .thenAnswer((_) async => [testLocation]);
+        return bloc;
+      },
+      act: (bloc) => bloc.add(const SearchLocationsEvent('Paris')),
+      expect: () => [
+        isA<LocationSearchLoading>(),
+        isA<LocationSearchLoaded>(),
+      ],
+      verify: (_) {
+        verify(() => mockRepo.searchLocations('Paris', 'fr')).called(1);
+      },
     );
   });
 

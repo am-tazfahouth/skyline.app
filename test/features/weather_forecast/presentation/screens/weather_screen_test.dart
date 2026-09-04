@@ -1060,7 +1060,7 @@ void main() {
       logger: MockAppLogger(),
       weatherRepository: mockRepository,
       getSettings: mockGetSettings,
-      isConnected: () async => true,
+      isConnected: () async => false,
     );
     bloc.add(const FetchWeatherEvent());
     await tester.pumpWidget(createTestScreen(bloc, locationBloc: locationBloc));
