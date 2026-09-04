@@ -446,6 +446,94 @@ void main() {
           latitude: any(named: 'latitude'), longitude: any(named: 'longitude')));
       },
     );
+
+    blocTest<WeatherForecastBloc, WeatherForecastState>(
+      'stale refresh DioException after concurrent fetch success → does not overwrite fresh result with error',
+      seed: () => WeatherLoaded(_result(cached: true), settings: _defaultSettings),
+      setUp: () {
+        when(() => mockRepository.loadCachedWeather(
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+        )).thenAnswer((_) async => _result(cached: true));
+        int fetchCount = 0;
+        when(() => mockRepository.fetchWeather(
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+        )).thenAnswer((_) async {
+          fetchCount++;
+          if (fetchCount == 1) {
+            await Future<void>.delayed(const Duration(milliseconds: 50));
+            return _result(cached: false);
+          }
+          await Future<void>.delayed(const Duration(milliseconds: 150));
+          throw _dioException(type: DioExceptionType.connectionError);
+        });
+      },
+      build: () => WeatherForecastBloc(
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
+        isConnected: () async => true,
+      ),
+      act: (bloc) async {
+        bloc.add(const FetchWeatherEvent());
+        await Future<void>.delayed(Duration.zero);
+        bloc.add(const RefreshWeatherEvent());
+        await Future<void>.delayed(const Duration(milliseconds: 250));
+      },
+      verify: (bloc) {
+        final lastState = bloc.state;
+        expect(lastState, isA<WeatherLoaded>());
+        expect(
+          lastState,
+          isA<WeatherLoaded>()
+              .having((s) => s.result.isCached, 'result is fresh', false)
+              .having((s) => s.notice, 'no error notice on fresh data', WeatherNotice.none),
+        );
+      },
+    );
+
+    blocTest<WeatherForecastBloc, WeatherForecastState>(
+      'stale refresh failure after ResetWeatherEvent → final state is WeatherEmpty',
+      seed: () => WeatherLoaded(_result(cached: true), settings: _defaultSettings),
+      setUp: () {
+        int fetchCount = 0;
+        when(() => mockRepository.fetchWeather(
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+        )).thenAnswer((_) async {
+          fetchCount++;
+          if (fetchCount == 1) {
+            await Future<void>.delayed(const Duration(milliseconds: 100));
+            return _result(cached: false);
+          }
+          throw _dioException(type: DioExceptionType.connectionError);
+        });
+        when(() => mockRepository.clearCachedWeather()).thenAnswer((_) async {});
+        when(() => mockRepository.loadCachedWeather(
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+        )).thenAnswer((_) async => null);
+      },
+      build: () => WeatherForecastBloc(
+        logger: mockLogger,
+        weatherRepository: mockRepository,
+        getSettings: mockGetSettings,
+        isConnected: () async => true,
+      ),
+      act: (bloc) async {
+        bloc.add(const FetchWeatherEvent());
+        await Future<void>.delayed(Duration.zero);
+        bloc.add(const RefreshWeatherEvent());
+        await Future<void>.delayed(Duration.zero);
+        bloc.add(const ResetWeatherEvent());
+        await Future<void>.delayed(const Duration(milliseconds: 200));
+      },
+      verify: (bloc) {
+        final lastState = bloc.state;
+        expect(lastState, isA<WeatherEmpty>());
+      },
+    );
   });
 
   group('ResetWeatherEvent', () {
