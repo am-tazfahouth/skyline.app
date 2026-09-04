@@ -46,6 +46,7 @@ class AppError {
     WeatherErrorCodes.network: "An error occurred with the network.",
     WeatherErrorCodes.loadCache: "An error occurred while loading data from cache.",
     WeatherErrorCodes.unexpected: "An unexpected error occurred. Please try again later.",
+    WeatherErrorCodes.parse: "API response format error — the data could not be parsed.",
 
     // Setting
     SettingErrorCodes.load: "An error occurred while loading settings.",
@@ -72,6 +73,7 @@ class AppError {
     WeatherErrorCodes.network: UserErrorType.network,
     WeatherErrorCodes.loadCache: UserErrorType.loadCache,
     WeatherErrorCodes.unexpected: UserErrorType.unexpected,
+    WeatherErrorCodes.parse: UserErrorType.fetch,
 
     // Setting
     SettingErrorCodes.load: UserErrorType.loadSetting,

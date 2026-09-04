@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/errors/app_error.dart';
+import 'package:sky_line/core/errors/weather_exceptions.dart';
 import 'package:sky_line/core/errors/weather_error_codes.dart';
 import 'package:sky_line/core/services/logger_sevices.dart';
 import 'package:sky_line/core/utils/platform_utils.dart';
@@ -114,6 +115,19 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
         emit(WeatherError(errorCode: code));
       }
     }
+    on WeatherParseException catch (e, stackTrace) {
+      final code = WeatherErrorCodes.parse;
+      logger.e(AppError.getDebugErrorMessage(code), error: e, stackTrace: stackTrace);
+      if (cached != null) {
+        emit(WeatherLoaded(
+          cached,
+          settings: settings,
+          notice: WeatherNotice.cachedData,
+        ));
+      } else {
+        emit(WeatherError(errorCode: code));
+      }
+    }
     catch (e, stackTrace) {
       logger.e(AppError.getDebugErrorMessage(WeatherErrorCodes.unexpected), error: e, stackTrace: stackTrace);
       if (cached != null) {
@@ -165,6 +179,18 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
           ? WeatherErrorCodes.network
           : WeatherErrorCodes.fetch;
       logger.e(AppError.getDebugErrorMessage(code), error: dioError, stackTrace: stackTrace);
+      if (state case WeatherLoaded loaded) {
+        emit(loaded.copyWith(
+          isFetching: false,
+          notice: WeatherNotice.refreshError,
+        ));
+      } else {
+        emit(WeatherEmpty(settings: currentSettings));
+      }
+    }
+    on WeatherParseException catch (e, stackTrace) {
+      final code = WeatherErrorCodes.parse;
+      logger.e(AppError.getDebugErrorMessage(code), error: e, stackTrace: stackTrace);
       if (state case WeatherLoaded loaded) {
         emit(loaded.copyWith(
           isFetching: false,

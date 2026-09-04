@@ -7,4 +7,5 @@ class WeatherErrorCodes {
   static const network = AppErrorCode(AppErrorSource.weatherForecast, 'network');
   static const loadCache = AppErrorCode(AppErrorSource.weatherForecast, 'loadCache');
   static const unexpected = AppErrorCode(AppErrorSource.weatherForecast, 'unexpected');
+  static const parse = AppErrorCode(AppErrorSource.weatherForecast, 'parse');
 }
