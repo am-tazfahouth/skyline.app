@@ -12,10 +12,14 @@ import 'package:sky_line/features/location/domain/entities/location_entity.dart'
 import 'package:sky_line/features/location/domain/repositories/location_repository.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
 import 'package:sky_line/features/location/presentation/utils/gps_error_feedback.dart';
+import 'package:sky_line/features/settings/domain/entities/setting_entity.dart';
+import 'package:sky_line/features/settings/domain/repositories/setting_repository.dart';
 
 class MockRepository extends Mock implements LocationRepository {}
 
 class MockLogger extends Mock implements AppLogger {}
+
+class MockSettingRepository extends Mock implements SettingRepository {}
 
 void main() {
   late MockRepository repo;
@@ -25,11 +29,14 @@ void main() {
     registerFallbackValue(
       const LocationEntity(latitude: 0, longitude: 0, cityName: ''),
     );
+    registerFallbackValue(const SettingEntity());
   });
 
   setUp(() {
     repo = MockRepository();
-    bloc = LocationBloc(logger: MockLogger(), repository: repo);
+    final mockSettingRepo = MockSettingRepository();
+    when(() => mockSettingRepo.loadSettings()).thenAnswer((_) async => const SettingEntity());
+    bloc = LocationBloc(logger: MockLogger(), repository: repo, settingRepository: mockSettingRepo);
     addTearDown(bloc.close);
   });
 
@@ -105,7 +112,7 @@ void main() {
 
     testWidgets('shows localized message and Retry action for gpsPermissionDenied',
         (tester) async {
-      when(() => repo.detectCurrentLocation())
+      when(() => repo.detectCurrentLocation(any()))
           .thenThrow(const LocationPermissionDeniedException());
 
       await pumpFeedback(tester, LocationErrorCodes.gpsPermissionDenied);
@@ -118,9 +125,10 @@ void main() {
       expect(find.text('Retry'), findsOneWidget);
 
       await tester.tap(find.text('Retry'));
+      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50)));
       await tester.pumpAndSettle();
 
-      verify(() => repo.detectCurrentLocation()).called(1);
+      verify(() => repo.detectCurrentLocation(any())).called(1);
     });
 
     testWidgets(

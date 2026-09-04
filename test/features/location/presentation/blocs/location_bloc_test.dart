@@ -10,13 +10,17 @@ import 'package:sky_line/features/location/domain/repositories/location_reposito
 import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_event.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_state.dart';
+import 'package:sky_line/features/settings/domain/entities/setting_entity.dart';
+import 'package:sky_line/features/settings/domain/repositories/setting_repository.dart';
 
 class MockRepository extends Mock implements LocationRepository {}
 class MockLogger extends Mock implements AppLogger {}
+class MockSettingRepository extends Mock implements SettingRepository {}
 
 void main() {
   late MockRepository mockRepo;
   late MockLogger mockLogger;
+  late MockSettingRepository mockSettingRepo;
   late LocationBloc bloc;
 
   setUpAll(() {
@@ -26,12 +30,15 @@ void main() {
       longitude: 0,
       cityName: '',
     ));
+    registerFallbackValue(const SettingEntity());
   });
 
   setUp(() {
     mockRepo = MockRepository();
     mockLogger = MockLogger();
-    bloc = LocationBloc(logger: mockLogger, repository: mockRepo);
+    mockSettingRepo = MockSettingRepository();
+    when(() => mockSettingRepo.loadSettings()).thenAnswer((_) async => const SettingEntity());
+    bloc = LocationBloc(logger: mockLogger, repository: mockRepo, settingRepository: mockSettingRepo);
   });
 
   tearDown(() => bloc.close());
@@ -101,7 +108,7 @@ void main() {
     blocTest<LocationBloc, LocationState>(
       'emits LocationSearchLoading then LocationSearchLoaded',
       build: () {
-        when(() => mockRepo.searchLocations('Paris')).thenAnswer((_) async => [testLocation]);
+        when(() => mockRepo.searchLocations(any(), any())).thenAnswer((_) async => [testLocation]);
         return bloc;
       },
       act: (bloc) => bloc.add(const SearchLocationsEvent('Paris')),
@@ -114,7 +121,7 @@ void main() {
     blocTest<LocationBloc, LocationState>(
       'emits LocationSearchError when search throws',
       build: () {
-        when(() => mockRepo.searchLocations(any())).thenThrow(Exception('fail'));
+        when(() => mockRepo.searchLocations(any(), any())).thenThrow(Exception('fail'));
         return bloc;
       },
       act: (bloc) => bloc.add(const SearchLocationsEvent('Paris')),
@@ -289,7 +296,7 @@ void main() {
     blocTest<LocationBloc, LocationState>(
       'emits LocationDetecting then LocationSelected with GPS location',
       build: () {
-        when(() => mockRepo.detectCurrentLocation()).thenAnswer((_) async => const LocationEntity(
+        when(() => mockRepo.detectCurrentLocation(any())).thenAnswer((_) async => const LocationEntity(
           latitude: -11.70,
           longitude: 43.25,
           cityName: 'Current Location',
@@ -309,7 +316,7 @@ void main() {
     blocTest<LocationBloc, LocationState>(
       'emits LocationError gpsPermissionDenied when permission denied',
       build: () {
-        when(() => mockRepo.detectCurrentLocation())
+        when(() => mockRepo.detectCurrentLocation(any()))
             .thenThrow(const LocationPermissionDeniedException());
         return bloc;
       },
@@ -324,7 +331,7 @@ void main() {
     blocTest<LocationBloc, LocationState>(
       'emits LocationError gpsPermissionPermanentlyDenied when denied forever',
       build: () {
-        when(() => mockRepo.detectCurrentLocation())
+        when(() => mockRepo.detectCurrentLocation(any()))
             .thenThrow(const LocationPermissionPermanentlyDeniedException());
         return bloc;
       },
@@ -339,7 +346,7 @@ void main() {
     blocTest<LocationBloc, LocationState>(
       'emits LocationError gpsDisabled when service is off',
       build: () {
-        when(() => mockRepo.detectCurrentLocation())
+        when(() => mockRepo.detectCurrentLocation(any()))
             .thenThrow(const LocationServiceDisabledException());
         return bloc;
       },
@@ -386,7 +393,7 @@ void main() {
     test('re-triggers detection when app resumes after opening location settings',
         () async {
       when(() => mockRepo.openLocationSettings()).thenAnswer((_) async {});
-      when(() => mockRepo.detectCurrentLocation()).thenAnswer(
+      when(() => mockRepo.detectCurrentLocation(any())).thenAnswer(
         (_) async => const LocationEntity(
           latitude: -11.70,
           longitude: 43.25,
@@ -406,13 +413,13 @@ void main() {
       await pumpEventQueue();
 
       expect(bloc.state, isA<LocationSelected>());
-      verify(() => mockRepo.detectCurrentLocation()).called(1);
+      verify(() => mockRepo.detectCurrentLocation(any())).called(1);
     });
 
     test(
         'does not re-trigger detection on resume when settings were not opened',
         () async {
-      when(() => mockRepo.detectCurrentLocation())
+      when(() => mockRepo.detectCurrentLocation(any()))
           .thenThrow(const LocationServiceDisabledException());
 
       bloc.add(const DetectCurrentLocationEvent());
@@ -422,7 +429,7 @@ void main() {
       bloc.didChangeAppLifecycleState(AppLifecycleState.resumed);
       await pumpEventQueue();
 
-      verify(() => mockRepo.detectCurrentLocation()).called(1);
+      verify(() => mockRepo.detectCurrentLocation(any())).called(1);
     });
   });
 }

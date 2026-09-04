@@ -3,19 +3,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/errors/app_error.dart';
 import 'package:sky_line/core/errors/location_error_codes.dart';
 import 'package:sky_line/core/errors/location_exceptions.dart';
+import 'package:sky_line/core/enums/setting_lang.dart';
 import 'package:sky_line/core/services/logger_sevices.dart';
 import 'package:sky_line/features/location/domain/entities/location_entity.dart';
 import 'package:sky_line/features/location/domain/repositories/location_repository.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_event.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_state.dart';
+import 'package:sky_line/features/settings/domain/repositories/setting_repository.dart';
 
 class LocationBloc extends Bloc<LocationEvent, LocationState>
     with WidgetsBindingObserver {
   final AppLogger logger;
   final LocationRepository repository;
+  final SettingRepository settingRepository;
 
-  LocationBloc({required this.logger, required this.repository})
-      : super(const LocationInitial()) {
+  LocationBloc({
+    required this.logger,
+    required this.repository,
+    required this.settingRepository,
+  }) : super(const LocationInitial()) {
     WidgetsBinding.instance.addObserver(this);
     on<DetectCurrentLocationEvent>(_onDetectCurrentLocation);
     on<OpenLocationSettingsEvent>(_onOpenLocationSettings);
@@ -42,13 +48,19 @@ class LocationBloc extends Bloc<LocationEvent, LocationState>
     return super.close();
   }
 
+  Future<String> _resolveLanguage() async {
+    final settings = await settingRepository.loadSettings();
+    return getStringFromLang(settings.lang);
+  }
+
   Future<void> _onDetectCurrentLocation(
     DetectCurrentLocationEvent event,
     Emitter<LocationState> emit,
   ) async {
     emit(const LocationDetecting());
     try {
-      final location = await repository.detectCurrentLocation();
+      final language = await _resolveLanguage();
+      final location = await repository.detectCurrentLocation(language);
       await repository.saveLastLocation(location);
       final favorites = repository.loadFavorites();
       emit(LocationSelected(location: location, favorites: favorites));
@@ -107,7 +119,8 @@ class LocationBloc extends Bloc<LocationEvent, LocationState>
     if (event.query.trim().isEmpty) return;
     emit(const LocationSearchLoading());
     try {
-      final results = await repository.searchLocations(event.query);
+      final language = await _resolveLanguage();
+      final results = await repository.searchLocations(event.query, language);
       emit(LocationSearchLoaded(results));
     } catch (e, stackTrace) {
       logger.e(

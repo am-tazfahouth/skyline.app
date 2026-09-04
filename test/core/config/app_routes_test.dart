@@ -61,7 +61,7 @@ void main() {
       providers: [
         BlocProvider<LocationBloc>(
           create: (_) =>
-              LocationBloc(logger: logger, repository: locationRepo),
+              LocationBloc(logger: logger, repository: locationRepo, settingRepository: settingRepo),
         ),
         BlocProvider<WeatherForecastBloc>(
           create: (_) => WeatherForecastBloc(

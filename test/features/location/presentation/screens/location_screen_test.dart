@@ -11,10 +11,14 @@ import 'package:sky_line/features/location/domain/repositories/location_reposito
 import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_event.dart';
 import 'package:sky_line/features/location/presentation/screens/location_screen.dart';
+import 'package:sky_line/features/settings/domain/entities/setting_entity.dart';
+import 'package:sky_line/features/settings/domain/repositories/setting_repository.dart';
 
 class MockRepository extends Mock implements LocationRepository {}
 
 class MockLogger extends Mock implements AppLogger {}
+
+class MockSettingRepository extends Mock implements SettingRepository {}
 
 const paris = LocationEntity(
   latitude: 48.85,
@@ -36,6 +40,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(const LocationEntity(latitude: 0, longitude: 0, cityName: ''));
+    registerFallbackValue(const SettingEntity());
   });
 
   setUp(() {
@@ -43,7 +48,9 @@ void main() {
   });
 
   LocationBloc createBloc() {
-    final bloc = LocationBloc(logger: MockLogger(), repository: repo);
+    final mockSettingRepo = MockSettingRepository();
+    when(() => mockSettingRepo.loadSettings()).thenAnswer((_) async => const SettingEntity());
+    final bloc = LocationBloc(logger: MockLogger(), repository: repo, settingRepository: mockSettingRepo);
     addTearDown(bloc.close);
     return bloc;
   }
@@ -109,7 +116,7 @@ void main() {
   testWidgets('GPS action dispatches DetectCurrentLocationEvent', (tester) async {
     bloc = createBloc();
     when(() => repo.loadFavorites()).thenReturn([]);
-    when(() => repo.detectCurrentLocation()).thenAnswer((_) async => gps);
+    when(() => repo.detectCurrentLocation(any())).thenAnswer((_) async => gps);
     when(() => repo.saveLastLocation(any())).thenAnswer((_) async {});
     when(() => repo.saveFavorite(any())).thenAnswer((_) async {});
 
@@ -117,13 +124,13 @@ void main() {
     await tester.tap(find.byIcon(Icons.my_location_rounded));
     await tester.pumpAndSettle();
 
-    verify(() => repo.detectCurrentLocation()).called(1);
+    verify(() => repo.detectCurrentLocation(any())).called(1);
   });
 
   testWidgets('GPS selection adds favorite and pops', (tester) async {
     bloc = createBloc();
     when(() => repo.loadFavorites()).thenReturn([]);
-    when(() => repo.detectCurrentLocation()).thenAnswer((_) async => gps);
+    when(() => repo.detectCurrentLocation(any())).thenAnswer((_) async => gps);
     when(() => repo.saveLastLocation(any())).thenAnswer((_) async {});
     when(() => repo.saveFavorite(any())).thenAnswer((_) async {});
 
@@ -194,7 +201,7 @@ void main() {
     bloc = createBloc();
     when(() => repo.loadFavorites()).thenReturn([paris]);
     when(() => repo.loadLastLocation()).thenReturn(null);
-    when(() => repo.detectCurrentLocation()).thenThrow(Exception('gps failed'));
+    when(() => repo.detectCurrentLocation(any())).thenThrow(Exception('gps failed'));
     bloc.add(const LoadFavoritesEvent());
 
     await pumpLocationScreen(tester);
@@ -212,7 +219,7 @@ void main() {
   testWidgets('GPS error shows a SnackBar', (tester) async {
     bloc = createBloc();
     when(() => repo.loadFavorites()).thenReturn([]);
-    when(() => repo.detectCurrentLocation()).thenThrow(Exception('gps failed'));
+    when(() => repo.detectCurrentLocation(any())).thenThrow(Exception('gps failed'));
 
     await pumpLocationScreen(tester);
     await tester.tap(find.byIcon(Icons.my_location_rounded));
@@ -225,7 +232,7 @@ void main() {
       (tester) async {
     bloc = createBloc();
     when(() => repo.loadFavorites()).thenReturn([]);
-    when(() => repo.detectCurrentLocation())
+    when(() => repo.detectCurrentLocation(any()))
         .thenThrow(const LocationServiceDisabledException());
     when(() => repo.openLocationSettings()).thenAnswer((_) async {});
 
@@ -244,7 +251,7 @@ void main() {
       (tester) async {
     bloc = createBloc();
     when(() => repo.loadFavorites()).thenReturn([]);
-    when(() => repo.detectCurrentLocation())
+    when(() => repo.detectCurrentLocation(any()))
         .thenThrow(const LocationPermissionPermanentlyDeniedException());
     when(() => repo.openAppSettings()).thenAnswer((_) async {});
 
@@ -266,7 +273,7 @@ void main() {
       (tester) async {
     bloc = createBloc();
     when(() => repo.loadFavorites()).thenReturn([]);
-    when(() => repo.detectCurrentLocation())
+    when(() => repo.detectCurrentLocation(any()))
         .thenThrow(const LocationPermissionDeniedException());
 
     await pumpLocationScreen(tester);
@@ -278,6 +285,6 @@ void main() {
     await tester.tap(find.text('Retry'));
     await tester.pumpAndSettle();
 
-    verify(() => repo.detectCurrentLocation()).called(2);
+    verify(() => repo.detectCurrentLocation(any())).called(2);
   });
 }

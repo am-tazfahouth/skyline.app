@@ -38,7 +38,7 @@ void main() {
         .thenAnswer((_) async => const SettingEntity());
 
     final locationBloc =
-        LocationBloc(logger: MockAppLogger(), repository: locationRepo);
+        LocationBloc(logger: MockAppLogger(), repository: locationRepo, settingRepository: settingRepo);
     final onboardingBloc = LocationOnboardingBloc(
       logger: MockAppLogger(),
       repository: onboardingRepo,
@@ -70,7 +70,7 @@ void main() {
     when(() => settingRepo.loadSettings()).thenThrow(Exception('boom'));
 
     final locationBloc =
-        LocationBloc(logger: MockAppLogger(), repository: locationRepo);
+        LocationBloc(logger: MockAppLogger(), repository: locationRepo, settingRepository: settingRepo);
     final onboardingBloc = LocationOnboardingBloc(
       logger: MockAppLogger(),
       repository: onboardingRepo,
@@ -109,7 +109,7 @@ void main() {
     await expectLater(
       AppBootstrap.hydrate(
         locationBloc:
-            LocationBloc(logger: MockAppLogger(), repository: locationRepo),
+            LocationBloc(logger: MockAppLogger(), repository: locationRepo, settingRepository: settingRepo),
         onboardingBloc: LocationOnboardingBloc(
           logger: MockAppLogger(),
           repository: onboardingRepo,

@@ -73,7 +73,7 @@ class InjectionContainer {
       locationPermissionSource,
     );
     locationBloc =
-        LocationBloc(logger: logger, repository: locationRepository);
+        LocationBloc(logger: logger, repository: locationRepository, settingRepository: settingRepository);
     locationOnboardingBloc = LocationOnboardingBloc(
       logger: logger,
       repository: locationRepository,

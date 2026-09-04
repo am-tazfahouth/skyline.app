@@ -21,8 +21,8 @@ class LocationRepositoryImpl implements LocationRepository {
   );
 
   @override
-  Future<List<LocationEntity>> searchLocations(String query) async {
-    final json = await _remoteSource.search(query, language: 'fr');
+  Future<List<LocationEntity>> searchLocations(String query, String language) async {
+    final json = await _remoteSource.search(query, language: language);
     final models = LocationMapper.fromJsonList(json);
     return models.map((m) => m.toEntity()).toList();
   }
@@ -117,7 +117,7 @@ class LocationRepositoryImpl implements LocationRepository {
   }
 
   @override
-  Future<LocationEntity> detectCurrentLocation() async {
+  Future<LocationEntity> detectCurrentLocation(String language) async {
     final status = await _permissionSource.requestLocationPermission();
     if (status.isRestricted || status.isDenied) {
       throw const LocationPermissionDeniedException();
@@ -132,16 +132,17 @@ class LocationRepositoryImpl implements LocationRepository {
     }
 
     final position = await _permissionSource.getCurrentPosition();
-    return _resolveDetectedLocation(position.latitude, position.longitude);
+    return _resolveDetectedLocation(position.latitude, position.longitude, language);
   }
 
   Future<LocationEntity> _resolveDetectedLocation(
     double latitude,
     double longitude,
+    String language,
   ) async {
     try {
       final place =
-          await _remoteSource.reverseGeocode(latitude: latitude, longitude: longitude, language: 'fr');
+          await _remoteSource.reverseGeocode(latitude: latitude, longitude: longitude, language: language);
       final city = _firstNonEmpty([place.city, place.locality]);
       if (city == null) return _gpsFallback(latitude, longitude);
       return LocationEntity(

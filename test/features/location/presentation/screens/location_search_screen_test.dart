@@ -11,10 +11,14 @@ import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart
 import 'package:sky_line/features/location/presentation/blocs/location_event.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_state.dart';
 import 'package:sky_line/features/location/presentation/screens/location_search_screen.dart';
+import 'package:sky_line/features/settings/domain/entities/setting_entity.dart';
+import 'package:sky_line/features/settings/domain/repositories/setting_repository.dart';
 
 class MockRepository extends Mock implements LocationRepository {}
 
 class MockLogger extends Mock implements AppLogger {}
+
+class MockSettingRepository extends Mock implements SettingRepository {}
 
 const paris = LocationEntity(
   latitude: 48.85,
@@ -29,11 +33,14 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(const LocationEntity(latitude: 0, longitude: 0, cityName: ''));
+    registerFallbackValue(const SettingEntity());
   });
 
   void createBloc() {
     repo = MockRepository();
-    bloc = LocationBloc(logger: MockLogger(), repository: repo);
+    final mockSettingRepo = MockSettingRepository();
+    when(() => mockSettingRepo.loadSettings()).thenAnswer((_) async => const SettingEntity());
+    bloc = LocationBloc(logger: MockLogger(), repository: repo, settingRepository: mockSettingRepo);
     addTearDown(bloc.close);
   }
 
@@ -67,7 +74,7 @@ void main() {
   }
 
   Future<void> pumpSearchResults(WidgetTester tester) async {
-    when(() => repo.searchLocations(any())).thenAnswer((_) async => [paris]);
+    when(() => repo.searchLocations(any(), any())).thenAnswer((_) async => [paris]);
     await pushSearchScreen(tester);
     bloc.add(const SearchLocationsEvent('par'));
     await tester.pumpAndSettle();
@@ -111,7 +118,7 @@ void main() {
       (tester) async {
     createBloc();
     when(() => repo.loadFavorites()).thenReturn([]);
-    when(() => repo.detectCurrentLocation())
+    when(() => repo.detectCurrentLocation(any()))
         .thenThrow(const LocationServiceDisabledException());
 
     bloc.add(const DetectCurrentLocationEvent());
@@ -126,7 +133,7 @@ void main() {
 
   testWidgets('search failure renders error message centered', (tester) async {
     createBloc();
-    when(() => repo.searchLocations(any())).thenThrow(Exception('fail'));
+    when(() => repo.searchLocations(any(), any())).thenThrow(Exception('fail'));
 
     await pushSearchScreen(tester);
     bloc.add(const SearchLocationsEvent('par'));

@@ -49,6 +49,12 @@ const _defaultSettings = SettingEntity(
   heatUnit: SettingHeatUnit.celsius,
 );
 
+MockSettingRepository _stubbedSettingRepo() {
+  final repo = MockSettingRepository();
+  when(() => repo.loadSettings()).thenAnswer((_) async => const SettingEntity());
+  return repo;
+}
+
 const gpsLocation = LocationEntity(
   latitude: 46.20,
   longitude: 6.14,
@@ -75,7 +81,7 @@ Widget createTestScreen(
   Locale locale = const Locale('en'),
 }) {
   final locBloc = locationBloc ??
-      LocationBloc(logger: MockAppLogger(), repository: MockLocationRepository());
+      LocationBloc(logger: MockAppLogger(), repository: MockLocationRepository(), settingRepository: _stubbedSettingRepo());
   final onboardingRepo = MockLocationRepository();
   when(() => onboardingRepo.hasSeenLocationOnboarding())
       .thenAnswer((_) async => true);
@@ -461,6 +467,7 @@ void main() {
     final locationBloc = LocationBloc(
       logger: MockAppLogger(),
       repository: locationRepo,
+      settingRepository: _stubbedSettingRepo(),
     );
 
     final bloc = WeatherForecastBloc(
@@ -514,6 +521,7 @@ void main() {
     final locationBloc = LocationBloc(
       logger: MockAppLogger(),
       repository: locationRepo,
+      settingRepository: _stubbedSettingRepo(),
     );
 
     final bloc = WeatherForecastBloc(
@@ -553,6 +561,7 @@ void main() {
     final locationBloc = LocationBloc(
       logger: MockAppLogger(),
       repository: locationRepo,
+      settingRepository: _stubbedSettingRepo(),
     );
     locationBloc.add(const LoadFavoritesEvent());
 
@@ -600,6 +609,7 @@ void main() {
     final locationBloc = LocationBloc(
       logger: MockAppLogger(),
       repository: locationRepo,
+      settingRepository: _stubbedSettingRepo(),
     );
     locationBloc.add(const LoadFavoritesEvent());
 
@@ -635,10 +645,11 @@ void main() {
     final locationRepo = MockLocationRepository();
     when(() => locationRepo.loadFavorites()).thenReturn([paris]);
     when(() => locationRepo.loadLastLocation()).thenReturn(paris);
-    when(() => locationRepo.detectCurrentLocation()).thenThrow(Exception('fail'));
+    when(() => locationRepo.detectCurrentLocation(any())).thenThrow(Exception('fail'));
     final locationBloc = LocationBloc(
       logger: MockAppLogger(),
       repository: locationRepo,
+      settingRepository: _stubbedSettingRepo(),
     );
     locationBloc.add(const LoadFavoritesEvent());
 
@@ -751,13 +762,14 @@ void main() {
     final onboardingBloc = await buildHydratedOnboardingBloc(repo: onboardingRepo);
 
     final locationRepo = MockLocationRepository();
-    when(() => locationRepo.detectCurrentLocation())
+    when(() => locationRepo.detectCurrentLocation(any()))
         .thenAnswer((_) async => gpsLocation);
     when(() => locationRepo.saveLastLocation(any())).thenAnswer((_) async {});
     when(() => locationRepo.loadFavorites()).thenReturn([]);
     final locationBloc = LocationBloc(
       logger: MockAppLogger(),
       repository: locationRepo,
+      settingRepository: _stubbedSettingRepo(),
     );
 
     final bloc = buildEmptyBloc();
@@ -777,7 +789,7 @@ void main() {
     await tester.pumpAndSettle();
 
     verify(() => onboardingRepo.markLocationOnboardingSeen()).called(1);
-    verify(() => locationRepo.detectCurrentLocation()).called(1);
+    verify(() => locationRepo.detectCurrentLocation(any())).called(1);
     verify(
       () => mockRepository.fetchWeather(
         latitude: gpsLocation.latitude,
@@ -797,11 +809,12 @@ void main() {
     final onboardingBloc = await buildHydratedOnboardingBloc(repo: onboardingRepo);
 
     final locationRepo = MockLocationRepository();
-    when(() => locationRepo.detectCurrentLocation())
+    when(() => locationRepo.detectCurrentLocation(any()))
         .thenThrow(const LocationServiceDisabledException());
     final locationBloc = LocationBloc(
       logger: MockAppLogger(),
       repository: locationRepo,
+      settingRepository: _stubbedSettingRepo(),
     );
 
     final bloc = buildEmptyBloc();
@@ -1040,13 +1053,14 @@ void main() {
     final locationBloc = LocationBloc(
       logger: MockAppLogger(),
       repository: locationRepo,
+      settingRepository: _stubbedSettingRepo(),
     );
 
     final bloc = WeatherForecastBloc(
       logger: MockAppLogger(),
       weatherRepository: mockRepository,
       getSettings: mockGetSettings,
-      isConnected: () async => false,
+      isConnected: () async => true,
     );
     bloc.add(const FetchWeatherEvent());
     await tester.pumpWidget(createTestScreen(bloc, locationBloc: locationBloc));
