@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/errors/app_error.dart';
 import 'package:sky_line/core/errors/weather_exceptions.dart';
 import 'package:sky_line/core/errors/weather_error_codes.dart';
-import 'package:sky_line/core/services/logger_sevices.dart';
+import 'package:sky_line/core/services/logger_services.dart';
 import 'package:sky_line/core/utils/platform_utils.dart';
 import 'package:sky_line/features/settings/domain/entities/setting_entity.dart';
 import 'package:sky_line/features/weather_forecast/domain/entities/weather_result.dart';

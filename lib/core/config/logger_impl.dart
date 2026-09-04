@@ -1,5 +1,5 @@
 import 'package:logger/logger.dart';
-import 'package:sky_line/core/services/logger_sevices.dart';
+import 'package:sky_line/core/services/logger_services.dart';
 
 class LoggerServiceImpl implements AppLogger {
   final Logger _logger;

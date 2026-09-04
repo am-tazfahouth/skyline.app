@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sky_line/core/errors/app_error.dart';
 import 'package:sky_line/core/errors/setting_error_codes.dart';
-import 'package:sky_line/core/services/logger_sevices.dart';
+import 'package:sky_line/core/services/logger_services.dart';
 import 'package:sky_line/features/settings/domain/repositories/setting_repository.dart';
 import 'package:sky_line/features/settings/presentation/blocs/settings_event.dart';
 import 'package:sky_line/features/settings/presentation/blocs/settings_state.dart';

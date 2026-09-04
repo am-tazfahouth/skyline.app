@@ -7,7 +7,7 @@ import 'package:sky_line/core/errors/location_error_codes.dart';
 import 'package:sky_line/core/errors/location_exceptions.dart';
 import 'package:sky_line/core/errors/weather_error_codes.dart';
 import 'package:sky_line/core/l10n/app_localisation.dart';
-import 'package:sky_line/core/services/logger_sevices.dart';
+import 'package:sky_line/core/services/logger_services.dart';
 import 'package:sky_line/features/location/domain/entities/location_entity.dart';
 import 'package:sky_line/features/location/domain/repositories/location_repository.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';

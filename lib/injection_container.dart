@@ -4,7 +4,7 @@ import 'package:logger/logger.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sky_line/core/config/db_helper/db_helper.dart';
 import 'package:sky_line/core/config/logger_impl.dart';
-import 'package:sky_line/core/services/logger_sevices.dart';
+import 'package:sky_line/core/services/logger_services.dart';
 import 'package:sky_line/features/settings/data/repositories/setting_repository_impl.dart';
 import 'package:sky_line/features/settings/domain/repositories/setting_repository.dart';
 import 'package:sky_line/features/settings/presentation/blocs/settings_bloc.dart';

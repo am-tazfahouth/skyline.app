@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:sky_line/core/config/app_theme.dart';
 import 'package:sky_line/core/l10n/app_localisation.dart';
-import 'package:sky_line/core/services/logger_sevices.dart';
+import 'package:sky_line/core/services/logger_services.dart';
 import 'package:sky_line/features/weather_forecast/domain/repositories/weather_repository.dart';
 import 'package:sky_line/features/weather_forecast/domain/usecases/get_settings_use_case.dart';
 import 'package:sky_line/features/weather_forecast/presentation/blocs/weather_forecast_bloc.dart';

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:sky_line/core/config/app_bootstrap.dart';
-import 'package:sky_line/core/services/logger_sevices.dart';
+import 'package:sky_line/core/services/logger_services.dart';
 import 'package:sky_line/features/location/domain/entities/location_entity.dart';
 import 'package:sky_line/features/location/domain/repositories/location_repository.dart';
 import 'package:sky_line/features/location/presentation/blocs/location_bloc.dart';

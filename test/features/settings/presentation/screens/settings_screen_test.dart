@@ -7,7 +7,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:sky_line/core/config/app_theme.dart';
 import 'package:sky_line/core/enums/setting_heat_unit.dart';
 import 'package:sky_line/core/l10n/app_localisation.dart';
-import 'package:sky_line/core/services/logger_sevices.dart';
+import 'package:sky_line/core/services/logger_services.dart';
 import 'package:sky_line/features/settings/domain/entities/setting_entity.dart';
 import 'package:sky_line/features/settings/domain/repositories/setting_repository.dart';
 import 'package:sky_line/features/settings/presentation/blocs/settings_bloc.dart';
