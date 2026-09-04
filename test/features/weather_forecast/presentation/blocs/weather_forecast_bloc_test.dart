@@ -482,10 +482,8 @@ void main() {
         await Future<void>.delayed(const Duration(milliseconds: 250));
       },
       verify: (bloc) {
-        final lastState = bloc.state;
-        expect(lastState, isA<WeatherLoaded>());
         expect(
-          lastState,
+          bloc.state,
           isA<WeatherLoaded>()
               .having((s) => s.result.isCached, 'result is fresh', false)
               .having((s) => s.notice, 'no error notice on fresh data', WeatherNotice.none),

@@ -92,7 +92,7 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
           settings: settings,
           notice: WeatherNotice.cachedData,
         ));
-      } else if (cached == null && state == loadingAnchor) {
+      } else if (state == loadingAnchor) {
         emit(WeatherEmpty(settings: settings));
       }
       return;
@@ -117,7 +117,7 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
           settings: settings,
           notice: WeatherNotice.cachedData,
         ));
-      } else if (cached == null && state == loadingAnchor) {
+      } else if (state == loadingAnchor) {
         emit(WeatherError(errorCode: code));
       }
     }
@@ -130,7 +130,7 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
           settings: settings,
           notice: WeatherNotice.cachedData,
         ));
-      } else if (cached == null && state == loadingAnchor) {
+      } else if (state == loadingAnchor) {
         emit(WeatherError(errorCode: code));
       }
     }
@@ -142,7 +142,7 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
           settings: settings,
           notice: WeatherNotice.cachedData,
         ));
-      } else if (cached == null && state == loadingAnchor) {
+      } else if (state == loadingAnchor) {
         emit(WeatherError(errorCode: WeatherErrorCodes.unexpected));
       }
     }
@@ -176,9 +176,18 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
       return;
     }
 
+    WeatherForecastState? loadingAnchor;
+    if (capturedResult != null) {
+      loadingAnchor = WeatherLoaded(capturedResult, isFetching: true, settings: currentSettings);
+    } else {
+      loadingAnchor = WeatherEmpty(isFetching: true, settings: currentSettings);
+    }
+
     try {
       final fresh = await weatherRepository.fetchWeather(latitude: lat, longitude: lon);
-      emit(WeatherLoaded(fresh, settings: settings));
+      if (state == loadingAnchor) {
+        emit(WeatherLoaded(fresh, settings: settings));
+      }
     }
     on DioException catch (dioError, stackTrace) {
       final code = dioError.type == DioExceptionType.connectionTimeout
@@ -187,36 +196,42 @@ class WeatherForecastBloc extends Bloc<WeatherForecastEvent, WeatherForecastStat
           ? WeatherErrorCodes.network
           : WeatherErrorCodes.fetch;
       logger.e(AppError.getDebugErrorMessage(code), error: dioError, stackTrace: stackTrace);
-      if (state case WeatherLoaded(:final result) when result == capturedResult) {
-        emit(WeatherLoaded(capturedResult!, isFetching: false,
-            settings: currentSettings, notice: WeatherNotice.refreshError));
+      if (state == loadingAnchor) {
+        if (capturedResult != null) {
+          emit(WeatherLoaded(capturedResult, isFetching: false,
+              settings: currentSettings, notice: WeatherNotice.refreshError));
+        } else {
+          emit(WeatherEmpty(settings: currentSettings));
+        }
       } else if (state case WeatherLoaded loaded) {
         emit(loaded.copyWith(isFetching: false));
-      } else {
-        emit(WeatherEmpty(settings: currentSettings));
       }
     }
     on WeatherParseException catch (e, stackTrace) {
       final code = WeatherErrorCodes.parse;
       logger.e(AppError.getDebugErrorMessage(code), error: e, stackTrace: stackTrace);
-      if (state case WeatherLoaded(:final result) when result == capturedResult) {
-        emit(WeatherLoaded(capturedResult!, isFetching: false,
-            settings: currentSettings, notice: WeatherNotice.refreshError));
+      if (state == loadingAnchor) {
+        if (capturedResult != null) {
+          emit(WeatherLoaded(capturedResult, isFetching: false,
+              settings: currentSettings, notice: WeatherNotice.refreshError));
+        } else {
+          emit(WeatherEmpty(settings: currentSettings));
+        }
       } else if (state case WeatherLoaded loaded) {
         emit(loaded.copyWith(isFetching: false));
-      } else {
-        emit(WeatherEmpty(settings: currentSettings));
       }
     }
     catch (e, stackTrace) {
       logger.e(AppError.getDebugErrorMessage(WeatherErrorCodes.unexpected), error: e, stackTrace: stackTrace);
-      if (state case WeatherLoaded(:final result) when result == capturedResult) {
-        emit(WeatherLoaded(capturedResult!, isFetching: false,
-            settings: currentSettings, notice: WeatherNotice.refreshError));
+      if (state == loadingAnchor) {
+        if (capturedResult != null) {
+          emit(WeatherLoaded(capturedResult, isFetching: false,
+              settings: currentSettings, notice: WeatherNotice.refreshError));
+        } else {
+          emit(WeatherError(errorCode: WeatherErrorCodes.unexpected));
+        }
       } else if (state case WeatherLoaded loaded) {
         emit(loaded.copyWith(isFetching: false));
-      } else {
-        emit(WeatherError(errorCode: WeatherErrorCodes.unexpected));
       }
     }
   }
