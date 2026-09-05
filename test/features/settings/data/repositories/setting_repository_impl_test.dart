@@ -33,12 +33,36 @@ void main() {
   });
 
   group('loadSettings', () {
-    test('should return defaults when cache is null', () async {
-      when(() => mockDbHelper.loadSettings()).thenReturn(null);
+    group('loadSettings first launch (null cache)', () {
+      setUp(() {
+        when(() => mockDbHelper.loadSettings()).thenReturn(null);
+        when(() => mockDbHelper.saveSettings(any())).thenReturn(null);
+      });
 
-      final result = await repository.loadSettings();
+      test('should use provider language and persist on first launch', () async {
+        repository = SettingRepositoryImpl.withSystemLang(
+          mockDbHelper,
+          () => SettingLang.fr,
+        );
 
-      expect(result, SettingEntity.defaults);
+        final result = await repository.loadSettings();
+
+        expect(result.lang, SettingLang.fr);
+        expect(result.theme, SettingTheme.system);
+        verify(() => mockDbHelper.saveSettings(any())).called(1);
+      });
+
+      test('should fall back to en for unsupported provider language', () async {
+        repository = SettingRepositoryImpl.withSystemLang(
+          mockDbHelper,
+          () => SettingLang.en,
+        );
+
+        final result = await repository.loadSettings();
+
+        expect(result.lang, SettingLang.en);
+        verify(() => mockDbHelper.saveSettings(any())).called(1);
+      });
     });
 
     test('should return cached entity converted to domain', () async {
@@ -57,6 +81,26 @@ void main() {
       expect(result.lang, SettingLang.fr);
       expect(result.windUnit, SettingWindUnit.kmh);
       expect(result.heatUnit, SettingHeatUnit.fahrenheit);
+    });
+
+    test('should keep persisted language and not save when cache exists', () async {
+      final entity = SettingCacheEntity(
+        id: 1,
+        themeValue: 'system',
+        langValue: 'es',
+        windUnitValue: 'ms',
+        heatUnitValue: 'celsius',
+      );
+      when(() => mockDbHelper.loadSettings()).thenReturn(entity);
+      repository = SettingRepositoryImpl.withSystemLang(
+        mockDbHelper,
+        () => SettingLang.fr,
+      );
+
+      final result = await repository.loadSettings();
+
+      expect(result.lang, SettingLang.es);
+      verifyNever(() => mockDbHelper.saveSettings(any()));
     });
   });
 
