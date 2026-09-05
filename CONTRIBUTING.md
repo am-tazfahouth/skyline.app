@@ -24,7 +24,7 @@ Please read the [README](README.md) first for a project overview, and keep in mi
 | Flutter     | `>= 3.35.0` |
 | Dart        | `^3.9.2` |
 
-The CI pipeline pins Flutter `3.35.0` (stable). Local results are only trustworthy on a matching SDK.
+The CI pipeline pins Flutter `3.35.5` (stable). Local results are only trustworthy on a matching SDK.
 
 ## Getting Started
 
@@ -100,7 +100,7 @@ A GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push and pu
 2. `flutter analyze --fatal-infos` (zero warnings, zero infos)
 3. `flutter test`
 
-The workflow pins Flutter `3.35.0`. A red CI run blocks the merge.
+The workflow pins Flutter `3.35.5`. A red CI run blocks the merge.
 
 Pushing a version tag (`v*`) additionally builds signed, split-per-ABI release APKs, publishes a GitHub Release, and uploads the three APKs as release assets.
 
