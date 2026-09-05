@@ -102,7 +102,7 @@ void main() {
     await tester.tap(find.text('Contact'));
     await tester.pumpAndSettle();
 
-    expect(mockPlatform.lastLaunchedUrl, 'mailto:am.tazfahouth@gmail.com');
+    expect(mockPlatform.lastLaunchedUrl, 'mailto:dv.bugslayer@gmail.com');
   });
 
   testWidgets('should render correctly in dark theme', (tester) async {
