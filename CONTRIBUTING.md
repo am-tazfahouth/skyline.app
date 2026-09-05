@@ -13,6 +13,7 @@ Please read the [README](README.md) first for a project overview, and keep in mi
 - [Testing](#testing)
 - [Documentation](#documentation)
 - [Continuous Integration](#continuous-integration)
+- [Release Process](#release-process)
 - [Commit Conventions](#commit-conventions)
 - [Pull Request Process](#pull-request-process)
 
@@ -93,13 +94,64 @@ If your change introduces a new feature or a substantial behavior change, add or
 
 ## Continuous Integration
 
-A GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push and pull request targeting `main`:
+A GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push and pull request targeting `main`, and on version tags (`v*`):
 
 1. `flutter pub get`
 2. `flutter analyze --fatal-infos` (zero warnings, zero infos)
 3. `flutter test`
 
 The workflow pins Flutter `3.35.0`. A red CI run blocks the merge.
+
+Pushing a version tag (`v*`) additionally builds signed, split-per-ABI release APKs, publishes a GitHub Release, and uploads the three APKs as release assets.
+
+## Release Process
+
+Releases are versioned and published from `main`.
+
+### One-time: create the signing keystore
+
+```bash
+# In the repository root. Keep the passwords safe and back up the .jks file —
+# losing it makes future app upgrades impossible.
+keytool -genkey -v \
+  -keystore android/app/sky_line_upload.jks \
+  -alias skyline \
+  -keyalg RSA \
+  -keysize 2048 \
+  -validity 10000
+```
+
+Create `android/key.properties` (gitignored):
+
+```properties
+storePassword=<keystore-password>
+keyPassword=<key-password>
+keyAlias=skyline
+storeFile=sky_line_upload.jks
+```
+
+### One-time: configure GitHub secrets
+
+The repository needs four secrets (repository settings → Secrets and variables → Actions):
+
+| Secret | Value |
+| ------ | ----- |
+| `ANDROID_KEYSTORE_BASE64` | `base64 -w0 android/app/sky_line_upload.jks` output |
+| `ANDROID_KEYSTORE_PASSWORD` | Keystore password |
+| `ANDROID_KEY_ALIAS` | `skyline` |
+| `ANDROID_KEY_PASSWORD` | Key password |
+
+### Publish a release
+
+1. Bump the version in `pubspec.yaml` (e.g. `1.0.0+1`) and commit on `main`.
+2. Push a matching version tag — CI then verifies (`flutter analyze` + `flutter test`), builds the release APKs, and publishes them to GitHub Releases:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+The release is created only if the analyze-and-test job passes for the tagged commit, and only if the signing secrets are configured.
 
 ## Commit Conventions
 

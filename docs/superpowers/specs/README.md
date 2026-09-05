@@ -42,3 +42,4 @@ Every feature or cross-cutting change goes through **Spec → Plan → Implement
 |------|-------|-------------|-----|
 | 2026-07-31 | App Routes Centralization | Centralized named-route generator with slide transitions | [spec](2026-07-31-app-routes-design.md) |
 | 2026-08-09 | Boot Hydration | Hydrate favorites, onboarding and settings before `runApp` | [spec](2026-08-09-boot-hydration-design.md) |
+| 2026-09-05 | APK GitHub Releases Delivery | Signed per-ABI APKs published to GitHub Releases on versioned tags | [spec](2026-09-05-apk-github-releases-design.md) |

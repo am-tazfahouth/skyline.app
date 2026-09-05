@@ -1,4 +1,4 @@
-package com.example.sky_line
+package app.skyline.dev
 
 import android.content.Intent
 import android.net.Uri
