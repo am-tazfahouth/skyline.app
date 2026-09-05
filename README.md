@@ -135,6 +135,10 @@ flutter analyze
 
 The full engineering history of the project — every feature design spec and its implementation plan — is available in [docs/](docs/README.md), indexed by feature.
 
+## Contributing
+
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow, code conventions, and pull request process.
+
 ## Author
 
 [am-tazfahouth](https://github.com/am-tazfahouth)
