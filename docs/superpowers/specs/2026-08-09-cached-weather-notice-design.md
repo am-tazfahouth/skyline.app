@@ -1,4 +1,4 @@
-# Cached Weather Notice Design Spec
+# Cached Weather Notice — Design Spec
 
 **Date:** 2026-08-09
 **Feature:** Show a localized SnackBar whenever the app displays weather data from the local cache (no live connection available)

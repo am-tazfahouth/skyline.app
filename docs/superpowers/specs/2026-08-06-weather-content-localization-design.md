@@ -1,4 +1,4 @@
-# Weather Content Localization Design Spec
+# Weather Content Localization — Design Spec
 
 **Date:** 2026-08-06
 **Feature:** Localize the weather content page (and adjacent weather screens) through the existing ARB system

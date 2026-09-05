@@ -1,5 +1,9 @@
 # Reverse Geocoding for Current Location — Implementation Plan
 
+**Date:** 2026-08-05
+**Feature:** location
+**Status:** Implemented
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Enrich the GPS-detected location with the real city name/country/admin1 via BigDataCloud reverse geocoding, falling back to `Current Location` on failure.

@@ -1,4 +1,4 @@
-# App Routes Centralization Design Spec
+# App Routes Centralization — Design Spec
 
 **Date:** 2026-07-31
 **Feature:** Centralized named routing via `RouteGenerator`

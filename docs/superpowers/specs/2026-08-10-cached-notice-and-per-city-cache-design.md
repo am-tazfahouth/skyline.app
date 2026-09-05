@@ -1,4 +1,4 @@
-# Cached Notice Refinement & Per-City Cache Design Spec
+# Cached Notice Refinement & Per-City Cache — Design Spec
 
 **Date:** 2026-08-10
 **Feature:** Refine the cached-data SnackBar behavior and make the weather cache per-city

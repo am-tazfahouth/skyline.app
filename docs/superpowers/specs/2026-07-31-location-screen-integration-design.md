@@ -1,4 +1,4 @@
-# Location Screen Integration Design Spec
+# Location Screen Integration — Design Spec
 
 **Date:** 2026-07-31
 **Feature:** Favorites location screen + WeatherHeader integration

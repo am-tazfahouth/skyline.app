@@ -1,5 +1,9 @@
 # Weather Offline Cache — Implementation Plan
 
+**Date:** 2026-06-17
+**Feature:** weather_forecast
+**Status:** Implemented
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Persist the last successful weather API response via ObjectBox so the UI shows cached data when offline, with an `isCached` indicator in the BLoC state.

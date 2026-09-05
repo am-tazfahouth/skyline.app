@@ -1,34 +1,34 @@
-# Detection automatique de la langue au premier demarrage
+# System Language First-Launch — Design Spec
 
-**Date** : 2026-09-04
-**Feature** : settings / language
-**Statut** : design valide
+**Date:** 2026-09-04
+**Feature:** settings / language
+**Status:** Approved
 
-## Probleme
+## Problem
 
-Au premier demarrage de l'application, la langue par defaut est `en` (`SettingEntity.defaults`), quel que soit le langage du systeme/materiel. L'utilisateur doit donc changer manuellement la langue dans les parametres, meme si celle de son appareil est deja supportee par l'application.
+On first launch of the application, the default language is `en` (`SettingEntity.defaults`), regardless of the system/device language. The user therefore has to manually change the language in the settings, even when the device language is already supported by the application.
 
-Langues supportees par l'application : `en`, `fr`, `es`, `ar`.
+Languages supported by the application: `en`, `fr`, `es`, `ar`.
 
-## Objectif
+## Goal
 
-Au **premier demarrage uniquement** (absence de reglage persiste en base), l'application doit regler automatiquement sa langue sur celle du systeme si elle est supportee. Si la langue du systeme ne correspond a aucune langue supportee, l'application utilise `en` comme fallback.
+On **first launch only** (no persisted setting in the database), the application must automatically set its language to that of the system when supported. If the system language does not match any supported language, the application falls back to `en`.
 
-La langue ainsi choisie devient un reglage manuel par defaut, modifiable ensuite dans les parametres (elle ne doit pas re-appliquer le reglage systeme a chaque lancement).
+The language chosen this way becomes a default manual setting, modifiable afterwards in the settings (it must not re-apply the system setting on every launch).
 
-## Approche retenue
+## Chosen Approach
 
-Approche **A (couche Data) + injection testable**. Aucun changement dans la presentation, le BLoC, `main.dart` ni l'injection container.
+Approach **A (Data layer) + testable injection**. No change in the presentation layer, the BLoC, `main.dart` nor the injection container.
 
-Le flux existant reste inchange :
-- `main.dart` lit `setting.lang` via `SettingsBloc` / `SettingsLoadSuccess`.
-- `SettingRepositoryImpl.loadSettings()` est le point d'entree du premier demarrage : il retourne `SettingEntity.defaults` quand rien n'existe en base.
+The existing flow stays unchanged:
+- `main.dart` reads `setting.lang` via `SettingsBloc` / `SettingsLoadSuccess`.
+- `SettingRepositoryImpl.loadSettings()` is the entry point of the first launch: it returns `SettingEntity.defaults` when nothing exists in the database.
 
-## Conception
+## Design
 
-### 1. `lib/core/utils/platform_utils.dart` — detection de la langue systeme
+### 1. `lib/core/utils/platform_utils.dart` — system language detection
 
-Ajouter une methode statique qui resout la langue supportee du systeme avec fallback `en` :
+Add a static method that resolves the supported system language with an `en` fallback:
 
 ```dart
 // Resolve supported system language, fallback to en
@@ -38,13 +38,13 @@ static SettingLang getSystemLang() {
 }
 ```
 
-- Reutilise `getLangFromString(String)` de `lib/core/enums/setting_lang.dart`, qui fait deja le mapping `en/fr/es/ar` avec fallback `en`.
-- Importer `setting_lang.dart` : pas de cycle (ce fichier n'importe pas `platform_utils`).
-- Coherent avec le pattern existant `is24HourFormat()` qui lit `platformDispatcher`.
+- Reuses `getLangFromString(String)` from `lib/core/enums/setting_lang.dart`, which already maps `en/fr/es/ar` with an `en` fallback.
+- Importing `setting_lang.dart`: no cycle (this file does not import `platform_utils`).
+- Consistent with the existing `is24HourFormat()` pattern which reads `platformDispatcher`.
 
-### 2. `lib/features/settings/data/repositories/setting_repository_impl.dart` — injection + premier demarrage
+### 2. `lib/features/settings/data/repositories/setting_repository_impl.dart` — injection + first launch
 
-Ajouter un provider injectable `systemLangProvider`, avec un constructeur nomme dedie aux tests pour ne pas impacter l'injection container existante :
+Add an injectable `systemLangProvider`, with a dedicated named constructor for tests so the existing injection container stays untouched:
 
 ```dart
 class SettingRepositoryImpl implements SettingRepository {
@@ -72,50 +72,50 @@ class SettingRepositoryImpl implements SettingRepository {
     return SettingMapper.toEntity(SettingMapper.fromCacheEntity(cached));
   }
 
-  // saveSettings inchange
+  // saveSettings unchanged
 }
 ```
 
-Comportement :
-- Si `cached == null` (premier demarrage) : langue systeme resolue, reglage persiste (`saveSettings`), valeur retournee.
-- Si un reglage existe : langue conservee telle quelle (pas d'ecrasement par le systeme).
+Behavior:
+- If `cached == null` (first launch): system language resolved, setting persisted (`saveSettings`), value returned.
+- If a setting exists: language kept as-is (no overwrite by the system).
 
-## Donnees
+## Data
 
-- La langue auto-detected est persistee immédiatement via `saveSettings(setting)`. Elle devient ainsi le reglage manuel par defaut.
-- Aucune nouvelle entite, ni nouveau champ ObjectBox, ni migration necessaire.
+- The auto-detected language is persisted immediately via `saveSettings(setting)`. It thus becomes the default manual setting.
+- No new entity, no new ObjectBox field, no migration required.
 
-## Gestion des erreurs
+## Error Handling
 
-- `loadSettings()` ne leve pas d'exception pour la detection : le fallback `en` garantit toujours une langue valide.
-- `saveSettings` suit son comportement synchrone existant (`DbHelper`).
-- Le BLoC et l'UI restent inchanges : aucun nouvel etat d'erreur.
+- `loadSettings()` does not throw for detection: the `en` fallback always guarantees a valid language.
+- `saveSettings` keeps its existing synchronous behavior (`DbHelper`).
+- The BLoC and the UI stay unchanged: no new error state.
 
 ## Tests
 
-### `test/core/utils/platform_utils_test.dart` (a creer)
+### `test/core/utils/platform_utils_test.dart` (to create)
 
-Verifier la detection et le mapping via `tester.platformDispatcher.locale` :
+Verify detection and mapping via `tester.platformDispatcher.locale`:
 - locale `fr` → `SettingLang.fr`
 - locale `ar` → `SettingLang.ar`
-- locale non supportee (`de`, `zh`) → `SettingLang.en` (fallback)
+- unsupported locale (`de`, `zh`) → `SettingLang.en` (fallback)
 
-### `test/features/settings/data/repositories/setting_repository_impl_test.dart` (ajouts)
+### `test/features/settings/data/repositories/setting_repository_impl_test.dart` (additions)
 
-Utiliser `SettingRepositoryImpl.withSystemLang` avec un `DbHelper` mocktail :
-- `loadSettings()` retourne `null`, provider `fr` → `SettingEntity.lang == SettingLang.fr` et `saveSettings` appele.
-- `loadSettings()` retourne `null`, provider `ar` → `SettingLang.ar`.
-- `loadSettings()` retourne `null`, provider non supporte (`de`) → `SettingLang.en` (fallback).
-- `loadSettings()` retourne un reglage existant (lang `es`) → langue conservee `es`, `saveSettings` non appele.
+Use `SettingRepositoryImpl.withSystemLang` with a mocktail `DbHelper`:
+- `loadSettings()` returns `null`, provider `fr` → `SettingEntity.lang == SettingLang.fr` and `saveSettings` called.
+- `loadSettings()` returns `null`, provider `ar` → `SettingLang.ar`.
+- `loadSettings()` returns `null`, unsupported provider (`de`) → `SettingLang.en` (fallback).
+- `loadSettings()` returns an existing setting (lang `es`) → language kept `es`, `saveSettings` not called.
 
-## Verification usine
+## Factory Verification
 
 - `flutter analyze` : 0 warning, 0 info.
-- `flutter test` : suite globale verte.
+- `flutter test` : entire suite green.
 - `flutter test test/core/utils/platform_utils_test.dart test/features/settings/data/repositories/setting_repository_impl_test.dart`
 
-## Hors perimetre (YAGNI)
+## Out of Scope (YAGNI)
 
-- Ne pas re-appliquer la langue systeme a chaque lancement.
-- Pas d'ecran de premier lancement dedie au choix de langue.
-- Pas de changement de l'injection container (le constructeur par defaut reste `SettingRepositoryImpl(this._dbHelper)`).
+- Do not re-apply the system language on every launch.
+- No dedicated first-launch language selection screen.
+- No change to the injection container (the default constructor remains `SettingRepositoryImpl(this._dbHelper)`).

@@ -1,5 +1,9 @@
 # Location Onboarding & Manual Search Fallback — Implementation Plan
 
+**Date:** 2026-08-07
+**Feature:** location
+**Status:** Implemented
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add a first-launch location onboarding bottom sheet and a manual-search fallback SnackBar on `WeatherScreen`. When `WeatherEmpty` is reached, if the persistent flag `hasSeenLocationOnboarding` is false, show a bottom sheet after a 500 ms delay offering "Enable location" / "Later". Independently, whenever `WeatherEmpty` is reached (regardless of the flag), show a SnackBar inviting a manual city search — except while the bottom sheet is showing, and never on `WeatherError`.

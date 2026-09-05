@@ -1,4 +1,8 @@
-# Creator Card — Settings Section Design
+# Creator Card — Design Spec
+
+**Date:** 2026-08-20
+**Feature:** settings
+**Status:** Approved
 
 ## Overview
 

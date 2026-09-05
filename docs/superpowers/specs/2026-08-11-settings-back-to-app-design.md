@@ -1,4 +1,4 @@
-# Settings Back-to-App Design Spec
+# Settings Back-to-App — Design Spec
 
 **Date:** 2026-08-11
 **Feature:** Make the system back button return to the app after opening location / app settings from the GPS-error SnackBar

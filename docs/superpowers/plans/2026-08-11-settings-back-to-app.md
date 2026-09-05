@@ -1,4 +1,8 @@
-# Settings Back-to-App Implementation Plan
+# Settings Back-to-App — Implementation Plan
+
+**Date:** 2026-08-11
+**Feature:** settings
+**Status:** Implemented
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 

@@ -1,4 +1,4 @@
-# Favorite Deletion Auto-Switch Design Spec
+# Favorite Deletion Auto-Switch — Design Spec
 
 **Date:** 2026-08-06
 **Feature:** Automatically switch to another favorite when the favorite driving the weather content is deleted

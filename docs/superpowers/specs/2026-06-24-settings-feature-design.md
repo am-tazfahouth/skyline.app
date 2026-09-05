@@ -1,4 +1,8 @@
-# Settings Feature — Design Specification
+# Settings Feature — Design Spec
+
+**Date:** 2026-06-24
+**Feature:** settings
+**Status:** Approved
 
 ## Objective
 Add a `settings` feature managing theme, language, wind speed unit, and temperature unit, with ObjectBox persistence and Flutter ARB localization.

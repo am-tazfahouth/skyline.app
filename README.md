@@ -132,6 +132,10 @@ flutter analyze
 - [x] Light/Dark themes & multi-language
 - [x] Adjustable temperature & wind units
 
+## Architecture Documentation
+
+The full engineering history of the project — every feature design spec and its implementation plan — is available in [docs/](docs/README.md), indexed by feature.
+
 ## Author
 
 [am-tazfahouth](https://github.com/am-tazfahouth)

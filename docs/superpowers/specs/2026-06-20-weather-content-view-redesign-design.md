@@ -1,4 +1,4 @@
-# WeatherContentView Redesign
+# Weather Content View Redesign — Design Spec
 
 **Date:** 2026-06-20
 **Status:** Approved

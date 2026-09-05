@@ -1,8 +1,9 @@
 # Weather Forecast Feature — Design Spec
 
-**Date**: 2026-06-16
-**Feature**: `weather_forecast`
-**Goal**: Fetch and display weather data for a hardcoded location (Moroni, Comoros) using the Open-Meteo API.
+**Date:** 2026-06-16
+**Feature:** weather_forecast
+**Goal:** Fetch and display weather data for a hardcoded location (Moroni, Comoros) using the Open-Meteo API.
+**Status:** Approved
 
 ---
 

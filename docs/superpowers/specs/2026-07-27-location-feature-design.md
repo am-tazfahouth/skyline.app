@@ -1,4 +1,4 @@
-# Location Feature Design Spec
+# Location Feature — Design Spec
 
 **Date:** 2026-07-27
 **Feature:** Location management for SkyLine weather app

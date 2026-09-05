@@ -1,4 +1,4 @@
-# Design: Prevent Duplicate Favorite Locations
+# Prevent Duplicate Favorite Locations — Design Spec
 
 **Date:** 2026-08-22
 **Status:** Approved

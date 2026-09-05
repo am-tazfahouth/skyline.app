@@ -1,4 +1,4 @@
-# Boot Hydration Design Spec
+# Boot Hydration — Design Spec
 
 **Date:** 2026-08-09
 **Feature:** Hydrate favorites, onboarding and settings before `runApp` to eliminate the startup empty-state flash on `LocationScreen`

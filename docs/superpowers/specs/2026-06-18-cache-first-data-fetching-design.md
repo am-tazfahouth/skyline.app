@@ -1,5 +1,9 @@
 # Cache-First Data Fetching — Design Spec
 
+**Date:** 2026-06-18
+**Feature:** weather_forecast
+**Status:** Approved
+
 ## Problem
 
 When the app launches, it currently shows a blank page with a full-screen `CircularProgressIndicator` (`WeatherLoading`) while fetching weather data from the API. This creates a poor first-launch experience. Additionally, the existing ObjectBox cache has no TTL and is only used as a fallback when the network fails, rather than being leveraged proactively.
