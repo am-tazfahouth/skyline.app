@@ -41,18 +41,17 @@ class LocationEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        latitude,
-        longitude,
-        cityName,
-        country,
-        admin1,
-        isGpsLocation,
-        sortOrder,
-      ];
+    latitude,
+    longitude,
+    cityName,
+    country,
+    admin1,
+    isGpsLocation,
+    sortOrder,
+  ];
 
-  String get title => [cityName, country]
-      .where((e) => e != null && e.isNotEmpty)
-      .join(', ');
+  String get title =>
+      [cityName, country].where((e) => e != null && e.isNotEmpty).join(', ');
 
   /// Returns true when [other] refers to the same geographic point as this
   /// location. Coordinates are compared after rounding to 4 decimals

@@ -27,7 +27,9 @@ void main() {
     });
 
     test('keeps countryName unchanged when it has no article', () {
-      final model = ReverseGeocodeModel.fromJson(const {'countryName': 'Comoros'});
+      final model = ReverseGeocodeModel.fromJson(const {
+        'countryName': 'Comoros',
+      });
       expect(model.countryName, 'Comoros');
     });
 
@@ -43,7 +45,10 @@ void main() {
 
   group('copyWith', () {
     test('returns a new instance with updated fields', () {
-      const original = ReverseGeocodeModel(city: 'Paris', countryName: 'France');
+      const original = ReverseGeocodeModel(
+        city: 'Paris',
+        countryName: 'France',
+      );
       final updated = original.copyWith(city: 'Lyon');
       expect(updated.city, 'Lyon');
       expect(original.city, 'Paris');

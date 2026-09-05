@@ -23,11 +23,11 @@ class DbHelper {
   late final Box<OnboardingCacheEntity> _onboardingBox;
 
   DbHelper._(this._store)
-      : _box = Box<WeatherCacheEntity>(_store),
-        _settingsBox = Box<SettingCacheEntity>(_store),
-        _locationBox = Box<LocationCacheEntity>(_store),
-        _lastLocationBox = Box<LastLocationEntity>(_store),
-        _onboardingBox = Box<OnboardingCacheEntity>(_store);
+    : _box = Box<WeatherCacheEntity>(_store),
+      _settingsBox = Box<SettingCacheEntity>(_store),
+      _locationBox = Box<LocationCacheEntity>(_store),
+      _lastLocationBox = Box<LastLocationEntity>(_store),
+      _onboardingBox = Box<OnboardingCacheEntity>(_store);
 
   static Future<DbHelper> init({String? directory}) async {
     if (_instance != null) return _instance!;
@@ -48,21 +48,25 @@ class DbHelper {
       final lat = _roundCoordinate(latitude);
       final lon = _roundCoordinate(longitude);
       final existing = _box
-          .query(WeatherCacheEntity_.latitude.between(lat, lat) &
-              WeatherCacheEntity_.longitude.between(lon, lon))
+          .query(
+            WeatherCacheEntity_.latitude.between(lat, lat) &
+                WeatherCacheEntity_.longitude.between(lon, lon),
+          )
           .build()
           .find();
       for (final entity in existing) {
         _box.remove(entity.id);
       }
       final jsonStr = jsonEncode(model.toJson());
-      _box.put(WeatherCacheEntity(
-        id: 0,
-        jsonData: jsonStr,
-        savedAt: DateTime.now().millisecondsSinceEpoch,
-        latitude: lat,
-        longitude: lon,
-      ));
+      _box.put(
+        WeatherCacheEntity(
+          id: 0,
+          jsonData: jsonStr,
+          savedAt: DateTime.now().millisecondsSinceEpoch,
+          latitude: lat,
+          longitude: lon,
+        ),
+      );
     });
   }
 
@@ -78,8 +82,10 @@ class DbHelper {
     final lat = _roundCoordinate(latitude);
     final lon = _roundCoordinate(longitude);
     final entities = _box
-        .query(WeatherCacheEntity_.latitude.between(lat, lat) &
-            WeatherCacheEntity_.longitude.between(lon, lon))
+        .query(
+          WeatherCacheEntity_.latitude.between(lat, lat) &
+              WeatherCacheEntity_.longitude.between(lon, lon),
+        )
         .build()
         .find();
     if (entities.isEmpty) return null;
@@ -97,20 +103,22 @@ class DbHelper {
   SettingCacheEntity? loadSettings() {
     final entities = _settingsBox.getAll();
     if (entities.isEmpty) return null;
-    
+
     return entities.first;
   }
 
   void saveSettings(SettingModel model) {
     _store.runInTransaction(TxMode.write, () {
       _settingsBox.removeAll();
-      _settingsBox.put(SettingCacheEntity(
-        id: 0,
-        themeValue: SettingTheme.getStringFromTheme(model.theme),
-        langValue: getStringFromLang(model.lang),
-        windUnitValue: SettingWindUnit.getStringFromWindUnit(model.windUnit),
-        heatUnitValue: SettingHeatUnit.getStringFromHeatUnit(model.heatUnit),
-      ));
+      _settingsBox.put(
+        SettingCacheEntity(
+          id: 0,
+          themeValue: SettingTheme.getStringFromTheme(model.theme),
+          langValue: getStringFromLang(model.lang),
+          windUnitValue: SettingWindUnit.getStringFromWindUnit(model.windUnit),
+          heatUnitValue: SettingHeatUnit.getStringFromHeatUnit(model.heatUnit),
+        ),
+      );
     });
   }
 
@@ -162,10 +170,9 @@ class DbHelper {
   void saveOnboardingFlag(bool seen) {
     _store.runInTransaction(TxMode.write, () {
       _onboardingBox.removeAll();
-      _onboardingBox.put(OnboardingCacheEntity(
-        id: 0,
-        hasSeenLocationOnboarding: seen,
-      ));
+      _onboardingBox.put(
+        OnboardingCacheEntity(id: 0, hasSeenLocationOnboarding: seen),
+      );
     });
   }
 

@@ -35,11 +35,7 @@ void main() {
       theme: theme ?? appTheme.light(),
       localizationsDelegates: AppLocalisation.localizationsDelegates,
       supportedLocales: AppLocalisation.supportedLocales,
-      home: const Scaffold(
-        body: SingleChildScrollView(
-          child: CreatorCard(),
-        ),
-      ),
+      home: const Scaffold(body: SingleChildScrollView(child: CreatorCard())),
     );
   }
 
@@ -96,10 +92,7 @@ void main() {
     await tester.tap(find.text('GitHub'));
     await tester.pumpAndSettle();
 
-    expect(
-      mockPlatform.lastLaunchedUrl,
-      'https://github.com/am-tazfahouth',
-    );
+    expect(mockPlatform.lastLaunchedUrl, 'https://github.com/am-tazfahouth');
   });
 
   testWidgets('should launch email URL on tap', (tester) async {
@@ -109,10 +102,7 @@ void main() {
     await tester.tap(find.text('Contact'));
     await tester.pumpAndSettle();
 
-    expect(
-      mockPlatform.lastLaunchedUrl,
-      'mailto:am.tazfahouth@gmail.com',
-    );
+    expect(mockPlatform.lastLaunchedUrl, 'mailto:am.tazfahouth@gmail.com');
   });
 
   testWidgets('should render correctly in dark theme', (tester) async {

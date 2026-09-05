@@ -27,20 +27,20 @@ class LocationModel extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
-        'latitude': latitude,
-        'longitude': longitude,
-        'name': cityName,
-        'country': country,
-        'admin1': admin1,
-      };
+    'latitude': latitude,
+    'longitude': longitude,
+    'name': cityName,
+    'country': country,
+    'admin1': admin1,
+  };
 
   LocationEntity toEntity() => LocationEntity(
-        latitude: latitude,
-        longitude: longitude,
-        cityName: cityName,
-        country: country,
-        admin1: admin1,
-      );
+    latitude: latitude,
+    longitude: longitude,
+    cityName: cityName,
+    country: country,
+    admin1: admin1,
+  );
 
   LocationModel copyWith({
     double? latitude,

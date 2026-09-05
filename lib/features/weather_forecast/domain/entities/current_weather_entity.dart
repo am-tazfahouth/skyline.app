@@ -37,11 +37,11 @@ class CurrentWeatherEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        temperature,
-        humidity,
-        isDay,
-        windSpeed,
-        precipitation,
-        weatherCode,
-      ];
+    temperature,
+    humidity,
+    isDay,
+    windSpeed,
+    precipitation,
+    weatherCode,
+  ];
 }

@@ -18,8 +18,8 @@ class LocationSearchScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final bgColor = AppTheme.surfaceFor(Theme.of(context).brightness).color;
     final l10n = AppLocalisation.of(context)!;
-    
-    return Scaffold(      
+
+    return Scaffold(
       appBar: AppBar(
         backgroundColor: bgColor,
         title: SearchBarWidget(
@@ -32,11 +32,10 @@ class LocationSearchScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: BlocBuilder<LocationBloc, LocationState>(
-          buildWhen: (previous, current) => 
-            current is LocationSearchLoading || 
-            current is LocationSearchLoaded  ||
-            current is LocationSearchError 
-          ,
+          buildWhen: (previous, current) =>
+              current is LocationSearchLoading ||
+              current is LocationSearchLoaded ||
+              current is LocationSearchError,
           builder: (context, state) {
             if (state is LocationSearchLoading) {
               return Center(
@@ -72,7 +71,7 @@ class LocationSearchScreen extends StatelessWidget {
                   AppError.getUserErrorMessage(state.errorCode, l10n),
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.error
+                    color: theme.colorScheme.error,
                   ),
                 ),
               );

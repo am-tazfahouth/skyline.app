@@ -18,17 +18,11 @@ void main() {
     });
 
     test('legacy kmh format still parses', () {
-      expect(
-        SettingWindUnit.getWindUnitFromString('kmh'),
-        SettingWindUnit.kmh,
-      );
+      expect(SettingWindUnit.getWindUnitFromString('kmh'), SettingWindUnit.kmh);
     });
 
     test('legacy ms format still parses', () {
-      expect(
-        SettingWindUnit.getWindUnitFromString('ms'),
-        SettingWindUnit.ms,
-      );
+      expect(SettingWindUnit.getWindUnitFromString('ms'), SettingWindUnit.ms);
     });
   });
 }

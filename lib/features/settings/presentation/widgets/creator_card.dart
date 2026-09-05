@@ -58,11 +58,15 @@ class CreatorCard extends StatelessWidget {
                       children: [
                         Text(
                           'Ali Mohamed Tazfahouth',
-                          style: styles.headlineMedium.copyWith(color: primaryText),
+                          style: styles.headlineMedium.copyWith(
+                            color: primaryText,
+                          ),
                         ),
                         Text(
                           l10n.settingsCreatorRole,
-                          style: styles.bodyMedium.copyWith(color: secondaryText),
+                          style: styles.bodyMedium.copyWith(
+                            color: secondaryText,
+                          ),
                         ),
                       ],
                     ),
@@ -87,7 +91,8 @@ class CreatorCard extends StatelessWidget {
                   _SocialLink(
                     icon: Icons.email_outlined,
                     label: l10n.settingsCreatorContact,
-                    onTap: () => _launchSafe(Uri.parse('mailto:$_emailAddress')),
+                    onTap: () =>
+                        _launchSafe(Uri.parse('mailto:$_emailAddress')),
                     color: secondaryText,
                   ),
                 ],

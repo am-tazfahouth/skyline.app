@@ -31,9 +31,9 @@ void main() {
     blocTest<SettingsBloc, SettingsState>(
       'emits loaded state when LoadSettingsEvent is added',
       setUp: () {
-        when(() => mockRepository.loadSettings()).thenAnswer(
-          (_) async => SettingEntity.defaults,
-        );
+        when(
+          () => mockRepository.loadSettings(),
+        ).thenAnswer((_) async => SettingEntity.defaults);
       },
       build: () => SettingsBloc(
         logger: mockLogger,
@@ -52,9 +52,9 @@ void main() {
       'emits updated state when UpdateSettingsEvent is added',
       setUp: () {
         when(() => mockRepository.saveSettings(any())).thenAnswer((_) async {});
-        when(() => mockRepository.loadSettings()).thenAnswer(
-          (_) async => SettingEntity.defaults,
-        );
+        when(
+          () => mockRepository.loadSettings(),
+        ).thenAnswer((_) async => SettingEntity.defaults);
       },
       build: () => SettingsBloc(logger: mockLogger, repository: mockRepository),
       seed: () => const SettingsLoadSuccess(
@@ -62,9 +62,14 @@ void main() {
         isLoaded: true,
         appVersion: '1.2.3',
       ),
-      act: (bloc) => bloc.add(const UpdateSettingsEvent(
-        setting: SettingEntity(theme: SettingTheme.dark, lang: SettingLang.fr)
-      )),
+      act: (bloc) => bloc.add(
+        const UpdateSettingsEvent(
+          setting: SettingEntity(
+            theme: SettingTheme.dark,
+            lang: SettingLang.fr,
+          ),
+        ),
+      ),
       expect: () => [
         isA<SettingsLoadSuccess>()
             .having((s) => s.setting.theme, 'theme', SettingTheme.dark)

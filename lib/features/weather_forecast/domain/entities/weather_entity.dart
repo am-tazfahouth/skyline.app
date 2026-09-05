@@ -28,7 +28,9 @@ class WeatherEntity extends Equatable {
 
   bool isDayAt(DateTime time) {
     final dayEntry = daily.cast<DailyWeatherEntity?>().firstWhere(
-      (d) => d != null && d.sunrise.year == time.year &&
+      (d) =>
+          d != null &&
+          d.sunrise.year == time.year &&
           d.sunrise.month == time.month &&
           d.sunrise.day == time.day,
       orElse: () => null,
@@ -41,10 +43,10 @@ class WeatherEntity extends Equatable {
 
   WeatherEntity withCurrentFromHourly(DateTime now) {
     if (hourly.isEmpty) return this;
-    final closest = hourly.reduce((a, b) =>
-        a.time.difference(now).abs() < b.time.difference(now).abs()
-            ? a
-            : b);
+    final closest = hourly.reduce(
+      (a, b) =>
+          a.time.difference(now).abs() < b.time.difference(now).abs() ? a : b,
+    );
     return copyWith(
       current: CurrentWeatherEntity(
         temperature: closest.temperature,

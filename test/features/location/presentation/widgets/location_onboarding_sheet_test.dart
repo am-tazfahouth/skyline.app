@@ -28,12 +28,16 @@ void main() {
     );
   }
 
-  testWidgets('renders title, body and both buttons in English', (tester) async {
+  testWidgets('renders title, body and both buttons in English', (
+    tester,
+  ) async {
     await tester.pumpWidget(buildSheet());
 
     expect(find.text('Set your location'), findsOneWidget);
     expect(
-      find.text('Enable location access to see the weather for your current position.'),
+      find.text(
+        'Enable location access to see the weather for your current position.',
+      ),
       findsOneWidget,
     );
     expect(find.text('Enable location'), findsOneWidget);
@@ -45,7 +49,9 @@ void main() {
 
     expect(find.text('Définir votre position'), findsOneWidget);
     expect(
-      find.text('Autorisez la localisation pour voir la météo à votre position actuelle.'),
+      find.text(
+        'Autorisez la localisation pour voir la météo à votre position actuelle.',
+      ),
       findsOneWidget,
     );
     expect(find.text('Activer la localisation'), findsOneWidget);
@@ -72,7 +78,9 @@ void main() {
     expect(later, isTrue);
   });
 
-  testWidgets('tapping the Enable button triggers onEnableLocation', (tester) async {
+  testWidgets('tapping the Enable button triggers onEnableLocation', (
+    tester,
+  ) async {
     var enabled = false;
     await tester.pumpWidget(buildSheet(onEnableLocation: () => enabled = true));
 
@@ -82,7 +90,9 @@ void main() {
     expect(enabled, isTrue);
   });
 
-  testWidgets('system back navigation triggers onLater through PopScope', (tester) async {
+  testWidgets('system back navigation triggers onLater through PopScope', (
+    tester,
+  ) async {
     var later = false;
     await tester.pumpWidget(buildSheet(onLater: () => later = true));
 

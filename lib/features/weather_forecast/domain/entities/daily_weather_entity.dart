@@ -37,11 +37,11 @@ class DailyWeatherEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        date,
-        tempMax,
-        tempMin,
-        weatherCode,
-        sunrise,
-        sunset,
-      ];
+    date,
+    tempMax,
+    tempMin,
+    weatherCode,
+    sunrise,
+    sunset,
+  ];
 }

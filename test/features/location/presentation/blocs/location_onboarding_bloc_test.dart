@@ -23,7 +23,8 @@ void main() {
   group('LocationOnboardingBloc', () {
     blocTest<LocationOnboardingBloc, LocationOnboardingState>(
       'initial state is LocationOnboardingLoading',
-      build: () => LocationOnboardingBloc(logger: mockLogger, repository: mockRepo),
+      build: () =>
+          LocationOnboardingBloc(logger: mockLogger, repository: mockRepo),
       act: (_) {},
       expect: () => [],
     );
@@ -31,8 +32,9 @@ void main() {
     blocTest<LocationOnboardingBloc, LocationOnboardingState>(
       'emits LocationOnboardingLoaded(false) when onboarding was not seen',
       build: () {
-        when(() => mockRepo.hasSeenLocationOnboarding())
-            .thenAnswer((_) async => false);
+        when(
+          () => mockRepo.hasSeenLocationOnboarding(),
+        ).thenAnswer((_) async => false);
         return LocationOnboardingBloc(logger: mockLogger, repository: mockRepo);
       },
       act: (bloc) => bloc.add(const LoadOnboardingStatusEvent()),
@@ -44,8 +46,9 @@ void main() {
     blocTest<LocationOnboardingBloc, LocationOnboardingState>(
       'emits LocationOnboardingLoaded(true) when onboarding was already seen',
       build: () {
-        when(() => mockRepo.hasSeenLocationOnboarding())
-            .thenAnswer((_) async => true);
+        when(
+          () => mockRepo.hasSeenLocationOnboarding(),
+        ).thenAnswer((_) async => true);
         return LocationOnboardingBloc(logger: mockLogger, repository: mockRepo);
       },
       act: (bloc) => bloc.add(const LoadOnboardingStatusEvent()),
@@ -57,22 +60,30 @@ void main() {
     blocTest<LocationOnboardingBloc, LocationOnboardingState>(
       'emits LocationOnboardingError and logs when load throws',
       build: () {
-        when(() => mockRepo.hasSeenLocationOnboarding())
-            .thenThrow(Exception('fail'));
+        when(
+          () => mockRepo.hasSeenLocationOnboarding(),
+        ).thenThrow(Exception('fail'));
         return LocationOnboardingBloc(logger: mockLogger, repository: mockRepo);
       },
       act: (bloc) => bloc.add(const LoadOnboardingStatusEvent()),
       expect: () => [isA<LocationOnboardingError>()],
       verify: (_) {
-        verify(() => mockLogger.e(any(), error: any(named: 'error'), stackTrace: any(named: 'stackTrace'))).called(1);
+        verify(
+          () => mockLogger.e(
+            any(),
+            error: any(named: 'error'),
+            stackTrace: any(named: 'stackTrace'),
+          ),
+        ).called(1);
       },
     );
 
     blocTest<LocationOnboardingBloc, LocationOnboardingState>(
       'marks onboarding seen and emits LocationOnboardingLoaded(true)',
       build: () {
-        when(() => mockRepo.markLocationOnboardingSeen())
-            .thenAnswer((_) async {});
+        when(
+          () => mockRepo.markLocationOnboardingSeen(),
+        ).thenAnswer((_) async {});
         return LocationOnboardingBloc(logger: mockLogger, repository: mockRepo);
       },
       act: (bloc) => bloc.add(const CompleteOnboardingEvent()),
@@ -87,8 +98,9 @@ void main() {
     blocTest<LocationOnboardingBloc, LocationOnboardingState>(
       'still emits LocationOnboardingLoaded(true) and logs when mark throws',
       build: () {
-        when(() => mockRepo.markLocationOnboardingSeen())
-            .thenThrow(Exception('fail'));
+        when(
+          () => mockRepo.markLocationOnboardingSeen(),
+        ).thenThrow(Exception('fail'));
         return LocationOnboardingBloc(logger: mockLogger, repository: mockRepo);
       },
       act: (bloc) => bloc.add(const CompleteOnboardingEvent()),
@@ -96,7 +108,13 @@ void main() {
         const LocationOnboardingLoaded(hasSeenLocationOnboarding: true),
       ],
       verify: (_) {
-        verify(() => mockLogger.e(any(), error: any(named: 'error'), stackTrace: any(named: 'stackTrace'))).called(1);
+        verify(
+          () => mockLogger.e(
+            any(),
+            error: any(named: 'error'),
+            stackTrace: any(named: 'stackTrace'),
+          ),
+        ).called(1);
       },
     );
   });

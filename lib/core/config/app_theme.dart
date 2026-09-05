@@ -1,5 +1,5 @@
-import "package:flutter/material.dart";
-import "package:sky_line/core/constants/app_text_styles.dart";
+import 'package:flutter/material.dart';
+import 'package:sky_line/core/constants/app_text_styles.dart';
 
 class AppTheme {
   final TextTheme textTheme;
@@ -336,16 +336,15 @@ class AppTheme {
     return theme(darkHighContrastScheme());
   }
 
-
   ThemeData theme(ColorScheme colorScheme) {
     final baseTextTheme = colorScheme.brightness == Brightness.light
-      ? Typography.material2021().black
-      :  Typography.material2021().white;
+        ? Typography.material2021().black
+        : Typography.material2021().white;
 
     final customTextTheme = createTextTheme(
-      baseTextTheme: baseTextTheme, 
-      bodyFontFamily: "SFPro", 
-      displayFontFamily: "SFPro"
+      baseTextTheme: baseTextTheme,
+      bodyFontFamily: 'SFPro',
+      displayFontFamily: 'SFPro',
     );
 
     return ThemeData(
@@ -360,28 +359,38 @@ class AppTheme {
         backgroundColor: colorScheme.surface,
       ),
       popupMenuTheme: PopupMenuThemeData(
-        color: colorScheme.brightness == Brightness.light ?colorScheme.surface: colorScheme.surfaceContainerLow,
+        color: colorScheme.brightness == Brightness.light
+            ? colorScheme.surface
+            : colorScheme.surfaceContainerLow,
       ),
       searchBarTheme: SearchBarThemeData(
-        backgroundColor: WidgetStatePropertyAll(colorScheme.surfaceContainerLow)
+        backgroundColor: WidgetStatePropertyAll(
+          colorScheme.surfaceContainerLow,
+        ),
       ),
       dialogTheme: DialogThemeData(
-        shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        backgroundColor: colorScheme.brightness == Brightness.light ?colorScheme.surface: colorScheme.surfaceContainerLow,
+        shape: ContinuousRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        backgroundColor: colorScheme.brightness == Brightness.light
+            ? colorScheme.surface
+            : colorScheme.surfaceContainerLow,
       ),
       snackBarTheme: SnackBarThemeData(
         elevation: 1,
         showCloseIcon: true,
         contentTextStyle: TextStyle(
           color: colorScheme.surface,
-          fontWeight: FontWeight.w500
+          fontWeight: FontWeight.w500,
         ),
         behavior: SnackBarBehavior.floating,
         actionOverflowThreshold: 1,
         closeIconColor: colorScheme.surface,
         dismissDirection: DismissDirection.horizontal,
         backgroundColor: colorScheme.inverseSurface,
-        shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: ContinuousRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
       ),
       textTheme: customTextTheme,
       scaffoldBackgroundColor: colorScheme.surface,
@@ -390,35 +399,63 @@ class AppTheme {
         elevation: 1,
         shadowColor: colorScheme.outlineVariant,
         color: colorScheme.surfaceContainerLowest,
-        surfaceTintColor: colorScheme.onInverseSurface
+        surfaceTintColor: colorScheme.onInverseSurface,
       ),
-      extensions: [
-        TextStyleCatalog.fromColorScheme(colorScheme),
-      ]
+      extensions: [TextStyleCatalog.fromColorScheme(colorScheme)],
     );
   }
 
-  TextTheme createTextTheme({ required TextTheme baseTextTheme, required String bodyFontFamily, required String displayFontFamily }) {  
+  TextTheme createTextTheme({
+    required TextTheme baseTextTheme,
+    required String bodyFontFamily,
+    required String displayFontFamily,
+  }) {
     // For eache style "display" (titres, headlines…), we change la the font
     final display = baseTextTheme.copyWith(
-      displayLarge: baseTextTheme.displayLarge?.copyWith(fontFamily: displayFontFamily),
-      displayMedium: baseTextTheme.displayMedium?.copyWith(fontFamily: displayFontFamily),
-      displaySmall: baseTextTheme.displaySmall?.copyWith(fontFamily: displayFontFamily),
-      headlineLarge: baseTextTheme.headlineLarge?.copyWith(fontFamily: displayFontFamily),
-      headlineMedium: baseTextTheme.headlineMedium?.copyWith(fontFamily: displayFontFamily),
-      headlineSmall: baseTextTheme.headlineSmall?.copyWith(fontFamily: displayFontFamily),
-      titleLarge: baseTextTheme.titleLarge?.copyWith(fontFamily: displayFontFamily),
-      titleMedium: baseTextTheme.titleMedium?.copyWith(fontFamily: displayFontFamily),
-      titleSmall: baseTextTheme.titleSmall?.copyWith(fontFamily: displayFontFamily),
+      displayLarge: baseTextTheme.displayLarge?.copyWith(
+        fontFamily: displayFontFamily,
+      ),
+      displayMedium: baseTextTheme.displayMedium?.copyWith(
+        fontFamily: displayFontFamily,
+      ),
+      displaySmall: baseTextTheme.displaySmall?.copyWith(
+        fontFamily: displayFontFamily,
+      ),
+      headlineLarge: baseTextTheme.headlineLarge?.copyWith(
+        fontFamily: displayFontFamily,
+      ),
+      headlineMedium: baseTextTheme.headlineMedium?.copyWith(
+        fontFamily: displayFontFamily,
+      ),
+      headlineSmall: baseTextTheme.headlineSmall?.copyWith(
+        fontFamily: displayFontFamily,
+      ),
+      titleLarge: baseTextTheme.titleLarge?.copyWith(
+        fontFamily: displayFontFamily,
+      ),
+      titleMedium: baseTextTheme.titleMedium?.copyWith(
+        fontFamily: displayFontFamily,
+      ),
+      titleSmall: baseTextTheme.titleSmall?.copyWith(
+        fontFamily: displayFontFamily,
+      ),
     );
 
     return display.copyWith(
       bodyLarge: baseTextTheme.bodyLarge?.copyWith(fontFamily: bodyFontFamily),
-      bodyMedium: baseTextTheme.bodyMedium?.copyWith(fontFamily: bodyFontFamily),
+      bodyMedium: baseTextTheme.bodyMedium?.copyWith(
+        fontFamily: bodyFontFamily,
+      ),
       bodySmall: baseTextTheme.bodySmall?.copyWith(fontFamily: bodyFontFamily),
-      labelLarge: baseTextTheme.labelLarge?.copyWith(fontFamily: bodyFontFamily),
-      labelMedium: baseTextTheme.labelMedium?.copyWith(fontFamily: bodyFontFamily),
-      labelSmall: baseTextTheme.labelSmall?.copyWith(fontFamily: bodyFontFamily),
+      labelLarge: baseTextTheme.labelLarge?.copyWith(
+        fontFamily: bodyFontFamily,
+      ),
+      labelMedium: baseTextTheme.labelMedium?.copyWith(
+        fontFamily: bodyFontFamily,
+      ),
+      labelSmall: baseTextTheme.labelSmall?.copyWith(
+        fontFamily: bodyFontFamily,
+      ),
     );
   }
 

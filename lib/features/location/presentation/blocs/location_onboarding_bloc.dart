@@ -12,7 +12,7 @@ class LocationOnboardingBloc
   final LocationRepository repository;
 
   LocationOnboardingBloc({required this.logger, required this.repository})
-      : super(const LocationOnboardingLoading()) {
+    : super(const LocationOnboardingLoading()) {
     on<LoadOnboardingStatusEvent>(_onLoadOnboardingStatus);
     on<CompleteOnboardingEvent>(_onCompleteOnboarding);
   }

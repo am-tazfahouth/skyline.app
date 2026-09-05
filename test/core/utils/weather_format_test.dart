@@ -13,13 +13,17 @@ void main() {
     });
 
     test('returns Fahrenheit when specified', () {
-      expect(WeatherFormat.temperature(23, unit: SettingHeatUnit.fahrenheit),
-          '73°F');
+      expect(
+        WeatherFormat.temperature(23, unit: SettingHeatUnit.fahrenheit),
+        '73°F',
+      );
     });
 
     test('returns Celsius when explicitly set', () {
-      expect(WeatherFormat.temperature(0, unit: SettingHeatUnit.celsius),
-          '0°C');
+      expect(
+        WeatherFormat.temperature(0, unit: SettingHeatUnit.celsius),
+        '0°C',
+      );
     });
   });
 

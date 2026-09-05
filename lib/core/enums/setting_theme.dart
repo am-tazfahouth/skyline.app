@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum SettingTheme{
+enum SettingTheme {
   light,
   dark,
   system;
@@ -53,4 +53,3 @@ enum SettingTheme{
     }
   } */
 }
-

@@ -23,29 +23,31 @@ class WeatherContentView extends StatelessWidget {
       body: RefreshIndicator(
         onRefresh: () async {
           context.read<WeatherForecastBloc>().add(const RefreshWeatherEvent());
-          await context.read<WeatherForecastBloc>().stream.firstWhere((s) => !s.isFetching);
+          await context.read<WeatherForecastBloc>().stream.firstWhere(
+            (s) => !s.isFetching,
+          );
         },
-        child: SafeArea(
+        child: const SafeArea(
           child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(
+            physics: AlwaysScrollableScrollPhysics(),
+            padding: EdgeInsets.symmetric(
               horizontal: AppSpacing.xl,
               vertical: AppSpacing.sm,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: AppSpacing.xs),
-                const WeatherMainCard(),
+                SizedBox(height: AppSpacing.xs),
+                WeatherMainCard(),
                 // End - MainCard
-                const SizedBox(height: 14),
-                const WeatherStatsCard(),
+                SizedBox(height: 14),
+                WeatherStatsCard(),
                 // End - States of current day
-                const SizedBox(height: 20),
-                const WeatherForecastSection(),
+                SizedBox(height: 20),
+                WeatherForecastSection(),
                 // End - Forecast section
-                const SizedBox(height: 20),
-                const WeatherSunTimes(),
+                SizedBox(height: 20),
+                WeatherSunTimes(),
                 // End - SunCard
               ],
             ),

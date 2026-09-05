@@ -5,7 +5,7 @@ import 'package:sky_line/core/constants/app_spacing.dart';
 import 'package:sky_line/core/constants/app_text_styles.dart';
 
 class SettingCard extends StatelessWidget {
-  final String title; 
+  final String title;
   final List<Widget> options;
   const SettingCard({super.key, required this.title, required this.options});
 
@@ -15,13 +15,13 @@ class SettingCard extends StatelessWidget {
     final styles = Theme.of(context).extension<TextStyleCatalog>()!;
     final cardColor = surface.colorContainer;
     final primaryText = surface.onColor;
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       child: Container(
         decoration: BoxDecoration(
           color: cardColor,
-          borderRadius: BorderRadius.circular(AppRadius.md)
+          borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.md),
@@ -35,8 +35,8 @@ class SettingCard extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: AppSpacing.sm,),
-              ...options
+              const SizedBox(height: AppSpacing.sm),
+              ...options,
             ],
           ),
         ),

@@ -65,7 +65,9 @@ class LocationBloc extends Bloc<LocationEvent, LocationState>
       final favorites = repository.loadFavorites();
       emit(LocationSelected(location: location, favorites: favorites));
     } on LocationPermissionPermanentlyDeniedException {
-      emit(const LocationError(LocationErrorCodes.gpsPermissionPermanentlyDenied));
+      emit(
+        const LocationError(LocationErrorCodes.gpsPermissionPermanentlyDenied),
+      );
     } on LocationPermissionDeniedException {
       emit(const LocationError(LocationErrorCodes.gpsPermissionDenied));
     } on LocationServiceDisabledException {
@@ -158,8 +160,15 @@ class LocationBloc extends Bloc<LocationEvent, LocationState>
       await repository.saveFavorite(event.location);
       final favorites = repository.loadFavorites();
       final currentState = state;
-      final currentLocation = currentState is LocationSelected ? currentState.location : null;
-      emit(LocationFavoritesLoaded(favorites: favorites, currentLocation: currentLocation));
+      final currentLocation = currentState is LocationSelected
+          ? currentState.location
+          : null;
+      emit(
+        LocationFavoritesLoaded(
+          favorites: favorites,
+          currentLocation: currentLocation,
+        ),
+      );
     } catch (e, stackTrace) {
       logger.e(
         AppError.getDebugErrorMessage(LocationErrorCodes.saveFavoriteFailed),
@@ -181,9 +190,10 @@ class LocationBloc extends Bloc<LocationEvent, LocationState>
       final previousLocation = currentState is LocationSelected
           ? currentState.location
           : currentState is LocationFavoritesLoaded
-              ? currentState.currentLocation
-              : null;
-      final isStillFavorite = previousLocation != null &&
+          ? currentState.currentLocation
+          : null;
+      final isStillFavorite =
+          previousLocation != null &&
           favorites.any(
             (f) =>
                 f.latitude == previousLocation.latitude &&
@@ -202,10 +212,12 @@ class LocationBloc extends Bloc<LocationEvent, LocationState>
           (previousLocation != null && currentLocation == null)) {
         await repository.clearLastLocation();
       }
-      emit(LocationFavoritesLoaded(
-        favorites: favorites,
-        currentLocation: currentLocation,
-      ));
+      emit(
+        LocationFavoritesLoaded(
+          favorites: favorites,
+          currentLocation: currentLocation,
+        ),
+      );
     } catch (e, stackTrace) {
       logger.e(
         AppError.getDebugErrorMessage(LocationErrorCodes.saveFavoriteFailed),
@@ -222,7 +234,8 @@ class LocationBloc extends Bloc<LocationEvent, LocationState>
   ) async {
     try {
       final favorites = repository.loadFavorites().toList();
-      final isValidRange = event.oldIndex >= 0 &&
+      final isValidRange =
+          event.oldIndex >= 0 &&
           event.oldIndex < favorites.length &&
           event.newIndex >= 0 &&
           event.newIndex <= favorites.length;
@@ -236,8 +249,15 @@ class LocationBloc extends Bloc<LocationEvent, LocationState>
       }
       final updatedFavorites = repository.loadFavorites();
       final currentState = state;
-      final currentLocation = currentState is LocationSelected ? currentState.location : null;
-      emit(LocationFavoritesLoaded(favorites: updatedFavorites, currentLocation: currentLocation));
+      final currentLocation = currentState is LocationSelected
+          ? currentState.location
+          : null;
+      emit(
+        LocationFavoritesLoaded(
+          favorites: updatedFavorites,
+          currentLocation: currentLocation,
+        ),
+      );
     } catch (e, stackTrace) {
       logger.e(
         AppError.getDebugErrorMessage(LocationErrorCodes.saveFavoriteFailed),
@@ -261,7 +281,12 @@ class LocationBloc extends Bloc<LocationEvent, LocationState>
         }
         lastLocation = null;
       }
-      emit(LocationFavoritesLoaded(favorites: favorites, currentLocation: lastLocation));
+      emit(
+        LocationFavoritesLoaded(
+          favorites: favorites,
+          currentLocation: lastLocation,
+        ),
+      );
     } catch (e, stackTrace) {
       logger.e(
         AppError.getDebugErrorMessage(LocationErrorCodes.loadFavoritesFailed),

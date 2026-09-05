@@ -41,7 +41,9 @@ class SettingsScreen extends StatelessWidget {
           if (state is SettingsError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(AppError.getUserErrorMessage(state.errorCode, l10n)),
+                content: Text(
+                  AppError.getUserErrorMessage(state.errorCode, l10n),
+                ),
               ),
             );
           } else if (state is SettingsLoadSuccess) {
@@ -59,71 +61,73 @@ class SettingsScreen extends StatelessWidget {
               final setting = state.setting;
               return Column(
                 children: [
-                  SizedBox(height: AppSpacing.xl),
+                  const SizedBox(height: AppSpacing.xl),
                   SettingCard(
-                    title: l10n.settingsSectionGeneral, 
+                    title: l10n.settingsSectionGeneral,
                     options: [
                       SettingItem(
                         title: l10n.settingsTheme,
                         description: l10n.settingsThemeDescription,
                         icon: Icons.light_mode_outlined,
-                        onClick: () => selectThemeDialog(context, setting)
+                        onClick: () => selectThemeDialog(context, setting),
                       ),
-                      SizedBox(height: AppSpacing.xs),
+                      const SizedBox(height: AppSpacing.xs),
                       SettingItem(
                         title: l10n.settingsLanguage,
                         description: l10n.settingsLanguageDescription,
                         icon: Icons.language_outlined,
-                        onClick: () => selectLangDialog(context, setting)
+                        onClick: () => selectLangDialog(context, setting),
                       ),
-                    ]
+                    ],
                   ),
-                  SizedBox(height: AppSpacing.xl),
+                  const SizedBox(height: AppSpacing.xl),
                   SettingCard(
-                    title: l10n.settingsSectionPreference, 
+                    title: l10n.settingsSectionPreference,
                     options: [
                       SettingItem(
                         title: l10n.settingsWindUnit,
                         description: l10n.settingsWindUnitDescription,
                         icon: Icons.air_outlined,
-                        onClick: () => selectWindUnitDialog(context, setting)
+                        onClick: () => selectWindUnitDialog(context, setting),
                       ),
-                      SizedBox(height: AppSpacing.xs),
+                      const SizedBox(height: AppSpacing.xs),
                       SettingItem(
                         title: l10n.settingsTemperatureUnit,
                         description: l10n.settingsTemperatureUnitDescription,
                         icon: Icons.thermostat_outlined,
-                        onClick: () => selectHeatUnitDialog(context, setting)
+                        onClick: () => selectHeatUnitDialog(context, setting),
                       ),
-                    ]
+                    ],
                   ),
-                  SizedBox(height: AppSpacing.xl),
+                  const SizedBox(height: AppSpacing.xl),
                   SettingCard(
-                    title: l10n.settingsSectionAbout, 
+                    title: l10n.settingsSectionAbout,
                     options: [
                       SettingItem(
                         title: l10n.settingsShare,
                         description: l10n.settingsShareDescription,
-                        icon: Icons.share, 
-                        onClick: () {}
+                        icon: Icons.share,
+                        onClick: () {},
                       ),
-                      SizedBox(height: AppSpacing.xs),
+                      const SizedBox(height: AppSpacing.xs),
                       SettingItem(
                         title: l10n.settingsLicenses,
                         icon: Icons.info_outline_rounded,
-                        onClick: () => _showLicence(context, state.appVersion)
+                        onClick: () => _showLicence(context, state.appVersion),
                       ),
-                      SizedBox(height: AppSpacing.xs),
+                      const SizedBox(height: AppSpacing.xs),
                       SettingItem(
-                        title: l10n.settingsAppVersion(state.appVersion.isEmpty ? '—' : state.appVersion),
+                        title: l10n.settingsAppVersion(
+                          state.appVersion.isEmpty ? '—' : state.appVersion,
+                        ),
                         icon: Icons.android,
-                        onClick: null
+                        onClick: null,
                       ),
-                    ]
+                    ],
                   ),
                   const SizedBox(height: AppSpacing.xl),
                   const CreatorCard(),
-                  SizedBox(height: AppSpacing.xxl),
+                  const SizedBox(height: AppSpacing.xxl),
                 ],
               );
             },
@@ -144,7 +148,7 @@ class SettingsScreen extends StatelessWidget {
         height: 70,
         width: 70,
       ),
-      applicationLegalese: 'Copyright © 2026 Ali Mohamed Tazfahouth'
+      applicationLegalese: 'Copyright © 2026 Ali Mohamed Tazfahouth',
     );
   }
 }

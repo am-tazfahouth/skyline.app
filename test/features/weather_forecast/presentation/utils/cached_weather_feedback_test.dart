@@ -25,8 +25,9 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('shows the localized cached-data message with no action',
-      (tester) async {
+  testWidgets('shows the localized cached-data message with no action', (
+    tester,
+  ) async {
     await pumpFeedback(tester);
 
     expect(
@@ -37,8 +38,9 @@ void main() {
   });
 
   group('showRefreshErrorSnackBar', () {
-    testWidgets('shows the localized refresh-error message with no action',
-        (tester) async {
+    testWidgets('shows the localized refresh-error message with no action', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: AppLocalisation.localizationsDelegates,

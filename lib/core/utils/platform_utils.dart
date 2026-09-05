@@ -11,8 +11,9 @@ class PlatformUtils {
   // Check internet connectivity
   static Future<bool> isConnected() async {
     try {
-      final result = await InternetAddress.lookup('google.com')
-          .timeout(const Duration(seconds: 5));
+      final result = await InternetAddress.lookup(
+        'google.com',
+      ).timeout(const Duration(seconds: 5));
       return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
     } catch (_) {
       return false;
@@ -31,14 +32,11 @@ class PlatformUtils {
   }
 
   // Get screen orientation
-  static Orientation getAppOrientation(){
-    FlutterView view = PlatformDispatcher.instance.views.first;
+  static Orientation getAppOrientation() {
+    final FlutterView view = PlatformDispatcher.instance.views.first;
     final w = view.physicalSize.width / view.devicePixelRatio;
     final h = view.physicalSize.height / view.devicePixelRatio;
-    return w > h ?
-      Orientation.landscape :
-      Orientation.portrait
-    ;
+    return w > h ? Orientation.landscape : Orientation.portrait;
   }
 
   // Get status bar height
@@ -48,41 +46,41 @@ class PlatformUtils {
   }
 
   // Get screen height
-  static double getScreenHeight(){
-    FlutterView view = PlatformDispatcher.instance.views.first;
+  static double getScreenHeight() {
+    final FlutterView view = PlatformDispatcher.instance.views.first;
     return view.physicalSize.height / view.devicePixelRatio;
   }
 
   // Get keyboard heigth
-  static double getKeyboardHeight(){
+  static double getKeyboardHeight() {
     final FlutterView view = PlatformDispatcher.instance.views.first;
     return view.viewInsets.bottom / view.devicePixelRatio;
   }
 
   // Get a systeme ui overlay
-  static SystemUiOverlayStyle getSystemUiStyle( SettingTheme theme, BuildContext context) {
+  static SystemUiOverlayStyle getSystemUiStyle(
+    SettingTheme theme,
+    BuildContext context,
+  ) {
     final brightness = theme == SettingTheme.system
-      ? Theme.brightnessOf(context)
-      : theme == SettingTheme.light
-          ? Brightness.light
-          : Brightness.dark
-      ;
+        ? Theme.brightnessOf(context)
+        : theme == SettingTheme.light
+        ? Brightness.light
+        : Brightness.dark;
 
     return SystemUiOverlayStyle(
       // Status bar
       statusBarColor: Colors.transparent,
       systemStatusBarContrastEnforced: false,
-      statusBarIconBrightness: brightness == Brightness.light 
-        ? Brightness.dark 
-        : Brightness.light
-      ,
+      statusBarIconBrightness: brightness == Brightness.light
+          ? Brightness.dark
+          : Brightness.light,
       // Navigation bar
       systemNavigationBarContrastEnforced: false,
       systemNavigationBarColor: Colors.transparent,
-      systemNavigationBarIconBrightness: brightness == Brightness.light 
-        ? Brightness.dark 
-        : Brightness.light
-      ,
+      systemNavigationBarIconBrightness: brightness == Brightness.light
+          ? Brightness.dark
+          : Brightness.light,
     );
   }
 

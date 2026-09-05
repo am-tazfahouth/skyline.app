@@ -17,17 +17,20 @@ class WeatherMapper {
 
       final hourlyTimes = hourlyJson['time'] as List<dynamic>;
       final hourlyTemps = hourlyJson['temperature_2m'] as List<dynamic>;
-      final hourlyPrecip = hourlyJson['precipitation_probability'] as List<dynamic>;
+      final hourlyPrecip =
+          hourlyJson['precipitation_probability'] as List<dynamic>;
       final hourlyCodes = hourlyJson['weather_code'] as List<dynamic>;
 
       final hourlyList = <HourlyWeatherModel>[];
       for (var i = 0; i < hourlyTimes.length; i++) {
-        hourlyList.add(HourlyWeatherModel(
-          time: DateTime.parse(hourlyTimes[i] as String),
-          temperature: (hourlyTemps[i] as num).toDouble(),
-          precipitationProbability: (hourlyPrecip[i] as num).toInt(),
-          weatherCode: (hourlyCodes[i] as num).toInt(),
-        ));
+        hourlyList.add(
+          HourlyWeatherModel(
+            time: DateTime.parse(hourlyTimes[i] as String),
+            temperature: (hourlyTemps[i] as num).toDouble(),
+            precipitationProbability: (hourlyPrecip[i] as num).toInt(),
+            weatherCode: (hourlyCodes[i] as num).toInt(),
+          ),
+        );
       }
 
       final dailyTimes = dailyJson['time'] as List<dynamic>;
@@ -39,14 +42,16 @@ class WeatherMapper {
 
       final dailyList = <DailyWeatherModel>[];
       for (var i = 0; i < dailyTimes.length; i++) {
-        dailyList.add(DailyWeatherModel(
-          date: DateTime.parse(dailyTimes[i] as String),
-          tempMax: (dailyMax[i] as num).toDouble(),
-          tempMin: (dailyMin[i] as num).toDouble(),
-          weatherCode: (dailyCodes[i] as num).toInt(),
-          sunrise: DateTime.parse(dailySunrise[i] as String),
-          sunset: DateTime.parse(dailySunset[i] as String),
-        ));
+        dailyList.add(
+          DailyWeatherModel(
+            date: DateTime.parse(dailyTimes[i] as String),
+            tempMax: (dailyMax[i] as num).toDouble(),
+            tempMin: (dailyMin[i] as num).toDouble(),
+            weatherCode: (dailyCodes[i] as num).toInt(),
+            sunrise: DateTime.parse(dailySunrise[i] as String),
+            sunset: DateTime.parse(dailySunset[i] as String),
+          ),
+        );
       }
 
       return WeatherModel(

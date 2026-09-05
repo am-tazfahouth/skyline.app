@@ -66,7 +66,10 @@ class WeatherError extends WeatherForecastState {
   final AppErrorCode errorCode;
   final SettingEntity settings;
 
-  const WeatherError({required this.errorCode, this.settings = const SettingEntity()});
+  const WeatherError({
+    required this.errorCode,
+    this.settings = const SettingEntity(),
+  });
 
   @override
   List<Object?> get props => [errorCode, settings];

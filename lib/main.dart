@@ -15,7 +15,8 @@ import 'package:sky_line/injection_container.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 void main() async {
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  final WidgetsBinding widgetsBinding =
+      WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
@@ -27,19 +28,14 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => InjectionContainer.weatherBloc..add(FetchWeatherEvent()),
+          create: (_) =>
+              InjectionContainer.weatherBloc..add(const FetchWeatherEvent()),
         ),
-        BlocProvider(
-          create: (_) => InjectionContainer.settingsBloc,
-        ),
-        BlocProvider(
-          create: (_) => InjectionContainer.locationBloc,
-        ),
-        BlocProvider(
-          create: (_) => InjectionContainer.locationOnboardingBloc,
-        ),
+        BlocProvider(create: (_) => InjectionContainer.settingsBloc),
+        BlocProvider(create: (_) => InjectionContainer.locationBloc),
+        BlocProvider(create: (_) => InjectionContainer.locationOnboardingBloc),
       ],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }

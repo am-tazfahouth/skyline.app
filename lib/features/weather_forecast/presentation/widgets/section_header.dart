@@ -20,12 +20,8 @@ class WeatherSectionHeader extends StatelessWidget {
     final styles = Theme.of(context).extension<TextStyleCatalog>()!;
     return Row(
       children: [
-        Icon(
-          size: 18,
-          color: color,
-          icon,
-        ),
-        SizedBox(width: AppSpacing.xs),
+        Icon(size: 18, color: color, icon),
+        const SizedBox(width: AppSpacing.xs),
         Text(
           title,
           style: styles.labelLarge.copyWith(

@@ -30,14 +30,22 @@ class WeatherHourlyTileList extends StatelessWidget {
         final weather = state.weatherOrNull;
         final settings = state.settingsOrNull;
         if (weather == null) {
-          return _buildPlaceholder(styles, cardColor, primaryText, secondaryText);
+          return _buildPlaceholder(
+            styles,
+            cardColor,
+            primaryText,
+            secondaryText,
+          );
         }
 
         final now = DateTime.now();
-        final filtered = weather.hourly.where((h) =>
-          h.time.isAfter(now) &&
-          h.time.isBefore(now.add(const Duration(hours: 12))),
-        ).toList();
+        final filtered = weather.hourly
+            .where(
+              (h) =>
+                  h.time.isAfter(now) &&
+                  h.time.isBefore(now.add(const Duration(hours: 12))),
+            )
+            .toList();
 
         if (filtered.isEmpty) return const SizedBox.shrink();
 
@@ -48,20 +56,25 @@ class WeatherHourlyTileList extends StatelessWidget {
               title: l10n.weatherHourlyTitle,
               color: primaryText,
             ),
-            SizedBox(height: AppSpacing.xs),
+            const SizedBox(height: AppSpacing.xs),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               clipBehavior: Clip.antiAlias,
               child: Row(
                 children: filtered.map((item) {
                   final time = DateFormat('HH:mm').format(item.time);
-                  final temp = WeatherFormat.temperature(item.temperature, unit: settings?.heatUnit ?? SettingHeatUnit.celsius);
+                  final temp = WeatherFormat.temperature(
+                    item.temperature,
+                    unit: settings?.heatUnit ?? SettingHeatUnit.celsius,
+                  );
                   final isDay = weather.isDayAt(item.time);
                   return _buildTile(
                     styles: styles,
                     time: time,
                     icon: WeatherIconMapper.fromWeatherCode(
-                    item.weatherCode, isDay: isDay),
+                      item.weatherCode,
+                      isDay: isDay,
+                    ),
                     temp: temp,
                     cardColor: cardColor,
                     primaryText: primaryText,
@@ -76,7 +89,12 @@ class WeatherHourlyTileList extends StatelessWidget {
     );
   }
 
-  Widget _buildPlaceholder(TextStyleCatalog styles, Color cardColor, Color primaryText, Color secondaryText) {
+  Widget _buildPlaceholder(
+    TextStyleCatalog styles,
+    Color cardColor,
+    Color primaryText,
+    Color secondaryText,
+  ) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       clipBehavior: Clip.antiAlias,
@@ -108,7 +126,10 @@ class WeatherHourlyTileList extends StatelessWidget {
   }) {
     return Container(
       margin: const EdgeInsets.only(right: AppSpacing.md),
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm, horizontal: AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(
+        vertical: AppSpacing.sm,
+        horizontal: AppSpacing.sm,
+      ),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(AppRadius.xl),
@@ -116,13 +137,10 @@ class WeatherHourlyTileList extends StatelessWidget {
       child: Column(
         children: [
           Text(time, style: styles.bodyMedium.copyWith(color: secondaryText)),
-          SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: AppSpacing.sm),
           Icon(icon, color: secondaryText, size: 22),
-          SizedBox(height: AppSpacing.sm),
-          Text(
-            temp,
-            style: styles.titleMedium.copyWith(color: primaryText),
-          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(temp, style: styles.titleMedium.copyWith(color: primaryText)),
         ],
       ),
     );

@@ -30,9 +30,9 @@ class HourlyWeatherEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        time,
-        temperature,
-        precipitationProbability,
-        weatherCode,
-      ];
+    time,
+    temperature,
+    precipitationProbability,
+    weatherCode,
+  ];
 }

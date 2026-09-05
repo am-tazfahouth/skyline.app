@@ -6,7 +6,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart' as ph;
 
 class LocationPermissionSource {
-  static const MethodChannel _settingsChannel = MethodChannel('sky_line/platform');
+  static const MethodChannel _settingsChannel = MethodChannel(
+    'sky_line/platform',
+  );
 
   @visibleForTesting
   static bool Function() isAndroidPlatform = () => Platform.isAndroid;
@@ -16,7 +18,8 @@ class LocationPermissionSource {
       Geolocator.openLocationSettings;
 
   @visibleForTesting
-  static Future<bool> Function() permissionHandlerOpenAppSettings = ph.openAppSettings;
+  static Future<bool> Function() permissionHandlerOpenAppSettings =
+      ph.openAppSettings;
 
   Future<ph.PermissionStatus> requestLocationPermission() {
     return ph.Permission.locationWhenInUse.request();
@@ -35,7 +38,10 @@ class LocationPermissionSource {
   Future<bool> openLocationSettings() async {
     if (isAndroidPlatform()) {
       try {
-        return await _settingsChannel.invokeMethod<bool>('openLocationSettings') ?? false;
+        return await _settingsChannel.invokeMethod<bool>(
+              'openLocationSettings',
+            ) ??
+            false;
       } on MissingPluginException {
         // Fall through to the plugin fallback below.
       }
@@ -46,7 +52,8 @@ class LocationPermissionSource {
   Future<bool> openAppSettings() async {
     if (isAndroidPlatform()) {
       try {
-        return await _settingsChannel.invokeMethod<bool>('openAppSettings') ?? false;
+        return await _settingsChannel.invokeMethod<bool>('openAppSettings') ??
+            false;
       } on MissingPluginException {
         // Fall through to the plugin fallback below.
       }

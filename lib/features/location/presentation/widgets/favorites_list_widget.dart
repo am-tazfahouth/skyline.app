@@ -32,9 +32,10 @@ class FavoritesListWidget extends StatelessWidget {
       },
       itemBuilder: (context, index) {
         final location = favorites[index];
-        final subtitle = [location.admin1, location.country]
-            .where((e) => e != null && e.isNotEmpty)
-            .join(', ');
+        final subtitle = [
+          location.admin1,
+          location.country,
+        ].where((e) => e != null && e.isNotEmpty).join(', ');
 
         return Dismissible(
           key: ValueKey('${location.latitude}_${location.longitude}'),
@@ -43,7 +44,10 @@ class FavoritesListWidget extends StatelessWidget {
             alignment: Alignment.centerRight,
             padding: const EdgeInsets.only(right: AppSpacing.lg),
             color: Theme.of(context).colorScheme.error,
-            child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
+            child: Icon(
+              Icons.delete,
+              color: Theme.of(context).colorScheme.onError,
+            ),
           ),
           onDismissed: (_) {
             context.read<LocationBloc>().add(

@@ -25,11 +25,7 @@ void main() {
     });
 
     test('fromJson handles null country and admin1', () {
-      final json = {
-        'name': 'Unknown',
-        'latitude': 0.0,
-        'longitude': 0.0,
-      };
+      final json = {'name': 'Unknown', 'latitude': 0.0, 'longitude': 0.0};
 
       final model = LocationModel.fromJson(json);
       expect(model.country, isNull);
@@ -53,8 +49,16 @@ void main() {
     });
 
     test('supports value equality', () {
-      const a = LocationModel(latitude: 48.85, longitude: 2.35, cityName: 'Paris');
-      const b = LocationModel(latitude: 48.85, longitude: 2.35, cityName: 'Paris');
+      const a = LocationModel(
+        latitude: 48.85,
+        longitude: 2.35,
+        cityName: 'Paris',
+      );
+      const b = LocationModel(
+        latitude: 48.85,
+        longitude: 2.35,
+        cityName: 'Paris',
+      );
       expect(a, equals(b));
     });
   });

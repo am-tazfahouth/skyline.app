@@ -13,9 +13,10 @@ class SearchResultTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final subtitle = [location.admin1, location.country]
-        .where((e) => e != null && e.isNotEmpty)
-        .join(', ');
+    final subtitle = [
+      location.admin1,
+      location.country,
+    ].where((e) => e != null && e.isNotEmpty).join(', ');
 
     return ListTile(
       title: Text(location.cityName),

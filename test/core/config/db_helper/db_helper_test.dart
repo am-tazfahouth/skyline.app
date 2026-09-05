@@ -54,8 +54,11 @@ void main() {
 
   group('DbHelper weather cache', () {
     test('saveWeather and loadWeather roundtrip for the same city', () {
-      dbHelper.saveWeather(buildModel(temperature: 22.5),
-          latitude: 48.85, longitude: 2.35);
+      dbHelper.saveWeather(
+        buildModel(temperature: 22.5),
+        latitude: 48.85,
+        longitude: 2.35,
+      );
       final loaded = dbHelper.loadWeather(latitude: 48.85, longitude: 2.35);
 
       expect(loaded, isNotNull);
@@ -70,39 +73,66 @@ void main() {
     });
 
     test('loadWeather returns null for a city that was never cached', () {
-      dbHelper.saveWeather(buildModel(temperature: 22.5),
-          latitude: 48.85, longitude: 2.35);
-      final other = dbHelper.loadWeather(latitude: -11.7022, longitude: 43.2551);
+      dbHelper.saveWeather(
+        buildModel(temperature: 22.5),
+        latitude: 48.85,
+        longitude: 2.35,
+      );
+      final other = dbHelper.loadWeather(
+        latitude: -11.7022,
+        longitude: 43.2551,
+      );
       expect(other, isNull);
     });
 
     test('two cities are cached independently', () {
-      dbHelper.saveWeather(buildModel(temperature: 22.5),
-          latitude: 48.85, longitude: 2.35);
-      dbHelper.saveWeather(buildModel(temperature: 31.0),
-          latitude: -11.7022, longitude: 43.2551);
+      dbHelper.saveWeather(
+        buildModel(temperature: 22.5),
+        latitude: 48.85,
+        longitude: 2.35,
+      );
+      dbHelper.saveWeather(
+        buildModel(temperature: 31.0),
+        latitude: -11.7022,
+        longitude: 43.2551,
+      );
 
       final paris = dbHelper.loadWeather(latitude: 48.85, longitude: 2.35);
-      final moroni = dbHelper.loadWeather(latitude: -11.7022, longitude: 43.2551);
+      final moroni = dbHelper.loadWeather(
+        latitude: -11.7022,
+        longitude: 43.2551,
+      );
       expect(paris!.current.temperature, 22.5);
       expect(moroni!.current.temperature, 31.0);
     });
 
     test('re-saving the same city replaces its previous entry', () {
-      dbHelper.saveWeather(buildModel(temperature: 22.5),
-          latitude: 48.85, longitude: 2.35);
-      dbHelper.saveWeather(buildModel(temperature: 27.0),
-          latitude: 48.85, longitude: 2.35);
+      dbHelper.saveWeather(
+        buildModel(temperature: 22.5),
+        latitude: 48.85,
+        longitude: 2.35,
+      );
+      dbHelper.saveWeather(
+        buildModel(temperature: 27.0),
+        latitude: 48.85,
+        longitude: 2.35,
+      );
 
       final paris = dbHelper.loadWeather(latitude: 48.85, longitude: 2.35);
       expect(paris!.current.temperature, 27.0);
     });
 
     test('loadWeather respects maxAgeMillis', () {
-      dbHelper.saveWeather(buildModel(temperature: 22.5),
-          latitude: 48.85, longitude: 2.35);
+      dbHelper.saveWeather(
+        buildModel(temperature: 22.5),
+        latitude: 48.85,
+        longitude: 2.35,
+      );
       final expired = dbHelper.loadWeather(
-          latitude: 48.85, longitude: 2.35, maxAgeMillis: 0);
+        latitude: 48.85,
+        longitude: 2.35,
+        maxAgeMillis: 0,
+      );
       expect(expired, isNull);
 
       final fresh = dbHelper.loadWeather(latitude: 48.85, longitude: 2.35);
@@ -120,10 +150,13 @@ void main() {
       expect(dbHelper.loadOnboardingFlag(), isTrue);
     });
 
-    test('loadOnboardingFlag returns false after saveOnboardingFlag(false)', () {
-      dbHelper.saveOnboardingFlag(true);
-      dbHelper.saveOnboardingFlag(false);
-      expect(dbHelper.loadOnboardingFlag(), isFalse);
-    });
+    test(
+      'loadOnboardingFlag returns false after saveOnboardingFlag(false)',
+      () {
+        dbHelper.saveOnboardingFlag(true);
+        dbHelper.saveOnboardingFlag(false);
+        expect(dbHelper.loadOnboardingFlag(), isFalse);
+      },
+    );
   });
 }

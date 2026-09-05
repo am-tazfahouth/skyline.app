@@ -15,20 +15,26 @@ class WeatherForecastSection extends StatelessWidget {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [        
+      children: [
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg, horizontal: AppSpacing.md),
+          padding: const EdgeInsets.symmetric(
+            vertical: AppSpacing.lg,
+            horizontal: AppSpacing.md,
+          ),
           decoration: BoxDecoration(
             color: cardColor,
             borderRadius: BorderRadius.circular(AppRadius.lg),
           ),
           child: const WeatherHourlyTileList(),
         ),
-        SizedBox(height: AppSpacing.lg),
+        const SizedBox(height: AppSpacing.lg),
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: AppSpacing.md),
+          padding: const EdgeInsets.symmetric(
+            vertical: AppSpacing.md,
+            horizontal: AppSpacing.md,
+          ),
           decoration: BoxDecoration(
             color: cardColor,
             borderRadius: BorderRadius.circular(AppRadius.lg),

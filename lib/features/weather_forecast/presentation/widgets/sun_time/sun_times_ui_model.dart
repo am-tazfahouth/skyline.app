@@ -64,18 +64,18 @@ class PeriodConfig {
   });
 
   TimePointData get start => TimePointData(
-        icon: firstIcon,
-        iconColor: firstColor,
-        label: firstLabel,
-        time: firstTime,
-      );
+    icon: firstIcon,
+    iconColor: firstColor,
+    label: firstLabel,
+    time: firstTime,
+  );
 
   TimePointData get end => TimePointData(
-        icon: secondIcon,
-        iconColor: secondColor,
-        label: secondLabel,
-        time: secondTime,
-      );
+    icon: secondIcon,
+    iconColor: secondColor,
+    label: secondLabel,
+    time: secondTime,
+  );
 
   TimePointData get middle {
     if (isDay) {
@@ -149,7 +149,8 @@ class PeriodConfig {
     }
 
     final midpoint = DateTime.fromMillisecondsSinceEpoch(
-      (firstTime.millisecondsSinceEpoch + secondTime.millisecondsSinceEpoch) ~/ 2,
+      (firstTime.millisecondsSinceEpoch + secondTime.millisecondsSinceEpoch) ~/
+          2,
     );
 
     return PeriodConfig(

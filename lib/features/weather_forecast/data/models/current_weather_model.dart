@@ -30,22 +30,22 @@ class CurrentWeatherModel extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
-        'temperature_2m': temperature,
-        'relative_humidity_2m': humidity,
-        'is_day': isDay ? 1 : 0,
-        'wind_speed_10m': windSpeed,
-        'precipitation': precipitation,
-        'weather_code': weatherCode,
-      };
+    'temperature_2m': temperature,
+    'relative_humidity_2m': humidity,
+    'is_day': isDay ? 1 : 0,
+    'wind_speed_10m': windSpeed,
+    'precipitation': precipitation,
+    'weather_code': weatherCode,
+  };
 
   CurrentWeatherEntity toEntity() => CurrentWeatherEntity(
-        temperature: temperature,
-        humidity: humidity,
-        isDay: isDay,
-        windSpeed: windSpeed,
-        precipitation: precipitation,
-        weatherCode: weatherCode,
-      );
+    temperature: temperature,
+    humidity: humidity,
+    isDay: isDay,
+    windSpeed: windSpeed,
+    precipitation: precipitation,
+    weatherCode: weatherCode,
+  );
 
   CurrentWeatherModel copyWith({
     double? temperature,
@@ -67,11 +67,11 @@ class CurrentWeatherModel extends Equatable {
 
   @override
   List<Object?> get props => [
-        temperature,
-        humidity,
-        isDay,
-        windSpeed,
-        precipitation,
-        weatherCode,
-      ];
+    temperature,
+    humidity,
+    isDay,
+    windSpeed,
+    precipitation,
+    weatherCode,
+  ];
 }

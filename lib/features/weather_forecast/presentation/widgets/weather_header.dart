@@ -27,11 +27,13 @@ class WeatherHeader extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: true,
       title: BlocBuilder<LocationBloc, LocationState>(
         builder: (context, state) {
-          final title = switch (state) {
-            LocationSelected(location: final l) => l.title,
-            LocationFavoritesLoaded(currentLocation: final c) => c?.title,
-            _ => null,
-          } ?? l10n.appTitle;
+          final title =
+              switch (state) {
+                LocationSelected(location: final l) => l.title,
+                LocationFavoritesLoaded(currentLocation: final c) => c?.title,
+                _ => null,
+              } ??
+              l10n.appTitle;
           return Text(
             title,
             style: styles.headlineSmall.copyWith(color: primaryText),

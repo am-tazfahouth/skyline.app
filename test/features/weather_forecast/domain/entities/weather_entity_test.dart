@@ -5,7 +5,7 @@ import 'package:sky_line/features/weather_forecast/domain/entities/hourly_weathe
 import 'package:sky_line/features/weather_forecast/domain/entities/weather_entity.dart';
 
 void main() {
-  final current = CurrentWeatherEntity(
+  final current = const CurrentWeatherEntity(
     temperature: 20.0,
     humidity: 60,
     isDay: true,
@@ -122,7 +122,9 @@ void main() {
         sunrise: DateTime(2026, 6, 17, 10),
         sunset: DateTime(2026, 6, 17, 11),
       );
-      final updatedNight = night.withCurrentFromHourly(DateTime(2026, 6, 17, 12));
+      final updatedNight = night.withCurrentFromHourly(
+        DateTime(2026, 6, 17, 12),
+      );
       expect(updatedNight.current.isDay, isFalse);
     });
   });

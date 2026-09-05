@@ -19,116 +19,140 @@ void main() {
   setUp(() {
     LocationPermissionSource.isAndroidPlatform = () => true;
     LocationPermissionSource.geolocatorOpenLocationSettings = () async => true;
-    LocationPermissionSource.permissionHandlerOpenAppSettings = () async => true;
+    LocationPermissionSource.permissionHandlerOpenAppSettings = () async =>
+        true;
   });
 
   tearDown(() {
     LocationPermissionSource.isAndroidPlatform = () => Platform.isAndroid;
-    LocationPermissionSource.geolocatorOpenLocationSettings = Geolocator.openLocationSettings;
-    LocationPermissionSource.permissionHandlerOpenAppSettings = ph.openAppSettings;
+    LocationPermissionSource.geolocatorOpenLocationSettings =
+        Geolocator.openLocationSettings;
+    LocationPermissionSource.permissionHandlerOpenAppSettings =
+        ph.openAppSettings;
     mockChannel(null);
   });
 
-  test('openLocationSettings invokes the native channel on Android and returns true',
-      () async {
-    final calls = <String>[];
-    mockChannel((call) async {
-      calls.add(call.method);
-      return true;
-    });
+  test(
+    'openLocationSettings invokes the native channel on Android and returns true',
+    () async {
+      final calls = <String>[];
+      mockChannel((call) async {
+        calls.add(call.method);
+        return true;
+      });
 
-    final result = await LocationPermissionSource().openLocationSettings();
+      final result = await LocationPermissionSource().openLocationSettings();
 
-    expect(result, isTrue);
-    expect(calls, ['openLocationSettings']);
-  });
+      expect(result, isTrue);
+      expect(calls, ['openLocationSettings']);
+    },
+  );
 
-  test('openLocationSettings returns false when the channel reports false', () async {
-    mockChannel((call) async => false);
+  test(
+    'openLocationSettings returns false when the channel reports false',
+    () async {
+      mockChannel((call) async => false);
 
-    final result = await LocationPermissionSource().openLocationSettings();
+      final result = await LocationPermissionSource().openLocationSettings();
 
-    expect(result, isFalse);
-  });
+      expect(result, isFalse);
+    },
+  );
 
-  test('openLocationSettings returns false when the channel returns null', () async {
-    mockChannel((call) async => null);
+  test(
+    'openLocationSettings returns false when the channel returns null',
+    () async {
+      mockChannel((call) async => null);
 
-    final result = await LocationPermissionSource().openLocationSettings();
+      final result = await LocationPermissionSource().openLocationSettings();
 
-    expect(result, isFalse);
-  });
+      expect(result, isFalse);
+    },
+  );
 
-  test('openLocationSettings falls back to the geolocator plugin when the channel throws',
-      () async {
-    mockChannel((call) async => throw MissingPluginException());
-    var fallbackCalled = false;
-    LocationPermissionSource.geolocatorOpenLocationSettings = () async {
-      fallbackCalled = true;
-      return true;
-    };
+  test(
+    'openLocationSettings falls back to the geolocator plugin when the channel throws',
+    () async {
+      mockChannel((call) async => throw MissingPluginException());
+      var fallbackCalled = false;
+      LocationPermissionSource.geolocatorOpenLocationSettings = () async {
+        fallbackCalled = true;
+        return true;
+      };
 
-    final result = await LocationPermissionSource().openLocationSettings();
+      final result = await LocationPermissionSource().openLocationSettings();
 
-    expect(result, isTrue);
-    expect(fallbackCalled, isTrue);
-  });
+      expect(result, isTrue);
+      expect(fallbackCalled, isTrue);
+    },
+  );
 
-  test('openAppSettings invokes the native channel on Android and returns true', () async {
-    final calls = <String>[];
-    mockChannel((call) async {
-      calls.add(call.method);
-      return true;
-    });
+  test(
+    'openAppSettings invokes the native channel on Android and returns true',
+    () async {
+      final calls = <String>[];
+      mockChannel((call) async {
+        calls.add(call.method);
+        return true;
+      });
 
-    final result = await LocationPermissionSource().openAppSettings();
+      final result = await LocationPermissionSource().openAppSettings();
 
-    expect(result, isTrue);
-    expect(calls, ['openAppSettings']);
-  });
+      expect(result, isTrue);
+      expect(calls, ['openAppSettings']);
+    },
+  );
 
-  test('openAppSettings returns false when the channel reports false', () async {
-    mockChannel((call) async => false);
+  test(
+    'openAppSettings returns false when the channel reports false',
+    () async {
+      mockChannel((call) async => false);
 
-    final result = await LocationPermissionSource().openAppSettings();
+      final result = await LocationPermissionSource().openAppSettings();
 
-    expect(result, isFalse);
-  });
+      expect(result, isFalse);
+    },
+  );
 
-  test('openAppSettings falls back to the permission_handler plugin when the channel throws',
-      () async {
-    mockChannel((call) async => throw MissingPluginException());
-    var fallbackCalled = false;
-    LocationPermissionSource.permissionHandlerOpenAppSettings = () async {
-      fallbackCalled = true;
-      return true;
-    };
+  test(
+    'openAppSettings falls back to the permission_handler plugin when the channel throws',
+    () async {
+      mockChannel((call) async => throw MissingPluginException());
+      var fallbackCalled = false;
+      LocationPermissionSource.permissionHandlerOpenAppSettings = () async {
+        fallbackCalled = true;
+        return true;
+      };
 
-    final result = await LocationPermissionSource().openAppSettings();
+      final result = await LocationPermissionSource().openAppSettings();
 
-    expect(result, isTrue);
-    expect(fallbackCalled, isTrue);
-  });
+      expect(result, isTrue);
+      expect(fallbackCalled, isTrue);
+    },
+  );
 
-  test('openLocationSettings skips the channel on non-Android platforms', () async {
-    LocationPermissionSource.isAndroidPlatform = () => false;
-    var fallbackCalled = false;
-    LocationPermissionSource.geolocatorOpenLocationSettings = () async {
-      fallbackCalled = true;
-      return true;
-    };
-    final calls = <String>[];
-    mockChannel((call) async {
-      calls.add(call.method);
-      return true;
-    });
+  test(
+    'openLocationSettings skips the channel on non-Android platforms',
+    () async {
+      LocationPermissionSource.isAndroidPlatform = () => false;
+      var fallbackCalled = false;
+      LocationPermissionSource.geolocatorOpenLocationSettings = () async {
+        fallbackCalled = true;
+        return true;
+      };
+      final calls = <String>[];
+      mockChannel((call) async {
+        calls.add(call.method);
+        return true;
+      });
 
-    final result = await LocationPermissionSource().openLocationSettings();
+      final result = await LocationPermissionSource().openLocationSettings();
 
-    expect(result, isTrue);
-    expect(calls, isEmpty);
-    expect(fallbackCalled, isTrue);
-  });
+      expect(result, isTrue);
+      expect(calls, isEmpty);
+      expect(fallbackCalled, isTrue);
+    },
+  );
 
   test('openAppSettings skips the channel on non-Android platforms', () async {
     LocationPermissionSource.isAndroidPlatform = () => false;

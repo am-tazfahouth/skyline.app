@@ -35,8 +35,14 @@ void main() {
   setUp(() {
     repo = MockRepository();
     final mockSettingRepo = MockSettingRepository();
-    when(() => mockSettingRepo.loadSettings()).thenAnswer((_) async => const SettingEntity());
-    bloc = LocationBloc(logger: MockLogger(), repository: repo, settingRepository: mockSettingRepo);
+    when(
+      () => mockSettingRepo.loadSettings(),
+    ).thenAnswer((_) async => const SettingEntity());
+    bloc = LocationBloc(
+      logger: MockLogger(),
+      repository: repo,
+      settingRepository: mockSettingRepo,
+    );
     addTearDown(bloc.close);
   });
 
@@ -94,8 +100,9 @@ void main() {
   });
 
   group('showGpsErrorSnackBar', () {
-    testWidgets('shows localized message and Enable action for gpsDisabled',
-        (tester) async {
+    testWidgets('shows localized message and Enable action for gpsDisabled', (
+      tester,
+    ) async {
       when(() => repo.openLocationSettings()).thenAnswer((_) async {});
 
       await pumpFeedback(tester, LocationErrorCodes.gpsDisabled);
@@ -110,54 +117,63 @@ void main() {
       verify(() => repo.openLocationSettings()).called(1);
     });
 
-    testWidgets('shows localized message and Retry action for gpsPermissionDenied',
-        (tester) async {
-      when(() => repo.detectCurrentLocation(any()))
-          .thenThrow(const LocationPermissionDeniedException());
+    testWidgets(
+      'shows localized message and Retry action for gpsPermissionDenied',
+      (tester) async {
+        when(
+          () => repo.detectCurrentLocation(any()),
+        ).thenThrow(const LocationPermissionDeniedException());
 
-      await pumpFeedback(tester, LocationErrorCodes.gpsPermissionDenied);
+        await pumpFeedback(tester, LocationErrorCodes.gpsPermissionDenied);
 
-      expect(
-        find.text('Location permission is required to get your current location.'),
-        findsOneWidget,
-      );
-      expect(find.byType(SnackBarAction), findsOneWidget);
-      expect(find.text('Retry'), findsOneWidget);
+        expect(
+          find.text(
+            'Location permission is required to get your current location.',
+          ),
+          findsOneWidget,
+        );
+        expect(find.byType(SnackBarAction), findsOneWidget);
+        expect(find.text('Retry'), findsOneWidget);
 
-      await tester.tap(find.text('Retry'));
-      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50)));
-      await tester.pumpAndSettle();
+        await tester.tap(find.text('Retry'));
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 50)),
+        );
+        await tester.pumpAndSettle();
 
-      verify(() => repo.detectCurrentLocation(any())).called(1);
-    });
+        verify(() => repo.detectCurrentLocation(any())).called(1);
+      },
+    );
 
     testWidgets(
-        'shows localized message and Settings action for gpsPermissionPermanentlyDenied',
-        (tester) async {
-      when(() => repo.openAppSettings()).thenAnswer((_) async {});
+      'shows localized message and Settings action for gpsPermissionPermanentlyDenied',
+      (tester) async {
+        when(() => repo.openAppSettings()).thenAnswer((_) async {});
 
-      await pumpFeedback(
-        tester,
-        LocationErrorCodes.gpsPermissionPermanentlyDenied,
-      );
+        await pumpFeedback(
+          tester,
+          LocationErrorCodes.gpsPermissionPermanentlyDenied,
+        );
 
-      expect(
-        find.text(
-          'Location permission is permanently denied. Please enable it in Settings.',
-        ),
-        findsOneWidget,
-      );
-      expect(find.byType(SnackBarAction), findsOneWidget);
-      expect(find.text('Settings'), findsOneWidget);
+        expect(
+          find.text(
+            'Location permission is permanently denied. Please enable it in Settings.',
+          ),
+          findsOneWidget,
+        );
+        expect(find.byType(SnackBarAction), findsOneWidget);
+        expect(find.text('Settings'), findsOneWidget);
 
-      await tester.tap(find.text('Settings'));
-      await tester.pumpAndSettle();
+        await tester.tap(find.text('Settings'));
+        await tester.pumpAndSettle();
 
-      verify(() => repo.openAppSettings()).called(1);
-    });
+        verify(() => repo.openAppSettings()).called(1);
+      },
+    );
 
-    testWidgets('shows localized message with no action for gpsFailed',
-        (tester) async {
+    testWidgets('shows localized message with no action for gpsFailed', (
+      tester,
+    ) async {
       await pumpFeedback(tester, LocationErrorCodes.gpsFailed);
 
       expect(

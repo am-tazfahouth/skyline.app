@@ -32,7 +32,10 @@ class WeatherMainCard extends StatelessWidget {
             ? WeatherFormat.condition(weather.current.weatherCode, l10n)
             : '--';
         final temperature = weather != null
-            ? WeatherFormat.temperature(weather.current.temperature, unit: settings?.heatUnit ?? SettingHeatUnit.celsius)
+            ? WeatherFormat.temperature(
+                weather.current.temperature,
+                unit: settings?.heatUnit ?? SettingHeatUnit.celsius,
+              )
             : '--°C';
         final iconData = weather != null
             ? WeatherIconMapper.fromWeatherCode(
@@ -44,26 +47,31 @@ class WeatherMainCard extends StatelessWidget {
 
         return Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.xl),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.xl,
+            vertical: AppSpacing.xl,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(iconData, color: primaryText, size: iconSize),
-            SizedBox(height: AppSpacing.md),
-            Text(
-              temperature,
-              style: styles.displayLarge.copyWith(color: primaryText),
-            ),
-            SizedBox(height: AppSpacing.sm),
-            Text(
-              condition,
-              style: styles.titleSmall.copyWith(color: primaryText),
-            ),
-            SizedBox(height: AppSpacing.xs),
-            Text(date,
-                style: styles.bodyMedium.copyWith(color: secondaryText)),
-          ],
-        ),
+            children: [
+              Icon(iconData, color: primaryText, size: iconSize),
+              const SizedBox(height: AppSpacing.md),
+              Text(
+                temperature,
+                style: styles.displayLarge.copyWith(color: primaryText),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                condition,
+                style: styles.titleSmall.copyWith(color: primaryText),
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                date,
+                style: styles.bodyMedium.copyWith(color: secondaryText),
+              ),
+            ],
+          ),
         );
       },
     );

@@ -10,7 +10,7 @@ class AppError {
   static String getDebugErrorMessage(AppErrorCode code) {
     return _debugErrorMessages[code] ?? 'Unknown debug error: $code';
   }
- 
+
   /// Get user-facing message (localized).
   static String getUserErrorMessage(AppErrorCode code, AppLocalisation l10n) {
     if (code == LocationErrorCodes.gpsDisabled) return l10n.errorGpsDisabled;
@@ -41,26 +41,32 @@ class AppError {
   /// -------------------------
   static final Map<AppErrorCode, String> _debugErrorMessages = {
     // Weather_forecast
-    WeatherErrorCodes.fetch: "An error occurred while fetching data.",
-    WeatherErrorCodes.cache: "An error occurred while caching data.",
-    WeatherErrorCodes.network: "An error occurred with the network.",
-    WeatherErrorCodes.loadCache: "An error occurred while loading data from cache.",
-    WeatherErrorCodes.unexpected: "An unexpected error occurred. Please try again later.",
-    WeatherErrorCodes.parse: "API response format error — the data could not be parsed.",
+    WeatherErrorCodes.fetch: 'An error occurred while fetching data.',
+    WeatherErrorCodes.cache: 'An error occurred while caching data.',
+    WeatherErrorCodes.network: 'An error occurred with the network.',
+    WeatherErrorCodes.loadCache:
+        'An error occurred while loading data from cache.',
+    WeatherErrorCodes.unexpected:
+        'An unexpected error occurred. Please try again later.',
+    WeatherErrorCodes.parse:
+        'API response format error — the data could not be parsed.',
 
     // Setting
-    SettingErrorCodes.load: "An error occurred while loading settings.",
-    SettingErrorCodes.update: "An error occurred while updating settings.",
+    SettingErrorCodes.load: 'An error occurred while loading settings.',
+    SettingErrorCodes.update: 'An error occurred while updating settings.',
 
     // Location
-    LocationErrorCodes.gpsDisabled: "GPS is disabled on the device.",
-    LocationErrorCodes.gpsPermissionDenied: "GPS permission was denied by the user.",
-    LocationErrorCodes.gpsPermissionPermanentlyDenied: "GPS permission was permanently denied by the user.",
-    LocationErrorCodes.gpsFailed: "Failed to detect GPS location.",
-    LocationErrorCodes.searchFailed: "Failed to search for cities.",
-    LocationErrorCodes.saveFavoriteFailed: "Failed to save favorite location.",
-    LocationErrorCodes.loadFavoritesFailed: "Failed to load favorite locations.",
-    LocationErrorCodes.unexpected: "An unexpected location error occurred.",
+    LocationErrorCodes.gpsDisabled: 'GPS is disabled on the device.',
+    LocationErrorCodes.gpsPermissionDenied:
+        'GPS permission was denied by the user.',
+    LocationErrorCodes.gpsPermissionPermanentlyDenied:
+        'GPS permission was permanently denied by the user.',
+    LocationErrorCodes.gpsFailed: 'Failed to detect GPS location.',
+    LocationErrorCodes.searchFailed: 'Failed to search for cities.',
+    LocationErrorCodes.saveFavoriteFailed: 'Failed to save favorite location.',
+    LocationErrorCodes.loadFavoritesFailed:
+        'Failed to load favorite locations.',
+    LocationErrorCodes.unexpected: 'An unexpected location error occurred.',
   };
 
   /// -------------------------

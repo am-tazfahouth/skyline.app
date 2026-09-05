@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:geolocator/geolocator.dart' hide LocationServiceDisabledException;
+import 'package:geolocator/geolocator.dart'
+    hide LocationServiceDisabledException;
 import 'package:mocktail/mocktail.dart';
 import 'package:permission_handler/permission_handler.dart' as ph;
 import 'package:sky_line/core/errors/location_exceptions.dart';
@@ -13,7 +14,9 @@ import 'package:sky_line/core/config/db_helper/location_cache_entity.dart';
 import 'package:sky_line/core/config/db_helper/last_location_entity.dart';
 
 class MockRemoteSource extends Mock implements LocationRemoteSource {}
+
 class MockLocalSource extends Mock implements LocationLocalSource {}
+
 class MockPermissionSource extends Mock implements LocationPermissionSource {}
 
 void main() {
@@ -27,17 +30,28 @@ void main() {
     mockLocal = MockLocalSource();
     mockPermission = MockPermissionSource();
     repo = LocationRepositoryImpl(mockRemote, mockLocal, mockPermission);
-    registerFallbackValue(LocationCacheEntity(latitude: 0, longitude: 0, cityName: ''));
-    registerFallbackValue(LastLocationEntity(latitude: 0, longitude: 0, cityName: ''));
+    registerFallbackValue(
+      LocationCacheEntity(latitude: 0, longitude: 0, cityName: ''),
+    );
+    registerFallbackValue(
+      LastLocationEntity(latitude: 0, longitude: 0, cityName: ''),
+    );
   });
 
   group('searchLocations', () {
     test('returns list of LocationEntity from API', () async {
-      when(() => mockRemote.search('Paris', language: 'en')).thenAnswer((_) async => {
-        'results': [
-          {'name': 'Paris', 'latitude': 48.85, 'longitude': 2.35, 'country': 'France'},
-        ],
-      });
+      when(() => mockRemote.search('Paris', language: 'en')).thenAnswer(
+        (_) async => {
+          'results': [
+            {
+              'name': 'Paris',
+              'latitude': 48.85,
+              'longitude': 2.35,
+              'country': 'France',
+            },
+          ],
+        },
+      );
 
       final results = await repo.searchLocations('Paris', 'en');
       expect(results, hasLength(1));
@@ -46,9 +60,9 @@ void main() {
     });
 
     test('returns empty list when no results', () async {
-      when(() => mockRemote.search('xyz', language: 'fr')).thenAnswer((_) async => {
-        'results': <dynamic>[],
-      });
+      when(
+        () => mockRemote.search('xyz', language: 'fr'),
+      ).thenAnswer((_) async => {'results': <dynamic>[]});
 
       final results = await repo.searchLocations('xyz', 'fr');
       expect(results, isEmpty);
@@ -58,7 +72,11 @@ void main() {
   group('loadFavorites', () {
     test('returns favorites from local source', () {
       when(() => mockLocal.loadFavorites()).thenReturn([
-        LocationCacheEntity(latitude: 48.85, longitude: 2.35, cityName: 'Paris'),
+        LocationCacheEntity(
+          latitude: 48.85,
+          longitude: 2.35,
+          cityName: 'Paris',
+        ),
       ]);
 
       final results = repo.loadFavorites();
@@ -72,72 +90,90 @@ void main() {
       when(() => mockLocal.loadFavorites()).thenReturn([]);
       when(() => mockLocal.saveFavorite(any())).thenReturn(null);
 
-      const entity = LocationEntity(latitude: 48.85, longitude: 2.35, cityName: 'Paris');
+      const entity = LocationEntity(
+        latitude: 48.85,
+        longitude: 2.35,
+        cityName: 'Paris',
+      );
       await repo.saveFavorite(entity);
 
       verify(() => mockLocal.saveFavorite(any())).called(1);
     });
 
-    test('skips saving when an existing favorite has the same rounded coordinates', () async {
-      when(() => mockLocal.loadFavorites()).thenReturn([
-        LocationCacheEntity(
-          id: 1,
-          latitude: 48.8566149,
-          longitude: 2.3522087,
+    test(
+      'skips saving when an existing favorite has the same rounded coordinates',
+      () async {
+        when(() => mockLocal.loadFavorites()).thenReturn([
+          LocationCacheEntity(
+            id: 1,
+            latitude: 48.8566149,
+            longitude: 2.3522087,
+            cityName: 'Paris',
+          ),
+        ]);
+
+        const entity = LocationEntity(
+          latitude: 48.8566,
+          longitude: 2.3522,
           cityName: 'Paris',
-        ),
-      ]);
+        );
+        await repo.saveFavorite(entity);
 
-      const entity = LocationEntity(
-        latitude: 48.8566,
-        longitude: 2.3522,
-        cityName: 'Paris',
-      );
-      await repo.saveFavorite(entity);
+        verifyNever(() => mockLocal.saveFavorite(any()));
+      },
+    );
 
-      verifyNever(() => mockLocal.saveFavorite(any()));
-    });
+    test(
+      'saves when coordinates differ beyond the rounding tolerance',
+      () async {
+        when(() => mockLocal.loadFavorites()).thenReturn([
+          LocationCacheEntity(
+            id: 1,
+            latitude: 45.7640,
+            longitude: 4.8357,
+            cityName: 'Lyon',
+          ),
+        ]);
+        when(() => mockLocal.saveFavorite(any())).thenReturn(null);
 
-    test('saves when coordinates differ beyond the rounding tolerance', () async {
-      when(() => mockLocal.loadFavorites()).thenReturn([
-        LocationCacheEntity(
-          id: 1,
-          latitude: 45.7640,
-          longitude: 4.8357,
-          cityName: 'Lyon',
-        ),
-      ]);
-      when(() => mockLocal.saveFavorite(any())).thenReturn(null);
+        const entity = LocationEntity(
+          latitude: 48.8566,
+          longitude: 2.3522,
+          cityName: 'Paris',
+        );
+        await repo.saveFavorite(entity);
 
-      const entity = LocationEntity(
-        latitude: 48.8566,
-        longitude: 2.3522,
-        cityName: 'Paris',
-      );
-      await repo.saveFavorite(entity);
-
-      verify(() => mockLocal.saveFavorite(any())).called(1);
-    });
+        verify(() => mockLocal.saveFavorite(any())).called(1);
+      },
+    );
   });
 
   group('removeFavorite', () {
     test('removes favorite matching cityName and country', () async {
       final favorites = [
         LocationCacheEntity(
-          id: 1, latitude: 48.85, longitude: 2.35,
-          cityName: 'Paris', country: 'France',
+          id: 1,
+          latitude: 48.85,
+          longitude: 2.35,
+          cityName: 'Paris',
+          country: 'France',
         ),
         LocationCacheEntity(
-          id: 2, latitude: 48.85, longitude: 2.35,
-          cityName: 'Paris', country: 'USA',
+          id: 2,
+          latitude: 48.85,
+          longitude: 2.35,
+          cityName: 'Paris',
+          country: 'USA',
         ),
       ];
       when(() => mockLocal.loadFavorites()).thenReturn(favorites);
       when(() => mockLocal.removeFavorite(any())).thenReturn(null);
 
       const location = LocationEntity(
-        latitude: 48.85, longitude: 2.35,
-        cityName: 'Paris', country: 'USA',
+        latitude: 48.85,
+        longitude: 2.35,
+        cityName: 'Paris',
+        country: 'USA',
       );
       await repo.removeFavorite(location);
 
@@ -148,15 +184,20 @@ void main() {
     test('does nothing when no matching favorite found', () async {
       when(() => mockLocal.loadFavorites()).thenReturn([
         LocationCacheEntity(
-          id: 1, latitude: 48.85, longitude: 2.35,
-          cityName: 'Paris', country: 'France',
+          id: 1,
+          latitude: 48.85,
+          longitude: 2.35,
+          cityName: 'Paris',
+          country: 'France',
         ),
       ]);
       when(() => mockLocal.removeFavorite(any())).thenReturn(null);
 
       const location = LocationEntity(
-        latitude: 48.85, longitude: 2.35,
-        cityName: 'Paris', country: 'USA',
+        latitude: 48.85,
+        longitude: 2.35,
+        cityName: 'Paris',
+        country: 'USA',
       );
       await repo.removeFavorite(location);
 
@@ -170,17 +211,25 @@ void main() {
 
       final favorites = [
         const LocationEntity(
-          latitude: 48.85, longitude: 2.35,
-          cityName: 'Paris', country: 'France', sortOrder: 5,
+          latitude: 48.85,
+          longitude: 2.35,
+          cityName: 'Paris',
+          country: 'France',
+          sortOrder: 5,
         ),
         const LocationEntity(
-          latitude: 40.71, longitude: -74.00,
-          cityName: 'New York', country: 'USA', sortOrder: 3,
+          latitude: 40.71,
+          longitude: -74.00,
+          cityName: 'New York',
+          country: 'USA',
+          sortOrder: 3,
         ),
       ];
       await repo.saveAllFavorites(favorites);
 
-      final captured = verify(() => mockLocal.saveAllFavorites(captureAny())).captured;
+      final captured = verify(
+        () => mockLocal.saveAllFavorites(captureAny()),
+      ).captured;
       final saved = captured.first as List<LocationCacheEntity>;
       expect(saved, hasLength(2));
       expect(saved[0].sortOrder, 0);
@@ -194,7 +243,9 @@ void main() {
 
       await repo.saveAllFavorites([]);
 
-      final captured = verify(() => mockLocal.saveAllFavorites(captureAny())).captured;
+      final captured = verify(
+        () => mockLocal.saveAllFavorites(captureAny()),
+      ).captured;
       final saved = captured.first as List<LocationCacheEntity>;
       expect(saved, isEmpty);
     });
@@ -204,8 +255,11 @@ void main() {
     test('returns LocationEntity when last location exists', () {
       when(() => mockLocal.loadLastLocation()).thenReturn(
         LastLocationEntity(
-          latitude: 48.85, longitude: 2.35,
-          cityName: 'Paris', country: 'France', admin1: 'Ile-de-France',
+          latitude: 48.85,
+          longitude: 2.35,
+          cityName: 'Paris',
+          country: 'France',
+          admin1: 'Ile-de-France',
         ),
       );
 
@@ -229,8 +283,10 @@ void main() {
       when(() => mockLocal.saveLastLocation(any())).thenReturn(null);
 
       const entity = LocationEntity(
-        latitude: 48.85, longitude: 2.35,
-        cityName: 'Paris', country: 'France',
+        latitude: 48.85,
+        longitude: 2.35,
+        cityName: 'Paris',
+        country: 'France',
       );
       await repo.saveLastLocation(entity);
 
@@ -289,18 +345,26 @@ void main() {
     );
 
     void stubPermissions() {
-      when(() => mockPermission.requestLocationPermission())
-          .thenAnswer((_) async => ph.PermissionStatus.granted);
-      when(() => mockPermission.isLocationServiceEnabled())
-          .thenAnswer((_) async => true);
-      when(() => mockPermission.getCurrentPosition())
-          .thenAnswer((_) async => position);
+      when(
+        () => mockPermission.requestLocationPermission(),
+      ).thenAnswer((_) async => ph.PermissionStatus.granted);
+      when(
+        () => mockPermission.isLocationServiceEnabled(),
+      ).thenAnswer((_) async => true);
+      when(
+        () => mockPermission.getCurrentPosition(),
+      ).thenAnswer((_) async => position);
     }
 
     test('requests permission, checks service, returns GPS location', () async {
       stubPermissions();
-      when(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25, language: 'en'))
-          .thenAnswer((_) async => const ReverseGeocodeModel(city: 'Moroni'));
+      when(
+        () => mockRemote.reverseGeocode(
+          latitude: -11.70,
+          longitude: 43.25,
+          language: 'en',
+        ),
+      ).thenAnswer((_) async => const ReverseGeocodeModel(city: 'Moroni'));
 
       final result = await repo.detectCurrentLocation('en');
 
@@ -310,17 +374,30 @@ void main() {
       verify(() => mockPermission.requestLocationPermission()).called(1);
       verify(() => mockPermission.isLocationServiceEnabled()).called(1);
       verify(() => mockPermission.getCurrentPosition()).called(1);
-      verify(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25, language: 'en')).called(1);
+      verify(
+        () => mockRemote.reverseGeocode(
+          latitude: -11.70,
+          longitude: 43.25,
+          language: 'en',
+        ),
+      ).called(1);
     });
 
     test('returns enriched location when reverse geocoding succeeds', () async {
       stubPermissions();
-      when(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25, language: 'en'))
-          .thenAnswer((_) async => const ReverseGeocodeModel(
-                city: 'Moroni',
-                principalSubdivision: 'Grande Comore',
-                countryName: 'Comoros',
-              ));
+      when(
+        () => mockRemote.reverseGeocode(
+          latitude: -11.70,
+          longitude: 43.25,
+          language: 'en',
+        ),
+      ).thenAnswer(
+        (_) async => const ReverseGeocodeModel(
+          city: 'Moroni',
+          principalSubdivision: 'Grande Comore',
+          countryName: 'Comoros',
+        ),
+      );
 
       final result = await repo.detectCurrentLocation('en');
 
@@ -334,42 +411,66 @@ void main() {
 
     test('uses locality when city is empty', () async {
       stubPermissions();
-      when(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25, language: 'en'))
-          .thenAnswer((_) async => const ReverseGeocodeModel(locality: 'Saint-Merri'));
+      when(
+        () => mockRemote.reverseGeocode(
+          latitude: -11.70,
+          longitude: 43.25,
+          language: 'en',
+        ),
+      ).thenAnswer(
+        (_) async => const ReverseGeocodeModel(locality: 'Saint-Merri'),
+      );
 
       final result = await repo.detectCurrentLocation('en');
 
       expect(result.cityName, 'Saint-Merri');
     });
 
-    test('falls back to Current Location when reverse geocoding throws', () async {
-      stubPermissions();
-      when(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25, language: 'en'))
-          .thenThrow(Exception('network error'));
+    test(
+      'falls back to Current Location when reverse geocoding throws',
+      () async {
+        stubPermissions();
+        when(
+          () => mockRemote.reverseGeocode(
+            latitude: -11.70,
+            longitude: 43.25,
+            language: 'en',
+          ),
+        ).thenThrow(Exception('network error'));
 
-      final result = await repo.detectCurrentLocation('en');
+        final result = await repo.detectCurrentLocation('en');
 
-      expect(result.cityName, 'Current Location');
-      expect(result.latitude, -11.70);
-      expect(result.longitude, 43.25);
-      expect(result.isGpsLocation, isTrue);
-    });
+        expect(result.cityName, 'Current Location');
+        expect(result.latitude, -11.70);
+        expect(result.longitude, 43.25);
+        expect(result.isGpsLocation, isTrue);
+      },
+    );
 
-    test('falls back to Current Location when no city or locality is returned', () async {
-      stubPermissions();
-      when(() => mockRemote.reverseGeocode(latitude: -11.70, longitude: 43.25, language: 'en'))
-          .thenAnswer((_) async => const ReverseGeocodeModel());
+    test(
+      'falls back to Current Location when no city or locality is returned',
+      () async {
+        stubPermissions();
+        when(
+          () => mockRemote.reverseGeocode(
+            latitude: -11.70,
+            longitude: 43.25,
+            language: 'en',
+          ),
+        ).thenAnswer((_) async => const ReverseGeocodeModel());
 
-      final result = await repo.detectCurrentLocation('en');
+        final result = await repo.detectCurrentLocation('en');
 
-      expect(result.cityName, 'Current Location');
-      expect(result.latitude, -11.70);
-      expect(result.longitude, 43.25);
-    });
+        expect(result.cityName, 'Current Location');
+        expect(result.latitude, -11.70);
+        expect(result.longitude, 43.25);
+      },
+    );
 
     test('throws LocationPermissionDeniedException when denied', () async {
-      when(() => mockPermission.requestLocationPermission())
-          .thenAnswer((_) async => ph.PermissionStatus.denied);
+      when(
+        () => mockPermission.requestLocationPermission(),
+      ).thenAnswer((_) async => ph.PermissionStatus.denied);
 
       expect(
         () => repo.detectCurrentLocation('en'),
@@ -378,8 +479,9 @@ void main() {
     });
 
     test('throws LocationPermissionDeniedException when restricted', () async {
-      when(() => mockPermission.requestLocationPermission())
-          .thenAnswer((_) async => ph.PermissionStatus.restricted);
+      when(
+        () => mockPermission.requestLocationPermission(),
+      ).thenAnswer((_) async => ph.PermissionStatus.restricted);
 
       expect(
         () => repo.detectCurrentLocation('en'),
@@ -387,35 +489,44 @@ void main() {
       );
     });
 
-    test('throws LocationPermissionPermanentlyDeniedException when denied forever',
-        () async {
-      when(() => mockPermission.requestLocationPermission())
-          .thenAnswer((_) async => ph.PermissionStatus.permanentlyDenied);
+    test(
+      'throws LocationPermissionPermanentlyDeniedException when denied forever',
+      () async {
+        when(
+          () => mockPermission.requestLocationPermission(),
+        ).thenAnswer((_) async => ph.PermissionStatus.permanentlyDenied);
 
-      expect(
-        () => repo.detectCurrentLocation('en'),
-        throwsA(isA<LocationPermissionPermanentlyDeniedException>()),
-      );
-    });
+        expect(
+          () => repo.detectCurrentLocation('en'),
+          throwsA(isA<LocationPermissionPermanentlyDeniedException>()),
+        );
+      },
+    );
 
-    test('throws LocationServiceDisabledException when service is off', () async {
-      when(() => mockPermission.requestLocationPermission())
-          .thenAnswer((_) async => ph.PermissionStatus.granted);
-      when(() => mockPermission.isLocationServiceEnabled())
-          .thenAnswer((_) async => false);
+    test(
+      'throws LocationServiceDisabledException when service is off',
+      () async {
+        when(
+          () => mockPermission.requestLocationPermission(),
+        ).thenAnswer((_) async => ph.PermissionStatus.granted);
+        when(
+          () => mockPermission.isLocationServiceEnabled(),
+        ).thenAnswer((_) async => false);
 
-      expect(
-        () => repo.detectCurrentLocation('en'),
-        throwsA(isA<LocationServiceDisabledException>()),
-      );
-      verifyNever(() => mockPermission.getCurrentPosition());
-    });
+        expect(
+          () => repo.detectCurrentLocation('en'),
+          throwsA(isA<LocationServiceDisabledException>()),
+        );
+        verifyNever(() => mockPermission.getCurrentPosition());
+      },
+    );
   });
 
   group('openLocationSettings', () {
     test('delegates to permission source', () async {
-      when(() => mockPermission.openLocationSettings())
-          .thenAnswer((_) async => true);
+      when(
+        () => mockPermission.openLocationSettings(),
+      ).thenAnswer((_) async => true);
 
       await repo.openLocationSettings();
 
@@ -425,8 +536,9 @@ void main() {
 
   group('openAppSettings', () {
     test('delegates to permission source', () async {
-      when(() => mockPermission.openAppSettings())
-          .thenAnswer((_) async => true);
+      when(
+        () => mockPermission.openAppSettings(),
+      ).thenAnswer((_) async => true);
 
       await repo.openAppSettings();
 

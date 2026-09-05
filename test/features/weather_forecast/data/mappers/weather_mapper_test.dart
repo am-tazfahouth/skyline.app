@@ -79,10 +79,7 @@ void main() {
     });
 
     test('fromJson throws WeatherParseException on missing current key', () {
-      final json = {
-        'hourly': validJson['hourly'],
-        'daily': validJson['daily'],
-      };
+      final json = {'hourly': validJson['hourly'], 'daily': validJson['daily']};
 
       expect(
         () => WeatherMapper.fromJson(json),

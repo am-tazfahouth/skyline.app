@@ -17,12 +17,12 @@ class SettingTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xs),
+      margin: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.xs,
+      ),
       child: ListTile(
-        title: Text(
-          label,
-          style: theme.textTheme.bodyLarge,
-        ),
+        title: Text(label, style: theme.textTheme.bodyLarge),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -32,8 +32,11 @@ class SettingTile extends StatelessWidget {
                 color: theme.colorScheme.primary,
               ),
             ),
-            SizedBox(width: AppSpacing.xs),
-            Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
+            const SizedBox(width: AppSpacing.xs),
+            Icon(
+              Icons.chevron_right,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ],
         ),
         onTap: onTap,

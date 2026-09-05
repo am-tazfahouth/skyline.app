@@ -19,7 +19,11 @@ void main() {
   group('loadFavorites', () {
     test('returns list from DbHelper', () {
       when(() => mockDbHelper.loadFavorites()).thenReturn([
-        LocationCacheEntity(latitude: 48.85, longitude: 2.35, cityName: 'Paris'),
+        LocationCacheEntity(
+          latitude: 48.85,
+          longitude: 2.35,
+          cityName: 'Paris',
+        ),
       ]);
 
       final result = source.loadFavorites();

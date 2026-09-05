@@ -32,15 +32,23 @@ void main() {
   late LocationBloc bloc;
 
   setUpAll(() {
-    registerFallbackValue(const LocationEntity(latitude: 0, longitude: 0, cityName: ''));
+    registerFallbackValue(
+      const LocationEntity(latitude: 0, longitude: 0, cityName: ''),
+    );
     registerFallbackValue(const SettingEntity());
   });
 
   void createBloc() {
     repo = MockRepository();
     final mockSettingRepo = MockSettingRepository();
-    when(() => mockSettingRepo.loadSettings()).thenAnswer((_) async => const SettingEntity());
-    bloc = LocationBloc(logger: MockLogger(), repository: repo, settingRepository: mockSettingRepo);
+    when(
+      () => mockSettingRepo.loadSettings(),
+    ).thenAnswer((_) async => const SettingEntity());
+    bloc = LocationBloc(
+      logger: MockLogger(),
+      repository: repo,
+      settingRepository: mockSettingRepo,
+    );
     addTearDown(bloc.close);
   }
 
@@ -74,14 +82,17 @@ void main() {
   }
 
   Future<void> pumpSearchResults(WidgetTester tester) async {
-    when(() => repo.searchLocations(any(), any())).thenAnswer((_) async => [paris]);
+    when(
+      () => repo.searchLocations(any(), any()),
+    ).thenAnswer((_) async => [paris]);
     await pushSearchScreen(tester);
     bloc.add(const SearchLocationsEvent('par'));
     await tester.pumpAndSettle();
   }
 
-  testWidgets('tapping a result adds it to favorites then selects it',
-      (tester) async {
+  testWidgets('tapping a result adds it to favorites then selects it', (
+    tester,
+  ) async {
     createBloc();
     when(() => repo.loadFavorites()).thenReturn([]);
     when(() => repo.saveFavorite(any())).thenAnswer((_) async {});
@@ -96,8 +107,9 @@ void main() {
     expect(find.text('open'), findsOneWidget);
   });
 
-  testWidgets('tapping an already-favorited result still adds and selects it',
-      (tester) async {
+  testWidgets('tapping an already-favorited result still adds and selects it', (
+    tester,
+  ) async {
     createBloc();
     // Duplicate protection lives in the repository layer, not in the screen:
     // the tap flow must stay identical whether or not the city is favorited.
@@ -114,12 +126,14 @@ void main() {
     expect(find.text('open'), findsOneWidget);
   });
 
-  testWidgets('GPS error state does not leak onto the search screen',
-      (tester) async {
+  testWidgets('GPS error state does not leak onto the search screen', (
+    tester,
+  ) async {
     createBloc();
     when(() => repo.loadFavorites()).thenReturn([]);
-    when(() => repo.detectCurrentLocation(any()))
-        .thenThrow(const LocationServiceDisabledException());
+    when(
+      () => repo.detectCurrentLocation(any()),
+    ).thenThrow(const LocationServiceDisabledException());
 
     bloc.add(const DetectCurrentLocationEvent());
     await tester.pumpAndSettle();
@@ -139,6 +153,9 @@ void main() {
     bloc.add(const SearchLocationsEvent('par'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Could not search cities. Please try again.'), findsOneWidget);
+    expect(
+      find.text('Could not search cities. Please try again.'),
+      findsOneWidget,
+    );
   });
 }

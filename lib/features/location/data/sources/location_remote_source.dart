@@ -7,7 +7,10 @@ class LocationRemoteSource {
 
   LocationRemoteSource(this._dio);
 
-  Future<Map<String, dynamic>> search(String query, {required String language}) async {
+  Future<Map<String, dynamic>> search(
+    String query, {
+    required String language,
+  }) async {
     final response = await _dio.get(
       ApiConstants.openMeteoGeocodingUrl,
       queryParameters: {

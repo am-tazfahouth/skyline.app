@@ -40,10 +40,12 @@ class InjectionContainer {
   static Future<void> init() async {
     dio = Dio();
     dbHelper = await DbHelper.init();
-    logger = LoggerServiceImpl(Logger(
-      printer: PrettyPrinter(),
-      level: kReleaseMode ? Level.warning : Level.debug,
-    ));
+    logger = LoggerServiceImpl(
+      Logger(
+        printer: PrettyPrinter(),
+        level: kReleaseMode ? Level.warning : Level.debug,
+      ),
+    );
     weatherRemoteSource = WeatherRemoteSource(dio);
     settingRepository = SettingRepositoryImpl(dbHelper);
     settingsBloc = SettingsBloc(
@@ -72,8 +74,11 @@ class InjectionContainer {
       locationLocalSource,
       locationPermissionSource,
     );
-    locationBloc =
-        LocationBloc(logger: logger, repository: locationRepository, settingRepository: settingRepository);
+    locationBloc = LocationBloc(
+      logger: logger,
+      repository: locationRepository,
+      settingRepository: settingRepository,
+    );
     locationOnboardingBloc = LocationOnboardingBloc(
       logger: logger,
       repository: locationRepository,

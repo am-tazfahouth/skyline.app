@@ -6,8 +6,5 @@ class OnboardingCacheEntity {
   int id;
   bool hasSeenLocationOnboarding;
 
-  OnboardingCacheEntity({
-    this.id = 0,
-    required this.hasSeenLocationOnboarding,
-  });
+  OnboardingCacheEntity({this.id = 0, required this.hasSeenLocationOnboarding});
 }

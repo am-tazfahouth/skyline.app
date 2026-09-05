@@ -10,12 +10,11 @@ class AppErrorCode {
 
   @override
   bool operator ==(Object other) =>
-    identical(this, other) ||
-    other is 
-      AppErrorCode &&
-      runtimeType == other.runtimeType &&
-      source == other.source &&
-      key == other.key;
+      identical(this, other) ||
+      other is AppErrorCode &&
+          runtimeType == other.runtimeType &&
+          source == other.source &&
+          key == other.key;
 
   @override
   int get hashCode => Object.hash(source, key);

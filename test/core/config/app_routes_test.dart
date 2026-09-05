@@ -32,7 +32,8 @@ class MockAppLogger extends Mock implements AppLogger {}
 
 class MockGetSettingsUseCase extends Mock implements GetSettingsUseCase {}
 
-FutureOr<({double latitude, double longitude})?> _defaultLastLocation() => (latitude: 0.0, longitude: 0.0);
+FutureOr<({double latitude, double longitude})?> _defaultLastLocation() =>
+    (latitude: 0.0, longitude: 0.0);
 
 void main() {
   late MockLocationRepository locationRepo;
@@ -49,23 +50,30 @@ void main() {
     getSettings = MockGetSettingsUseCase();
 
     when(() => locationRepo.loadFavorites()).thenReturn([]);
-    when(() => locationRepo.hasSeenLocationOnboarding())
-        .thenAnswer((_) async => true);
-    when(() => weatherRepo.loadCachedWeather(
-      latitude: any(named: 'latitude'),
-      longitude: any(named: 'longitude'),
-    )).thenAnswer((_) async => null);
+    when(
+      () => locationRepo.hasSeenLocationOnboarding(),
+    ).thenAnswer((_) async => true);
+    when(
+      () => weatherRepo.loadCachedWeather(
+        latitude: any(named: 'latitude'),
+        longitude: any(named: 'longitude'),
+      ),
+    ).thenAnswer((_) async => null);
     when(() => getSettings()).thenAnswer((_) async => SettingEntity.defaults);
-    when(() => settingRepo.loadSettings())
-        .thenAnswer((_) async => SettingEntity.defaults);
+    when(
+      () => settingRepo.loadSettings(),
+    ).thenAnswer((_) async => SettingEntity.defaults);
   });
 
   Widget wrap(Widget child) {
     return MultiBlocProvider(
       providers: [
         BlocProvider<LocationBloc>(
-          create: (_) =>
-              LocationBloc(logger: logger, repository: locationRepo, settingRepository: settingRepo),
+          create: (_) => LocationBloc(
+            logger: logger,
+            repository: locationRepo,
+            settingRepository: settingRepo,
+          ),
         ),
         BlocProvider<WeatherForecastBloc>(
           create: (_) => WeatherForecastBloc(
@@ -80,10 +88,8 @@ void main() {
           create: (_) => SettingsBloc(logger: logger, repository: settingRepo),
         ),
         BlocProvider<LocationOnboardingBloc>(
-          create: (_) => LocationOnboardingBloc(
-            logger: logger,
-            repository: locationRepo,
-          ),
+          create: (_) =>
+              LocationOnboardingBloc(logger: logger, repository: locationRepo),
         ),
       ],
       child: child,
@@ -117,8 +123,9 @@ void main() {
     expect(find.byType(LocationScreen), findsOneWidget);
   });
 
-  testWidgets('locationSearch route builds LocationSearchScreen',
-      (tester) async {
+  testWidgets('locationSearch route builds LocationSearchScreen', (
+    tester,
+  ) async {
     await pumpRoute(tester, AppRoutes.locationSearch);
 
     expect(find.byType(LocationSearchScreen), findsOneWidget);

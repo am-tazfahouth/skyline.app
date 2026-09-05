@@ -29,7 +29,9 @@ void main() {
       buildWidget(title: 'Daily', color: const Color(0xFFFF0000)),
     );
 
-    final icon = tester.widget<Icon>(find.byIcon(Icons.access_time_filled_outlined));
+    final icon = tester.widget<Icon>(
+      find.byIcon(Icons.access_time_filled_outlined),
+    );
     final text = tester.widget<Text>(find.text('Daily'));
 
     expect(icon.color, const Color(0xFFFF0000));

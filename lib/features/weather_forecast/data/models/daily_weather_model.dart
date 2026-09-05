@@ -30,22 +30,22 @@ class DailyWeatherModel extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
-        'time': date.toIso8601String(),
-        'temperature_2m_max': tempMax,
-        'temperature_2m_min': tempMin,
-        'weather_code': weatherCode,
-        'sunrise': sunrise.toIso8601String(),
-        'sunset': sunset.toIso8601String(),
-      };
+    'time': date.toIso8601String(),
+    'temperature_2m_max': tempMax,
+    'temperature_2m_min': tempMin,
+    'weather_code': weatherCode,
+    'sunrise': sunrise.toIso8601String(),
+    'sunset': sunset.toIso8601String(),
+  };
 
   DailyWeatherEntity toEntity() => DailyWeatherEntity(
-        date: date,
-        tempMax: tempMax,
-        tempMin: tempMin,
-        weatherCode: weatherCode,
-        sunrise: sunrise,
-        sunset: sunset,
-      );
+    date: date,
+    tempMax: tempMax,
+    tempMin: tempMin,
+    weatherCode: weatherCode,
+    sunrise: sunrise,
+    sunset: sunset,
+  );
 
   DailyWeatherModel copyWith({
     DateTime? date,
@@ -67,11 +67,11 @@ class DailyWeatherModel extends Equatable {
 
   @override
   List<Object?> get props => [
-        date,
-        tempMax,
-        tempMin,
-        weatherCode,
-        sunrise,
-        sunset,
-      ];
+    date,
+    tempMax,
+    tempMin,
+    weatherCode,
+    sunrise,
+    sunset,
+  ];
 }

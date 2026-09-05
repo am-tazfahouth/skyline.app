@@ -18,7 +18,8 @@ class MockAppLogger extends Mock implements AppLogger {}
 
 class MockGetSettingsUseCase extends Mock implements GetSettingsUseCase {}
 
-FutureOr<({double latitude, double longitude})?> _defaultLastLocation() => (latitude: 0.0, longitude: 0.0);
+FutureOr<({double latitude, double longitude})?> _defaultLastLocation() =>
+    (latitude: 0.0, longitude: 0.0);
 
 void main() {
   Widget buildScreen({
@@ -42,11 +43,11 @@ void main() {
         data: MediaQuery.of(context).copyWith(textScaler: textScaler),
         child: child!,
       ),
-      home: Scaffold(
+      home: const Scaffold(
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [WeatherSunTimes()],
+            children: [WeatherSunTimes()],
           ),
         ),
       ),
@@ -54,27 +55,28 @@ void main() {
   }
 
   testWidgets(
-      'placeholder fallback spreads the time points across the full card width',
-      (tester) async {
-    await tester.pumpWidget(buildScreen());
+    'placeholder fallback spreads the time points across the full card width',
+    (tester) async {
+      await tester.pumpWidget(buildScreen());
 
-    expect(find.text('--:--'), findsNWidgets(3));
-    expect(find.text('Sun Time'), findsNothing);
+      expect(find.text('--:--'), findsNWidgets(3));
+      expect(find.text('Sun Time'), findsNothing);
 
-    final firstCenter = tester.getCenter(find.text('--:--').at(0));
-    final middleCenter = tester.getCenter(find.text('--:--').at(1));
-    final lastCenter = tester.getCenter(find.text('--:--').at(2));
+      final firstCenter = tester.getCenter(find.text('--:--').at(0));
+      final middleCenter = tester.getCenter(find.text('--:--').at(1));
+      final lastCenter = tester.getCenter(find.text('--:--').at(2));
 
-    final firstGap = middleCenter.dx - firstCenter.dx;
-    final secondGap = lastCenter.dx - middleCenter.dx;
+      final firstGap = middleCenter.dx - firstCenter.dx;
+      final secondGap = lastCenter.dx - middleCenter.dx;
 
-    expect(firstGap, greaterThan(120));
-    expect(secondGap, greaterThan(120));
+      expect(firstGap, greaterThan(120));
+      expect(secondGap, greaterThan(120));
 
-    final screenWidth =
-        tester.view.physicalSize.width / tester.view.devicePixelRatio;
-    expect((middleCenter.dx - screenWidth / 2).abs(), lessThan(50));
-  });
+      final screenWidth =
+          tester.view.physicalSize.width / tester.view.devicePixelRatio;
+      expect((middleCenter.dx - screenWidth / 2).abs(), lessThan(50));
+    },
+  );
 
   testWidgets('placeholder shows localized labels in French', (tester) async {
     await tester.pumpWidget(buildScreen(locale: const Locale('fr')));
@@ -84,16 +86,19 @@ void main() {
     expect(find.text('Coucher du soleil'), findsOneWidget);
   });
 
-  testWidgets('placeholder survives narrow screens with large system text',
-      (tester) async {
+  testWidgets('placeholder survives narrow screens with large system text', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(280, 640);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
 
-    await tester.pumpWidget(buildScreen(
-      locale: const Locale('fr'),
-      textScaler: const TextScaler.linear(1.4),
-    ));
+    await tester.pumpWidget(
+      buildScreen(
+        locale: const Locale('fr'),
+        textScaler: const TextScaler.linear(1.4),
+      ),
+    );
 
     expect(tester.takeException(), isNull);
     expect(find.text('--:--'), findsNWidgets(3));

@@ -31,15 +31,15 @@ class _LocationScreenState extends State<LocationScreen> {
   Widget build(BuildContext context) {
     final bgColor = AppTheme.surfaceFor(Theme.of(context).brightness).color;
     final l10n = AppLocalisation.of(context)!;
-    
+
     return BlocListener<LocationBloc, LocationState>(
       listener: (context, state) {
         if (state is LocationSelected) {
           final location = state.location;
           if (location.isGpsLocation) {
-            context
-                .read<LocationBloc>()
-                .add(AddFavoriteEvent(location: location));
+            context.read<LocationBloc>().add(
+              AddFavoriteEvent(location: location),
+            );
           }
           if (context.mounted) {
             Navigator.pop(context);
@@ -71,9 +71,9 @@ class _LocationScreenState extends State<LocationScreen> {
                   icon: const Icon(Icons.my_location_rounded),
                   tooltip: l10n.locationCurrentLocationTooltip,
                   onPressed: () {
-                    context
-                        .read<LocationBloc>()
-                        .add(const DetectCurrentLocationEvent());
+                    context.read<LocationBloc>().add(
+                      const DetectCurrentLocationEvent(),
+                    );
                   },
                 );
               },
@@ -99,9 +99,9 @@ class _LocationScreenState extends State<LocationScreen> {
             return FavoritesListWidget(
               favorites: favorites,
               onLocationTap: (location) {
-                context
-                    .read<LocationBloc>()
-                    .add(SelectLocationEvent(location: location));
+                context.read<LocationBloc>().add(
+                  SelectLocationEvent(location: location),
+                );
               },
             );
           },

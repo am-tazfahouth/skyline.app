@@ -1,9 +1,4 @@
-enum SettingLang {
-  en,
-  fr,
-  es,
-  ar
-}
+enum SettingLang { en, fr, es, ar }
 
 // Convert a String lo lang
 SettingLang getLangFromString(String lang) {
@@ -15,7 +10,7 @@ SettingLang getLangFromString(String lang) {
     case 'es':
       return SettingLang.es;
     case 'ar':
-      return SettingLang.ar;    
+      return SettingLang.ar;
     default:
       return SettingLang.en;
   }
@@ -43,8 +38,8 @@ String getStringFromLang(SettingLang lang) {
     case SettingLang.fr:
       return 'fr';
     case SettingLang.es:
-      return 'es';  
+      return 'es';
     case SettingLang.ar:
-      return 'ar';  
+      return 'ar';
   }
 }

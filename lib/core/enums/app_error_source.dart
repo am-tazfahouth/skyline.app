@@ -1,5 +1,1 @@
-enum AppErrorSource {
-  settings,
-  weatherForecast,
-  location,
-}
+enum AppErrorSource { settings, weatherForecast, location }

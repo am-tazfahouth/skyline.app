@@ -4,14 +4,20 @@ import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/core/utils/weather_unit_converter.dart';
 
 class WeatherFormat {
-  static String temperature(double value, {SettingHeatUnit unit = SettingHeatUnit.celsius}) {
+  static String temperature(
+    double value, {
+    SettingHeatUnit unit = SettingHeatUnit.celsius,
+  }) {
     final converted = unit == SettingHeatUnit.fahrenheit
         ? WeatherUnitConverter.celsiusToFahrenheit(value)
         : value;
     return '${converted.toStringAsFixed(0)}°${unit == SettingHeatUnit.celsius ? "C" : "F"}';
   }
 
-  static String wind(double value, {SettingWindUnit unit = SettingWindUnit.ms}) {
+  static String wind(
+    double value, {
+    SettingWindUnit unit = SettingWindUnit.ms,
+  }) {
     final converted = unit == SettingWindUnit.kmh
         ? WeatherUnitConverter.msToKmh(value)
         : value;

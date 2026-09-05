@@ -32,14 +32,20 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       } catch (_) {
         appVersion = '';
       }
-      emit(SettingsLoadSuccess(
-        setting: setting,
-        isLoaded: true,
-        appVersion: appVersion,
-      ));
+      emit(
+        SettingsLoadSuccess(
+          setting: setting,
+          isLoaded: true,
+          appVersion: appVersion,
+        ),
+      );
     } catch (e, stackTrace) {
-      logger.e(AppError.getDebugErrorMessage(SettingErrorCodes.load), error: e, stackTrace: stackTrace);
-      emit(SettingsError(errorCode: SettingErrorCodes.load));
+      logger.e(
+        AppError.getDebugErrorMessage(SettingErrorCodes.load),
+        error: e,
+        stackTrace: stackTrace,
+      );
+      emit(const SettingsError(errorCode: SettingErrorCodes.load));
     }
   }
 
@@ -52,14 +58,20 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       final previousVersion = state is SettingsLoadSuccess
           ? (state as SettingsLoadSuccess).appVersion
           : '';
-      emit(SettingsLoadSuccess(
-        setting: event.setting,
-        isLoaded: true,
-        appVersion: previousVersion,
-      ));
+      emit(
+        SettingsLoadSuccess(
+          setting: event.setting,
+          isLoaded: true,
+          appVersion: previousVersion,
+        ),
+      );
     } catch (e, stackTrace) {
-      logger.e(AppError.getDebugErrorMessage(SettingErrorCodes.update), error: e, stackTrace: stackTrace);
-      emit(SettingsError(errorCode: SettingErrorCodes.update));
+      logger.e(
+        AppError.getDebugErrorMessage(SettingErrorCodes.update),
+        error: e,
+        stackTrace: stackTrace,
+      );
+      emit(const SettingsError(errorCode: SettingErrorCodes.update));
     }
   }
 }

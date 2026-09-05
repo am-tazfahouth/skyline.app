@@ -15,27 +15,26 @@ void selectHeatUnitDialog(BuildContext context, SettingEntity setting) {
       return AlertDialog(
         title: Text(l10n.settingsTemperatureUnit),
         content: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxHeight: 300
-          ),
+          constraints: const BoxConstraints(maxHeight: 300),
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: RadioGroup<SettingHeatUnit>(
               groupValue: setting.heatUnit,
               onChanged: (value) {
-                setting = setting.copyWith(heatUnit: value) ;
-                context.read<SettingsBloc>().add(UpdateSettingsEvent(setting: setting));
+                setting = setting.copyWith(heatUnit: value);
+                context.read<SettingsBloc>().add(
+                  UpdateSettingsEvent(setting: setting),
+                );
                 Navigator.pop(context);
               },
               child: ListBody(
                 children: SettingHeatUnit.values.map((unit) {
                   return RadioListTile<SettingHeatUnit>(
-                    title: Text(
-                      switch (unit) {
-                        SettingHeatUnit.celsius => l10n.settingsTempUnitCelsius,
-                        SettingHeatUnit.fahrenheit => l10n.settingsTempUnitFahrenheit,
-                      },
-                    ),
+                    title: Text(switch (unit) {
+                      SettingHeatUnit.celsius => l10n.settingsTempUnitCelsius,
+                      SettingHeatUnit.fahrenheit =>
+                        l10n.settingsTempUnitFahrenheit,
+                    }),
                     value: unit,
                   );
                 }).toList(),

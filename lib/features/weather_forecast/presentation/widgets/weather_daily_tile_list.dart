@@ -31,7 +31,13 @@ class WeatherDailyTileList extends StatelessWidget {
         final weather = state.weatherOrNull;
         final settings = state.settingsOrNull;
         if (weather == null) {
-          return _buildPlaceholder(styles, primaryText, secondaryText, gradientCold, gradientHot);
+          return _buildPlaceholder(
+            styles,
+            primaryText,
+            secondaryText,
+            gradientCold,
+            gradientHot,
+          );
         }
 
         final items = weather.daily.take(7).toList();
@@ -44,12 +50,18 @@ class WeatherDailyTileList extends StatelessWidget {
               title: l10n.weatherDailyTitle,
               color: primaryText,
             ),
-            SizedBox(height: AppSpacing.xs),
+            const SizedBox(height: AppSpacing.xs),
             ...items.map((item) {
               final dayLabel = _formatDayLabel(item.date, l10n);
               final condition = WeatherFormat.condition(item.weatherCode, l10n);
-              final tempMin = WeatherFormat.temperature(item.tempMin, unit: settings?.heatUnit ?? SettingHeatUnit.celsius);
-              final tempMax = WeatherFormat.temperature(item.tempMax, unit: settings?.heatUnit ?? SettingHeatUnit.celsius);
+              final tempMin = WeatherFormat.temperature(
+                item.tempMin,
+                unit: settings?.heatUnit ?? SettingHeatUnit.celsius,
+              );
+              final tempMax = WeatherFormat.temperature(
+                item.tempMax,
+                unit: settings?.heatUnit ?? SettingHeatUnit.celsius,
+              );
               return _buildRowTile(
                 styles: styles,
                 dayLabel: dayLabel,
@@ -79,7 +91,13 @@ class WeatherDailyTileList extends StatelessWidget {
     return l10n.weatherDayLabel(date);
   }
 
-  Widget _buildPlaceholder(TextStyleCatalog styles, Color primaryText, Color secondaryText, Color gradientCold, Color gradientHot) {
+  Widget _buildPlaceholder(
+    TextStyleCatalog styles,
+    Color primaryText,
+    Color secondaryText,
+    Color gradientCold,
+    Color gradientHot,
+  ) {
     return Column(
       children: List.generate(
         5,
@@ -112,11 +130,14 @@ class WeatherDailyTileList extends StatelessWidget {
     required Color gradientHot,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm, horizontal: AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(
+        vertical: AppSpacing.sm,
+        horizontal: AppSpacing.sm,
+      ),
       child: Row(
         children: [
           Icon(icon, color: secondaryText, size: 22),
-          SizedBox(width: AppSpacing.xl),
+          const SizedBox(width: AppSpacing.xl),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -127,7 +148,7 @@ class WeatherDailyTileList extends StatelessWidget {
                   color: primaryText,
                 ),
               ),
-              SizedBox(height: AppSpacing.xs),
+              const SizedBox(height: AppSpacing.xs),
               Text(
                 condition,
                 style: styles.bodyMedium.copyWith(color: secondaryText),
@@ -155,7 +176,7 @@ class WeatherDailyTileList extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: AppSpacing.xs),
+                const SizedBox(height: AppSpacing.xs),
                 Container(
                   height: 3,
                   decoration: BoxDecoration(

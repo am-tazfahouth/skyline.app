@@ -28,10 +28,15 @@ class WeatherStatsCard extends StatelessWidget {
         final weather = state.weatherOrNull;
         final settings = state.settingsOrNull;
         final wind = weather != null
-            ? WeatherFormat.wind(weather.current.windSpeed, unit: settings?.windUnit ?? SettingWindUnit.ms)
+            ? WeatherFormat.wind(
+                weather.current.windSpeed,
+                unit: settings?.windUnit ?? SettingWindUnit.ms,
+              )
             : '-- m/s';
         final rain = weather != null
-            ? WeatherFormat.percentInt(_findCurrentHourPrecipitationProbability(weather.hourly))
+            ? WeatherFormat.percentInt(
+                _findCurrentHourPrecipitationProbability(weather.hourly),
+              )
             : '--%';
         final humidity = weather != null
             ? WeatherFormat.percentInt(weather.current.humidity)
@@ -39,35 +44,41 @@ class WeatherStatsCard extends StatelessWidget {
 
         return Row(
           children: [
-            Expanded(child: _buildStatCard(
-              styles: styles,
-              icon: Icons.air_rounded,
-              value: wind,
-              label: l10n.weatherStatsWind,
-              cardColor: cardColor,
-              primaryText: primaryText,
-              secondaryText: secondaryText,
-            )),
-            SizedBox(width: AppSpacing.sm),
-            Expanded(child: _buildStatCard(
-              styles: styles,
-              icon: Icons.umbrella_rounded,
-              value: rain,
-              label: l10n.weatherStatsChanceOfRain,
-              cardColor: cardColor,
-              primaryText: primaryText,
-              secondaryText: secondaryText,
-            )),
-            SizedBox(width: AppSpacing.sm),
-            Expanded(child: _buildStatCard(
-              styles: styles,
-              icon: Icons.water_drop_outlined,
-              value: humidity,
-              label: l10n.weatherStatsHumidity,
-              cardColor: cardColor,
-              primaryText: primaryText,
-              secondaryText: secondaryText,
-            )),
+            Expanded(
+              child: _buildStatCard(
+                styles: styles,
+                icon: Icons.air_rounded,
+                value: wind,
+                label: l10n.weatherStatsWind,
+                cardColor: cardColor,
+                primaryText: primaryText,
+                secondaryText: secondaryText,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: _buildStatCard(
+                styles: styles,
+                icon: Icons.umbrella_rounded,
+                value: rain,
+                label: l10n.weatherStatsChanceOfRain,
+                cardColor: cardColor,
+                primaryText: primaryText,
+                secondaryText: secondaryText,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: _buildStatCard(
+                styles: styles,
+                icon: Icons.water_drop_outlined,
+                value: humidity,
+                label: l10n.weatherStatsHumidity,
+                cardColor: cardColor,
+                primaryText: primaryText,
+                secondaryText: secondaryText,
+              ),
+            ),
           ],
         );
       },
@@ -84,7 +95,10 @@ class WeatherStatsCard extends StatelessWidget {
     required Color secondaryText,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg, horizontal: AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(
+        vertical: AppSpacing.lg,
+        horizontal: AppSpacing.sm,
+      ),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(AppRadius.md),
@@ -93,23 +107,24 @@ class WeatherStatsCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, color: secondaryText, size: 20),
-          SizedBox(height: AppSpacing.sm),
-          Text(
-            value,
-            style: styles.titleMedium.copyWith(color: primaryText),
-          ),
-          SizedBox(height: AppSpacing.xs),
+          const SizedBox(height: AppSpacing.sm),
+          Text(value, style: styles.titleMedium.copyWith(color: primaryText)),
+          const SizedBox(height: AppSpacing.xs),
           Text(label, style: styles.labelSmall.copyWith(color: secondaryText)),
         ],
       ),
     );
   }
 
-  int _findCurrentHourPrecipitationProbability(List<HourlyWeatherEntity> hourly) {
+  int _findCurrentHourPrecipitationProbability(
+    List<HourlyWeatherEntity> hourly,
+  ) {
     if (hourly.isEmpty) return 0;
     final now = DateTime.now();
-    final closest = hourly.reduce((a, b) =>
-        a.time.difference(now).abs() < b.time.difference(now).abs() ? a : b);
+    final closest = hourly.reduce(
+      (a, b) =>
+          a.time.difference(now).abs() < b.time.difference(now).abs() ? a : b,
+    );
     return closest.precipitationProbability;
   }
 }

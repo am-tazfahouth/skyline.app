@@ -15,28 +15,26 @@ void selectThemeDialog(BuildContext context, SettingEntity setting) {
       return AlertDialog(
         title: Text(l10n.settingsTheme),
         content: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxHeight: 300
-          ),
+          constraints: const BoxConstraints(maxHeight: 300),
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: RadioGroup<SettingTheme>(
               groupValue: setting.theme,
               onChanged: (value) {
-                setting = setting.copyWith(theme: value) ;
-                context.read<SettingsBloc>().add(UpdateSettingsEvent(setting: setting));
+                setting = setting.copyWith(theme: value);
+                context.read<SettingsBloc>().add(
+                  UpdateSettingsEvent(setting: setting),
+                );
                 Navigator.pop(context);
               },
               child: ListBody(
                 children: SettingTheme.values.map((theme) {
                   return RadioListTile<SettingTheme>(
-                    title: Text(
-                      switch (theme) {
-                        SettingTheme.light => l10n.settingsThemeLight,
-                        SettingTheme.dark => l10n.settingsThemeDark,
-                        SettingTheme.system => l10n.settingsThemeSystem,
-                      },
-                    ),
+                    title: Text(switch (theme) {
+                      SettingTheme.light => l10n.settingsThemeLight,
+                      SettingTheme.dark => l10n.settingsThemeDark,
+                      SettingTheme.system => l10n.settingsThemeSystem,
+                    }),
                     value: theme,
                   );
                 }).toList(),

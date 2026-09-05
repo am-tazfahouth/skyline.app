@@ -21,7 +21,10 @@ class LocationRepositoryImpl implements LocationRepository {
   );
 
   @override
-  Future<List<LocationEntity>> searchLocations(String query, String language) async {
+  Future<List<LocationEntity>> searchLocations(
+    String query,
+    String language,
+  ) async {
     final json = await _remoteSource.search(query, language: language);
     final models = LocationMapper.fromJsonList(json);
     return models.map((m) => m.toEntity()).toList();
@@ -35,30 +38,32 @@ class LocationRepositoryImpl implements LocationRepository {
   @override
   Future<void> saveFavorite(LocationEntity location) async {
     final alreadySaved = _localSource.loadFavorites().any(
-          (favorite) => location.isAtSamePointAs(_mapToEntity(favorite)),
-        );
+      (favorite) => location.isAtSamePointAs(_mapToEntity(favorite)),
+    );
     if (alreadySaved) return;
 
-    _localSource.saveFavorite(LocationCacheEntity(
-      latitude: location.latitude,
-      longitude: location.longitude,
-      cityName: location.cityName,
-      country: location.country,
-      admin1: location.admin1,
-      isGpsLocation: location.isGpsLocation,
-      sortOrder: location.sortOrder,
-    ));
+    _localSource.saveFavorite(
+      LocationCacheEntity(
+        latitude: location.latitude,
+        longitude: location.longitude,
+        cityName: location.cityName,
+        country: location.country,
+        admin1: location.admin1,
+        isGpsLocation: location.isGpsLocation,
+        sortOrder: location.sortOrder,
+      ),
+    );
   }
 
   LocationEntity _mapToEntity(LocationCacheEntity cache) => LocationEntity(
-        latitude: cache.latitude,
-        longitude: cache.longitude,
-        cityName: cache.cityName,
-        country: cache.country,
-        admin1: cache.admin1,
-        isGpsLocation: cache.isGpsLocation,
-        sortOrder: cache.sortOrder,
-      );
+    latitude: cache.latitude,
+    longitude: cache.longitude,
+    cityName: cache.cityName,
+    country: cache.country,
+    admin1: cache.admin1,
+    isGpsLocation: cache.isGpsLocation,
+    sortOrder: cache.sortOrder,
+  );
 
   @override
   Future<void> removeFavorite(LocationEntity location) async {
@@ -74,15 +79,23 @@ class LocationRepositoryImpl implements LocationRepository {
   @override
   Future<void> saveAllFavorites(List<LocationEntity> favorites) async {
     // List index IS the intended sort order (used for reordering).
-    _localSource.saveAllFavorites(favorites.asMap().entries.map((e) => LocationCacheEntity(
-      latitude: e.value.latitude,
-      longitude: e.value.longitude,
-      cityName: e.value.cityName,
-      country: e.value.country,
-      admin1: e.value.admin1,
-      isGpsLocation: e.value.isGpsLocation,
-      sortOrder: e.key,
-    )).toList());
+    _localSource.saveAllFavorites(
+      favorites
+          .asMap()
+          .entries
+          .map(
+            (e) => LocationCacheEntity(
+              latitude: e.value.latitude,
+              longitude: e.value.longitude,
+              cityName: e.value.cityName,
+              country: e.value.country,
+              admin1: e.value.admin1,
+              isGpsLocation: e.value.isGpsLocation,
+              sortOrder: e.key,
+            ),
+          )
+          .toList(),
+    );
   }
 
   @override
@@ -101,14 +114,16 @@ class LocationRepositoryImpl implements LocationRepository {
 
   @override
   Future<void> saveLastLocation(LocationEntity location) async {
-    _localSource.saveLastLocation(LastLocationEntity(
-      latitude: location.latitude,
-      longitude: location.longitude,
-      cityName: location.cityName,
-      country: location.country,
-      admin1: location.admin1,
-      isGpsLocation: location.isGpsLocation,
-    ));
+    _localSource.saveLastLocation(
+      LastLocationEntity(
+        latitude: location.latitude,
+        longitude: location.longitude,
+        cityName: location.cityName,
+        country: location.country,
+        admin1: location.admin1,
+        isGpsLocation: location.isGpsLocation,
+      ),
+    );
   }
 
   @override
@@ -132,7 +147,11 @@ class LocationRepositoryImpl implements LocationRepository {
     }
 
     final position = await _permissionSource.getCurrentPosition();
-    return _resolveDetectedLocation(position.latitude, position.longitude, language);
+    return _resolveDetectedLocation(
+      position.latitude,
+      position.longitude,
+      language,
+    );
   }
 
   Future<LocationEntity> _resolveDetectedLocation(
@@ -141,8 +160,11 @@ class LocationRepositoryImpl implements LocationRepository {
     String language,
   ) async {
     try {
-      final place =
-          await _remoteSource.reverseGeocode(latitude: latitude, longitude: longitude, language: language);
+      final place = await _remoteSource.reverseGeocode(
+        latitude: latitude,
+        longitude: longitude,
+        language: language,
+      );
       final city = _firstNonEmpty([place.city, place.locality]);
       if (city == null) return _gpsFallback(latitude, longitude);
       return LocationEntity(

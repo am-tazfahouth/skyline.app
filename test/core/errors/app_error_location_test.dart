@@ -12,12 +12,15 @@ void main() {
       expect(message, 'GPS is disabled on the device.');
     });
 
-    test('getDebugErrorMessage returns correct message for gpsPermissionDenied', () {
-      final message = AppError.getDebugErrorMessage(
-        LocationErrorCodes.gpsPermissionDenied,
-      );
-      expect(message, 'GPS permission was denied by the user.');
-    });
+    test(
+      'getDebugErrorMessage returns correct message for gpsPermissionDenied',
+      () {
+        final message = AppError.getDebugErrorMessage(
+          LocationErrorCodes.gpsPermissionDenied,
+        );
+        expect(message, 'GPS permission was denied by the user.');
+      },
+    );
 
     test('getDebugErrorMessage returns correct message for gpsFailed', () {
       final message = AppError.getDebugErrorMessage(
@@ -33,19 +36,25 @@ void main() {
       expect(message, 'Failed to search for cities.');
     });
 
-    test('getDebugErrorMessage returns correct message for saveFavoriteFailed', () {
-      final message = AppError.getDebugErrorMessage(
-        LocationErrorCodes.saveFavoriteFailed,
-      );
-      expect(message, 'Failed to save favorite location.');
-    });
+    test(
+      'getDebugErrorMessage returns correct message for saveFavoriteFailed',
+      () {
+        final message = AppError.getDebugErrorMessage(
+          LocationErrorCodes.saveFavoriteFailed,
+        );
+        expect(message, 'Failed to save favorite location.');
+      },
+    );
 
-    test('getDebugErrorMessage returns correct message for loadFavoritesFailed', () {
-      final message = AppError.getDebugErrorMessage(
-        LocationErrorCodes.loadFavoritesFailed,
-      );
-      expect(message, 'Failed to load favorite locations.');
-    });
+    test(
+      'getDebugErrorMessage returns correct message for loadFavoritesFailed',
+      () {
+        final message = AppError.getDebugErrorMessage(
+          LocationErrorCodes.loadFavoritesFailed,
+        );
+        expect(message, 'Failed to load favorite locations.');
+      },
+    );
 
     test('getDebugErrorMessage returns correct message for unexpected', () {
       final message = AppError.getDebugErrorMessage(
@@ -62,28 +71,33 @@ void main() {
       expect(message, 'Location services are turned off.');
     });
 
-    test('getUserErrorMessage returns correct message for gpsPermissionDenied', () {
-      final message = AppError.getUserErrorMessage(
-        LocationErrorCodes.gpsPermissionDenied,
-        AppLocalisationEn(),
-      );
-      expect(
-        message,
-        'Location permission is required to get your current location.',
-      );
-    });
+    test(
+      'getUserErrorMessage returns correct message for gpsPermissionDenied',
+      () {
+        final message = AppError.getUserErrorMessage(
+          LocationErrorCodes.gpsPermissionDenied,
+          AppLocalisationEn(),
+        );
+        expect(
+          message,
+          'Location permission is required to get your current location.',
+        );
+      },
+    );
 
-    test('getUserErrorMessage returns correct message for gpsPermissionPermanentlyDenied',
-        () {
-      final message = AppError.getUserErrorMessage(
-        LocationErrorCodes.gpsPermissionPermanentlyDenied,
-        AppLocalisationEn(),
-      );
-      expect(
-        message,
-        'Location permission is permanently denied. Please enable it in Settings.',
-      );
-    });
+    test(
+      'getUserErrorMessage returns correct message for gpsPermissionPermanentlyDenied',
+      () {
+        final message = AppError.getUserErrorMessage(
+          LocationErrorCodes.gpsPermissionPermanentlyDenied,
+          AppLocalisationEn(),
+        );
+        expect(
+          message,
+          'Location permission is permanently denied. Please enable it in Settings.',
+        );
+      },
+    );
 
     test('getUserErrorMessage returns correct message for search type', () {
       final message = AppError.getUserErrorMessage(

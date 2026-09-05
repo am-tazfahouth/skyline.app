@@ -15,27 +15,25 @@ void selectWindUnitDialog(BuildContext context, SettingEntity setting) {
       return AlertDialog(
         title: Text(l10n.settingsWindUnit),
         content: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxHeight: 300
-          ),
+          constraints: const BoxConstraints(maxHeight: 300),
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: RadioGroup<SettingWindUnit>(
               groupValue: setting.windUnit,
               onChanged: (value) {
-                setting = setting.copyWith(windUnit: value) ;
-                context.read<SettingsBloc>().add(UpdateSettingsEvent(setting: setting));
+                setting = setting.copyWith(windUnit: value);
+                context.read<SettingsBloc>().add(
+                  UpdateSettingsEvent(setting: setting),
+                );
                 Navigator.pop(context);
               },
               child: ListBody(
                 children: SettingWindUnit.values.map((unit) {
                   return RadioListTile<SettingWindUnit>(
-                    title: Text(
-                      switch (unit) {
-                        SettingWindUnit.ms => l10n.settingsWindUnitMs,
-                        SettingWindUnit.kmh => l10n.settingsWindUnitKmh,
-                      },
-                    ),
+                    title: Text(switch (unit) {
+                      SettingWindUnit.ms => l10n.settingsWindUnitMs,
+                      SettingWindUnit.kmh => l10n.settingsWindUnitKmh,
+                    }),
                     value: unit,
                   );
                 }).toList(),

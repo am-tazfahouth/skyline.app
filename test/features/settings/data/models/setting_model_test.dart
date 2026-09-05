@@ -15,7 +15,12 @@ void main() {
     );
 
     test('props returns correct list', () {
-      expect(tModel.props, [SettingTheme.light, SettingLang.fr, SettingWindUnit.kmh, SettingHeatUnit.fahrenheit]);
+      expect(tModel.props, [
+        SettingTheme.light,
+        SettingLang.fr,
+        SettingWindUnit.kmh,
+        SettingHeatUnit.fahrenheit,
+      ]);
     });
 
     test('defaults are correct', () {

@@ -16,10 +16,10 @@ class WeatherModel extends Equatable {
   });
 
   WeatherEntity toEntity() => WeatherEntity(
-        current: current.toEntity(),
-        hourly: hourly.map((h) => h.toEntity()).toList(),
-        daily: daily.map((d) => d.toEntity()).toList(),
-      );
+    current: current.toEntity(),
+    hourly: hourly.map((h) => h.toEntity()).toList(),
+    daily: daily.map((d) => d.toEntity()).toList(),
+  );
 
   WeatherModel copyWith({
     CurrentWeatherModel? current,
@@ -34,22 +34,21 @@ class WeatherModel extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
-        'current': current.toJson(),
-        'hourly': hourly.map((h) => h.toJson()).toList(),
-        'daily': daily.map((d) => d.toJson()).toList(),
-      };
+    'current': current.toJson(),
+    'hourly': hourly.map((h) => h.toJson()).toList(),
+    'daily': daily.map((d) => d.toJson()).toList(),
+  };
 
   factory WeatherModel.fromCacheJson(Map<String, dynamic> json) {
     return WeatherModel(
       current: CurrentWeatherModel.fromJson(
-          json['current'] as Map<String, dynamic>),
+        json['current'] as Map<String, dynamic>,
+      ),
       hourly: (json['hourly'] as List)
-          .map((h) =>
-              HourlyWeatherModel.fromJson(h as Map<String, dynamic>))
+          .map((h) => HourlyWeatherModel.fromJson(h as Map<String, dynamic>))
           .toList(),
       daily: (json['daily'] as List)
-          .map((d) =>
-              DailyWeatherModel.fromJson(d as Map<String, dynamic>))
+          .map((d) => DailyWeatherModel.fromJson(d as Map<String, dynamic>))
           .toList(),
     );
   }

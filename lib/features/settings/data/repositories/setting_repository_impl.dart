@@ -11,13 +11,10 @@ class SettingRepositoryImpl implements SettingRepository {
   final SettingLang Function() systemLangProvider;
 
   SettingRepositoryImpl(this._dbHelper)
-      : systemLangProvider = PlatformUtils.getSystemLang;
+    : systemLangProvider = PlatformUtils.getSystemLang;
 
   @visibleForTesting
-  SettingRepositoryImpl.withSystemLang(
-    this._dbHelper,
-    this.systemLangProvider,
-  );
+  SettingRepositoryImpl.withSystemLang(this._dbHelper, this.systemLangProvider);
 
   @override
   Future<SettingEntity> loadSettings() async {

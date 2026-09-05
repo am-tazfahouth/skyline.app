@@ -26,8 +26,7 @@ void main() {
       windUnit: SettingWindUnit.kmh,
       heatUnit: SettingHeatUnit.fahrenheit,
     );
-    when(() => mockRepository.loadSettings())
-        .thenAnswer((_) async => expected);
+    when(() => mockRepository.loadSettings()).thenAnswer((_) async => expected);
 
     final result = await useCase();
 

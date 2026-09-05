@@ -9,7 +9,11 @@ class WeatherRepositoryImpl implements WeatherRepository {
   final DbHelper _dbHelper;
   final int _cacheMaxAgeDays;
 
-  WeatherRepositoryImpl(this._remoteSource, this._dbHelper, [this._cacheMaxAgeDays = 6]);
+  WeatherRepositoryImpl(
+    this._remoteSource,
+    this._dbHelper, [
+    this._cacheMaxAgeDays = 6,
+  ]);
 
   @override
   Future<WeatherResult?> loadCachedWeather({
@@ -29,7 +33,10 @@ class WeatherRepositoryImpl implements WeatherRepository {
   }
 
   @override
-  Future<WeatherResult> fetchWeather({required double latitude, required double longitude}) async {
+  Future<WeatherResult> fetchWeather({
+    required double latitude,
+    required double longitude,
+  }) async {
     final json = await _remoteSource.fetchWeather(latitude, longitude);
     final model = WeatherMapper.fromJson(json);
     _dbHelper.saveWeather(model, latitude: latitude, longitude: longitude);

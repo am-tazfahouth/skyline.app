@@ -18,7 +18,8 @@ class MockAppLogger extends Mock implements AppLogger {}
 
 class MockGetSettingsUseCase extends Mock implements GetSettingsUseCase {}
 
-FutureOr<({double latitude, double longitude})?> _defaultLastLocation() => (latitude: 0.0, longitude: 0.0);
+FutureOr<({double latitude, double longitude})?> _defaultLastLocation() =>
+    (latitude: 0.0, longitude: 0.0);
 
 void main() {
   Widget buildScreen() {
@@ -35,11 +36,11 @@ void main() {
       locale: const Locale('en'),
       supportedLocales: AppLocalisation.supportedLocales,
       localizationsDelegates: AppLocalisation.localizationsDelegates,
-      home: Scaffold(
+      home: const Scaffold(
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [WeatherHourlyTileList()],
+            children: [WeatherHourlyTileList()],
           ),
         ),
       ),
@@ -53,24 +54,26 @@ void main() {
     expect(find.text('--°'), findsNWidgets(6));
   });
 
-  testWidgets('placeholder keeps tiles clipped inside the card on narrow screens',
-      (tester) async {
-    tester.view.physicalSize = const Size(320, 640);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.reset);
+  testWidgets(
+    'placeholder keeps tiles clipped inside the card on narrow screens',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 640);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
 
-    await tester.pumpWidget(buildScreen());
+      await tester.pumpWidget(buildScreen());
 
-    expect(tester.takeException(), isNull);
+      expect(tester.takeException(), isNull);
 
-    final scrollable = tester.widget<SingleChildScrollView>(
-      find.descendant(
-        of: find.byType(WeatherHourlyTileList),
-        matching: find.byType(SingleChildScrollView),
-      ),
-    );
-    expect(scrollable.clipBehavior, isNot(Clip.none));
-  });
+      final scrollable = tester.widget<SingleChildScrollView>(
+        find.descendant(
+          of: find.byType(WeatherHourlyTileList),
+          matching: find.byType(SingleChildScrollView),
+        ),
+      );
+      expect(scrollable.clipBehavior, isNot(Clip.none));
+    },
+  );
 }
 
 extension on Widget {

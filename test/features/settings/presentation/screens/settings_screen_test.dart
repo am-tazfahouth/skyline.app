@@ -32,7 +32,8 @@ class MockWeatherRepository extends Mock implements WeatherRepository {}
 
 class MockGetSettingsUseCase extends Mock implements GetSettingsUseCase {}
 
-FutureOr<({double latitude, double longitude})?> _defaultLastLocation() => (latitude: 0.0, longitude: 0.0);
+FutureOr<({double latitude, double longitude})?> _defaultLastLocation() =>
+    (latitude: 0.0, longitude: 0.0);
 
 Widget createTestScreen(SettingsBloc bloc, WeatherForecastBloc weatherBloc) {
   return MaterialApp(
@@ -51,11 +52,12 @@ Widget createTestScreen(SettingsBloc bloc, WeatherForecastBloc weatherBloc) {
 
 WeatherForecastBloc _buildWeatherBloc() {
   final repository = MockWeatherRepository();
-  when(() => repository.loadCachedWeather(
-    latitude: any(named: 'latitude'),
-    longitude: any(named: 'longitude'),
-  ))
-      .thenAnswer((_) async => _weatherResult(cached: true));
+  when(
+    () => repository.loadCachedWeather(
+      latitude: any(named: 'latitude'),
+      longitude: any(named: 'longitude'),
+    ),
+  ).thenAnswer((_) async => _weatherResult(cached: true));
   final getSettings = MockGetSettingsUseCase();
   when(() => getSettings()).thenAnswer((_) async => SettingEntity.defaults);
   return WeatherForecastBloc(
@@ -110,14 +112,17 @@ void main() {
 
   setUp(() {
     mockRepository = MockSettingRepository();
-    when(() => mockRepository.loadSettings()).thenAnswer(
-      (_) async => SettingEntity.defaults,
-    );
+    when(
+      () => mockRepository.loadSettings(),
+    ).thenAnswer((_) async => SettingEntity.defaults);
     when(() => mockRepository.saveSettings(any())).thenAnswer((_) async {});
   });
 
   testWidgets('should display settings title', (tester) async {
-    final bloc = SettingsBloc(logger: MockAppLogger(), repository: mockRepository);
+    final bloc = SettingsBloc(
+      logger: MockAppLogger(),
+      repository: mockRepository,
+    );
     bloc.add(const LoadSettingsEvent());
     await tester.pumpWidget(createTestScreen(bloc, _buildWeatherBloc()));
     await tester.pumpAndSettle();
@@ -126,7 +131,10 @@ void main() {
   });
 
   testWidgets('should display all setting tiles', (tester) async {
-    final bloc = SettingsBloc(logger: MockAppLogger(), repository: mockRepository);
+    final bloc = SettingsBloc(
+      logger: MockAppLogger(),
+      repository: mockRepository,
+    );
     bloc.add(const LoadSettingsEvent());
     await tester.pumpWidget(createTestScreen(bloc, _buildWeatherBloc()));
     await tester.pumpAndSettle();
@@ -138,18 +146,29 @@ void main() {
   });
 
   testWidgets('should display setting descriptions', (tester) async {
-    final bloc = SettingsBloc(logger: MockAppLogger(), repository: mockRepository);
+    final bloc = SettingsBloc(
+      logger: MockAppLogger(),
+      repository: mockRepository,
+    );
     bloc.add(const LoadSettingsEvent());
     await tester.pumpWidget(createTestScreen(bloc, _buildWeatherBloc()));
     await tester.pumpAndSettle();
 
     expect(find.text('Choose the theme of the application'), findsOneWidget);
     expect(find.text('Choose the language of the application'), findsOneWidget);
-    expect(find.text('Choose the unit of measurement for wind'), findsOneWidget);
-    expect(find.text('Choose the unit of measurement of the temperature'), findsOneWidget);
+    expect(
+      find.text('Choose the unit of measurement for wind'),
+      findsOneWidget,
+    );
+    expect(
+      find.text('Choose the unit of measurement of the temperature'),
+      findsOneWidget,
+    );
   });
 
-  testWidgets('should display app version from the settings bloc', (tester) async {
+  testWidgets('should display app version from the settings bloc', (
+    tester,
+  ) async {
     final bloc = SettingsBloc(
       logger: MockAppLogger(),
       repository: mockRepository,
@@ -162,8 +181,13 @@ void main() {
     expect(find.text('App version: 1.2.3'), findsOneWidget);
   });
 
-  testWidgets('should propagate updated settings to the weather bloc', (tester) async {
-    final bloc = SettingsBloc(logger: MockAppLogger(), repository: mockRepository);
+  testWidgets('should propagate updated settings to the weather bloc', (
+    tester,
+  ) async {
+    final bloc = SettingsBloc(
+      logger: MockAppLogger(),
+      repository: mockRepository,
+    );
     bloc.add(const LoadSettingsEvent());
     final weatherBloc = _buildWeatherBloc();
     weatherBloc.add(const FetchWeatherEvent());
@@ -173,9 +197,11 @@ void main() {
 
     expect(weatherBloc.state, isA<WeatherLoaded>());
 
-    bloc.add(const UpdateSettingsEvent(
-      setting: SettingEntity(heatUnit: SettingHeatUnit.fahrenheit),
-    ));
+    bloc.add(
+      const UpdateSettingsEvent(
+        setting: SettingEntity(heatUnit: SettingHeatUnit.fahrenheit),
+      ),
+    );
     await tester.pumpAndSettle();
 
     final state = weatherBloc.state;

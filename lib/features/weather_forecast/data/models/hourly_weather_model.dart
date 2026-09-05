@@ -18,25 +18,25 @@ class HourlyWeatherModel extends Equatable {
     return HourlyWeatherModel(
       time: DateTime.parse(json['time'] as String),
       temperature: (json['temperature_2m'] as num).toDouble(),
-      precipitationProbability:
-          (json['precipitation_probability'] as num).toInt(),
+      precipitationProbability: (json['precipitation_probability'] as num)
+          .toInt(),
       weatherCode: (json['weather_code'] as num).toInt(),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'time': time.toIso8601String(),
-        'temperature_2m': temperature,
-        'precipitation_probability': precipitationProbability,
-        'weather_code': weatherCode,
-      };
+    'time': time.toIso8601String(),
+    'temperature_2m': temperature,
+    'precipitation_probability': precipitationProbability,
+    'weather_code': weatherCode,
+  };
 
   HourlyWeatherEntity toEntity() => HourlyWeatherEntity(
-        time: time,
-        temperature: temperature,
-        precipitationProbability: precipitationProbability,
-        weatherCode: weatherCode,
-      );
+    time: time,
+    temperature: temperature,
+    precipitationProbability: precipitationProbability,
+    weatherCode: weatherCode,
+  );
 
   HourlyWeatherModel copyWith({
     DateTime? time,
@@ -55,9 +55,9 @@ class HourlyWeatherModel extends Equatable {
 
   @override
   List<Object?> get props => [
-        time,
-        temperature,
-        precipitationProbability,
-        weatherCode,
-      ];
+    time,
+    temperature,
+    precipitationProbability,
+    weatherCode,
+  ];
 }

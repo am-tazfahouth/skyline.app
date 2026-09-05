@@ -121,8 +121,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
           listenWhen: (previous, current) =>
               current is WeatherLoaded &&
               current.notice != WeatherNotice.none &&
-              (previous is! WeatherLoaded ||
-                  previous.notice != current.notice),
+              (previous is! WeatherLoaded || previous.notice != current.notice),
           listener: (context, state) {
             if (state is! WeatherLoaded) return;
             switch (state.notice) {
@@ -176,10 +175,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                   const SizedBox(height: 16),
                                   Text(
                                     l10n.weatherRefreshing,
-                                    style:
-                                        theme.textTheme.bodyLarge?.copyWith(
-                                          color: primary,
-                                        ),
+                                    style: theme.textTheme.bodyLarge?.copyWith(
+                                      color: primary,
+                                    ),
                                   ),
                                 ],
                               ),

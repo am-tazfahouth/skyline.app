@@ -48,10 +48,10 @@ class ReverseGeocodeModel extends Equatable {
 
   @override
   List<Object?> get props => [
-        city,
-        locality,
-        principalSubdivision,
-        countryName,
-        countryCode,
-      ];
+    city,
+    locality,
+    principalSubdivision,
+    countryName,
+    countryCode,
+  ];
 }

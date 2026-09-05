@@ -49,7 +49,10 @@ class LocationSelected extends LocationState {
 class LocationFavoritesLoaded extends LocationState {
   final List<LocationEntity> favorites;
   final LocationEntity? currentLocation;
-  const LocationFavoritesLoaded({required this.favorites, this.currentLocation});
+  const LocationFavoritesLoaded({
+    required this.favorites,
+    this.currentLocation,
+  });
   @override
   List<Object?> get props => [favorites, currentLocation];
 }

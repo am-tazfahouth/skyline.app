@@ -65,7 +65,7 @@ class WeatherSunTimes extends StatelessWidget {
                 title: config.title,
                 color: primaryText,
               ),
-              SizedBox(height: AppSpacing.sm),
+              const SizedBox(height: AppSpacing.sm),
               Row(
                 children: [
                   Expanded(
@@ -80,7 +80,9 @@ class WeatherSunTimes extends StatelessWidget {
                     child: Center(
                       child: Text(
                         '—',
-                        style: styles.headlineMedium.copyWith(color: secondaryText),
+                        style: styles.headlineMedium.copyWith(
+                          color: secondaryText,
+                        ),
                       ),
                     ),
                   ),
@@ -96,7 +98,9 @@ class WeatherSunTimes extends StatelessWidget {
                     child: Center(
                       child: Text(
                         '—',
-                        style: styles.headlineMedium.copyWith(color: secondaryText),
+                        style: styles.headlineMedium.copyWith(
+                          color: secondaryText,
+                        ),
                       ),
                     ),
                   ),
@@ -212,13 +216,13 @@ class _TimePoint extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(data.icon, color: data.iconColor, size: 20),
-        SizedBox(height: AppSpacing.xs),
+        const SizedBox(height: AppSpacing.xs),
         Text(
           data.label,
           style: styles.labelSmall.copyWith(color: secondaryText),
           textAlign: TextAlign.center,
         ),
-        SizedBox(height: AppSpacing.xs),
+        const SizedBox(height: AppSpacing.xs),
         Text(
           data.time,
           style: styles.titleMedium.copyWith(
