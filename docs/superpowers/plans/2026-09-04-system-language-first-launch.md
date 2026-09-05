@@ -2,34 +2,34 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** At first launch, automatically set the app language to the device language if supported, falling back to English otherwise.
+**Goal:** At first launch (no persisted settings), automatically set the app language to the device's system language when supported, falling back to `en`.
 
-**Architecture:** Confined to the Data layer plus a `core` utility. `SettingRepositoryImpl.loadSettings()` detects when no persisted setting exists (first launch), resolves the system language via a new `PlatformUtils.getSystemLang()` (reusing the existing `getLangFromString` mapping with `en` fallback), persists the choice, and returns it. Presentation, BLoC, `main.dart`, and the injection container stay untouched.
+**Architecture:** Detection lives in `core` (`PlatformUtils.getSystemLang()`), and first-launch resolution + persistence happens in the Data layer (`SettingRepositoryImpl.loadSettings()` via an injected `systemLangProvider`). No presentation/BLoC/injection-container changes.
 
-**Tech Stack:** Flutter, Dart, mocktail (tests), `flutter_test` widget tester.
+**Tech Stack:** Flutter/Dart, mocktail for tests, `WidgetsBinding.instance.platformDispatcher.locale` for system language.
 
 ## Global Constraints
 
-- Code, comments, variable names, and commits written exclusively in English.
-- All relevant classes extend `Equatable` with explicit `props` (unchanged here).
-- No `freezed` or immutable-code generators (unchanged here).
-- Run `flutter analyze` with zero warnings/info before finishing.
-- Run `flutter test` to validate the full suite.
-- Supported languages: `en`, `fr`, `es`, `ar`. Fallback: `en`.
+- Code, variables, comments, and commits must be in English.
+- All domain entities / models / events / states extend `Equatable` (no change needed here — `SettingEntity` already does).
+- `flutter analyze` must report 0 warnings and 0 infos.
+- `flutter test` must pass.
+- Do NOT modify `main.dart`, `SettingsBloc`, `injection_container.dart`, or the `SettingEntity` defaults.
+- Supported `SettingLang` values: `en`, `fr`, `es`, `ar` (fallback is `en`).
+- The default constructor `SettingRepositoryImpl(this._dbHelper)` must remain working unchanged.
 
 ---
 
-### Task 1: System language detection helper
+### Task 1: System language detection in PlatformUtils
 
 **Files:**
 - Modify: `lib/core/utils/platform_utils.dart`
-- Create: `test/core/utils/platform_utils_test.dart`
+- Test: `test/core/utils/platform_utils_test.dart` (create)
 
 **Interfaces:**
-- Consumes: `getLangFromString(String)` from `lib/core/enums/setting_lang.dart`, `SettingLang` enum, `WidgetsBinding.instance.platformDispatcher.locale`.
-- Produces: `static SettingLang PlatformUtils.getSystemLang()`.
+- Produces: `static SettingLang PlatformUtils.getSystemLang()` — returns the device system language mapped to `SettingLang`, with fallback to `SettingLang.en` for any unsupported language. Reuses `getLangFromString(String)` from `lib/core/enums/setting_lang.dart`.
 
-- [ ] **Step 1: Write the failing tests**
+- [ ] **Step 1: Write the failing test**
 
 Create `test/core/utils/platform_utils_test.dart`:
 
@@ -42,226 +42,182 @@ import 'package:sky_line/core/utils/platform_utils.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  Future<SettingLang> resolve(SystemLocale locale) async {
-    tester.platformDispatcher.localeTestValue = locale;
-    return PlatformUtils.getSystemLang();
-  }
-
-  testWidgets('returns fr for a French system locale', (tester) async {
-    expect(await resolve(const Locale('fr')), SettingLang.fr);
+  test('returns fr when device locale is fr', () {
+    tester.binding.platformDispatcher.localeTestValue =
+        const Locale('fr', 'FR');
+    expect(PlatformUtils.getSystemLang(), SettingLang.fr);
   });
 
-  testWidgets('returns ar for an Arabic system locale', (tester) async {
-    expect(await resolve(const Locale('ar')), SettingLang.ar);
+  test('returns ar when device locale is ar', () {
+    tester.binding.platformDispatcher.localeTestValue =
+        const Locale('ar', 'SA');
+    expect(PlatformUtils.getSystemLang(), SettingLang.ar);
   });
 
-  testWidgets('returns en for a supported English locale', (tester) async {
-    expect(await resolve(const Locale('en')), SettingLang.en);
+  test('returns es when device locale is es', () {
+    tester.binding.platformDispatcher.localeTestValue =
+        const Locale('es', 'ES');
+    expect(PlatformUtils.getSystemLang(), SettingLang.es);
   });
 
-  testWidgets('falls back to en for an unsupported locale', (tester) async {
-    expect(await resolve(const Locale('de')), SettingLang.en);
+  test('returns en when device locale is en', () {
+    tester.binding.platformDispatcher.localeTestValue =
+        const Locale('en', 'US');
+    expect(PlatformUtils.getSystemLang(), SettingLang.en);
+  });
+
+  test('returns en (fallback) for unsupported locale', () {
+    tester.binding.platformDispatcher.localeTestValue =
+        const Locale('de', 'DE');
+    expect(PlatformUtils.getSystemLang(), SettingLang.en);
+  });
+
+  test('returns en (fallback) for unsupported zh locale', () {
+    tester.binding.platformDispatcher.localeTestValue =
+        const Locale('zh', 'CN');
+    expect(PlatformUtils.getSystemLang(), SettingLang.en);
   });
 }
 ```
 
-Note: `Locale` here refers to `dart:ui`'s `Locale`; `tester.platformDispatcher.localeTestValue` accepts a `Locale`. Ensure `import 'dart:ui'` is not needed since `Locale` is re-exported by Flutter's `material`/`widgets`.
+Note: `localeTestValue` is available on `TestPlatformDispatcher` (Flutter test binding); `platformDispatcher` accesses the root `WidgetsBinding`'s platform dispatcher.
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [ ] **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/core/utils/platform_utils_test.dart`
-Expected: FAIL — `getSystemLang` is not defined.
+Expected: FAIL — `getSystemLang` is not defined on `PlatformUtils`.
 
-- [ ] **Step 3: Write the minimal implementation**
+- [ ] **Step 3: Write minimal implementation**
 
-In `lib/core/utils/platform_utils.dart`, add the import and the method. Ensure `dart:ui` and `package:flutter/material.dart` are already imported (they are). Add import for `setting_lang.dart`:
+In `lib/core/utils/platform_utils.dart`, add an import and the new static method:
 
 ```dart
 import 'package:sky_line/core/enums/setting_lang.dart';
 ```
 
-Add the method at the end of the `PlatformUtils` class:
+Add after the `is24HourFormat()` method (line ~24):
 
 ```dart
-// Resolve supported system language, fallback to en
-static SettingLang getSystemLang() {
-  final locale = WidgetsBinding.instance.platformDispatcher.locale;
-  return getLangFromString(locale.languageCode);
-}
+  // Resolve supported system language, fallback to en
+  static SettingLang getSystemLang() {
+    final locale = WidgetsBinding.instance.platformDispatcher.locale;
+    return getLangFromString(locale.languageCode);
+  }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [ ] **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/core/utils/platform_utils_test.dart`
-Expected: PASS (4 tests).
+Expected: PASS (6 tests).
 
-- [ ] **Step 5: Run analyzer**
+- [ ] **Step 5: Run analysis**
 
-Run: `flutter analyze lib/core/utils/platform_utils.dart test/core/utils/platform_utils_test.dart`
-Expected: No issues found.
+Run: `flutter analyze`
+Expected: 0 issues.
 
 - [ ] **Step 6: Commit**
 
 ```bash
 git add lib/core/utils/platform_utils.dart test/core/utils/platform_utils_test.dart
-git commit -m "feat: add system language detection helper"
+git commit -m "feat: detect system language with en fallback"
 ```
 
 ---
 
-### Task 2: First-launch language resolution in repository
+### Task 2: First-launch language resolution in SettingRepositoryImpl
 
 **Files:**
 - Modify: `lib/features/settings/data/repositories/setting_repository_impl.dart`
 - Modify: `test/features/settings/data/repositories/setting_repository_impl_test.dart`
 
 **Interfaces:**
-- Consumes: `PlatformUtils.getSystemLang()`, `SettingEntity.defaults` / `copyWith`, `SettingLang`, `DbHelper.loadSettings()` / `saveSettings()`.
-- Produces: `SettingRepositoryImpl.withSystemLang(DbHelper, SettingLang Function())` constructor for tests; unchanged public behavior of `SettingRepositoryImpl(DbHelper)`.
+- Consumes: `SettingLang PlatformUtils.getSystemLang()` (Task 1), `SettingLang Function()` provider.
+- Produces:
+  - Constructor `SettingRepositoryImpl(DbHelper)` — unchanged default, defaults provider to `PlatformUtils.getSystemLang`.
+  - `@visibleForTesting` constructor `SettingRepositoryImpl.withSystemLang(DbHelper, SettingLang Function() systemLangProvider)`.
+  - Behavior change to `loadSettings()`: when `DbHelper.loadSettings()` returns `null`, resolve language via provider, persist via `saveSettings`, return the created `SettingEntity`; otherwise return the cached entity converted to domain (unchanged).
 
-- [ ] **Step 1: Update the existing null-cache test and add first-launch tests**
+- [ ] **Step 1: Update the existing test for the changed null-cache behavior**
 
-Replace the `should return defaults when cache is null` test (lines 36-42) with a controlled-constructor version and add new cases. Update `test/features/settings/data/repositories/setting_repository_impl_test.dart`:
+In `test/features/settings/data/repositories/setting_repository_impl_test.dart`, replace the existing `'should return defaults when cache is null'` test (lines 36-42) with a group using the injection constructor. Add new tests to the `loadSettings` group:
 
 ```dart
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:sky_line/core/config/db_helper/db_helper.dart';
-import 'package:sky_line/core/config/db_helper/setting_cache_entity.dart';
-import 'package:sky_line/core/enums/setting_heat_unit.dart';
-import 'package:sky_line/core/enums/setting_lang.dart';
-import 'package:sky_line/core/enums/setting_theme.dart';
-import 'package:sky_line/core/enums/setting_wind_unit.dart';
-import 'package:sky_line/features/settings/data/models/setting_model.dart';
-import 'package:sky_line/features/settings/data/repositories/setting_repository_impl.dart';
-import 'package:sky_line/features/settings/domain/entities/setting_entity.dart';
-
-class MockDbHelper extends Mock implements DbHelper {}
-
-void main() {
-  late MockDbHelper mockDbHelper;
-
-  SettingRepositoryImpl buildRepo(SettingLang Function() provider) =>
-      SettingRepositoryImpl.withSystemLang(mockDbHelper, provider);
-
-  setUpAll(() {
-    registerFallbackValue(SettingCacheEntity(
-      id: 1,
-      themeValue: 'system',
-      langValue: 'en',
-      windUnitValue: 'ms',
-      heatUnitValue: 'celsius',
-    ));
-    registerFallbackValue(const SettingModel());
-  });
-
-  setUp(() {
-    mockDbHelper = MockDbHelper();
-  });
-
-  group('loadSettings', () {
-    test('applies system language and persists when no cache exists', () async {
+  group('loadSettings first launch (null cache)', () {
+    setUp(() {
       when(() => mockDbHelper.loadSettings()).thenReturn(null);
       when(() => mockDbHelper.saveSettings(any())).thenReturn(null);
-      final repo = buildRepo(() => SettingLang.fr);
+    });
 
-      final result = await repo.loadSettings();
+    test('should use provider language and persist on first launch', () async {
+      repository = SettingRepositoryImpl.withSystemLang(
+        mockDbHelper,
+        () => SettingLang.fr,
+      );
+
+      final result = await repository.loadSettings();
 
       expect(result.lang, SettingLang.fr);
       expect(result.theme, SettingTheme.system);
-      expect(result.windUnit, SettingWindUnit.ms);
-      expect(result.heatUnit, SettingHeatUnit.celsius);
       verify(() => mockDbHelper.saveSettings(any())).called(1);
     });
 
-    test('fallback to en for unsupported system language', () async {
-      when(() => mockDbHelper.loadSettings()).thenReturn(null);
-      when(() => mockDbHelper.saveSettings(any())).thenReturn(null);
-      final repo = buildRepo(() => SettingLang.en);
+    test('should fall back to en for unsupported provider language', () async {
+      repository = SettingRepositoryImpl.withSystemLang(
+        mockDbHelper,
+        () => SettingLang.en,
+      );
 
-      final result = await repo.loadSettings();
+      final result = await repository.loadSettings();
 
       expect(result.lang, SettingLang.en);
       verify(() => mockDbHelper.saveSettings(any())).called(1);
     });
-
-    test('keeps cached language and does not save when setting exists',
-        () async {
-      final entity = SettingCacheEntity(
-        id: 1,
-        themeValue: 'dark',
-        langValue: 'es',
-        windUnitValue: 'kmh',
-        heatUnitValue: 'fahrenheit',
-      );
-      when(() => mockDbHelper.loadSettings()).thenReturn(entity);
-      final repo = buildRepo(() => SettingLang.fr);
-
-      final result = await repo.loadSettings();
-
-      expect(result.lang, SettingLang.es);
-      expect(result.theme, SettingTheme.dark);
-      expect(result.windUnit, SettingWindUnit.kmh);
-      expect(result.heatUnit, SettingHeatUnit.fahrenheit);
-      verifyNever(() => mockDbHelper.saveSettings(any()));
-    });
-
-    test('should return cached entity converted to domain', () async {
-      final entity = SettingCacheEntity(
-        id: 1,
-        themeValue: 'dark',
-        langValue: 'fr',
-        windUnitValue: 'kmh',
-        heatUnitValue: 'fahrenheit',
-      );
-      when(() => mockDbHelper.loadSettings()).thenReturn(entity);
-      final repo = buildRepo(() => SettingLang.ar);
-
-      final result = await repo.loadSettings();
-
-      expect(result.theme, SettingTheme.dark);
-      expect(result.lang, SettingLang.fr);
-      expect(result.windUnit, SettingWindUnit.kmh);
-      expect(result.heatUnit, SettingHeatUnit.fahrenheit);
-    });
   });
-
-  group('saveSettings', () {
-    test('should save through dbHelper', () async {
-      final setting = const SettingEntity(
-        theme: SettingTheme.light,
-        lang: SettingLang.ar,
-        windUnit: SettingWindUnit.ms,
-        heatUnit: SettingHeatUnit.celsius,
-      );
-      when(() => mockDbHelper.saveSettings(any())).thenReturn(null);
-      final repo = buildRepo(() => SettingLang.en);
-
-      await repo.saveSettings(setting);
-
-      verify(() => mockDbHelper.saveSettings(any())).called(1);
-    });
-  });
-}
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+The `saveSettings(any())` verification needs `registerFallbackValue(const SettingModel())` — already present in `setUpAll` (line 27). Also keep the existing `'should return cached entity converted to domain'` test unchanged in the `loadSettings` group, and add a test that a persisted cache is NOT overridden:
+
+```dart
+    test('should keep persisted language and not save when cache exists', () async {
+      final entity = SettingCacheEntity(
+        id: 1,
+        themeValue: 'system',
+        langValue: 'es',
+        windUnitValue: 'ms',
+        heatUnitValue: 'celsius',
+      );
+      when(() => mockDbHelper.loadSettings()).thenReturn(entity);
+      repository = SettingRepositoryImpl.withSystemLang(
+        mockDbHelper,
+        () => SettingLang.fr,
+      );
+
+      final result = await repository.loadSettings();
+
+      expect(result.lang, SettingLang.es);
+      verifyNever(() => mockDbHelper.saveSettings(any()));
+    });
+```
+
+Note: this test must NOT stub `saveSettings` to `thenReturn(null)` (the `saveSettings` mock returns null by default in mocktail), so `verifyNever` holds. Place it in the `loadSettings` group.
+
+- [ ] **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/settings/data/repositories/setting_repository_impl_test.dart`
-Expected: FAIL — `withSystemLang` constructor does not exist.
+Expected: FAIL — `SettingRepositoryImpl.withSystemLang` constructor does not exist.
 
-- [ ] **Step 3: Write the minimal implementation**
+- [ ] **Step 3: Write minimal implementation**
 
-Update `lib/features/settings/data/repositories/setting_repository_impl.dart`:
+Replace the content of `lib/features/settings/data/repositories/setting_repository_impl.dart`:
 
 ```dart
 import 'package:flutter/foundation.dart';
+import 'package:sky_line/core/config/db_helper/db_helper.dart';
 import 'package:sky_line/core/enums/setting_lang.dart';
 import 'package:sky_line/core/utils/platform_utils.dart';
+import 'package:sky_line/features/settings/data/mappers/setting_mapper.dart';
 import 'package:sky_line/features/settings/domain/entities/setting_entity.dart';
 import 'package:sky_line/features/settings/domain/repositories/setting_repository.dart';
-import '../models/setting_model.dart';
-import '../mappers/setting_mapper.dart';
 
 class SettingRepositoryImpl implements SettingRepository {
   final DbHelper _dbHelper;
@@ -296,47 +252,47 @@ class SettingRepositoryImpl implements SettingRepository {
 }
 ```
 
-Preserve the existing import block of the file exactly as it currently is (the snippet above shows the needed additions; adjust to keep current relative imports `../models/setting_model.dart` and `../mappers/setting_mapper.dart` untouched if already present).
-
-- [ ] **Step 4: Run tests to verify they pass**
+- [ ] **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/settings/data/repositories/setting_repository_impl_test.dart`
 Expected: PASS (all `loadSettings` and `saveSettings` tests).
 
-- [ ] **Step 5: Run analyzer**
+- [ ] **Step 5: Run analysis**
 
-Run: `flutter analyze lib/features/settings/data/repositories/setting_repository_impl.dart test/features/settings/data/repositories/setting_repository_impl_test.dart`
-Expected: No issues found.
+Run: `flutter analyze`
+Expected: 0 issues.
 
-- [ ] **Step 6: Run the full repository test suite**
-
-Run: `flutter test test/features/settings/`
-Expected: PASS.
-
-- [ ] **Step 7: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
 git add lib/features/settings/data/repositories/setting_repository_impl.dart test/features/settings/data/repositories/setting_repository_impl_test.dart
-git commit -m "feat: resolve system language on first launch"
+git commit -m "feat: auto-set system language on first launch"
 ```
 
 ---
 
-### Task 3: Full-suite validation
+### Task 3: Full-suite verification
 
-**Files:**
-- None modified.
+**Files:** none (verification only).
 
-- [ ] **Step 1: Run analyzer on the whole project**
+- [ ] **Step 1: Run the targeted integration tests together**
 
-Run: `flutter analyze`
-Expected: No issues found (0 warnings, 0 info).
+Run: `flutter test test/core/utils/platform_utils_test.dart test/features/settings/data/repositories/setting_repository_impl_test.dart`
+Expected: PASS.
 
 - [ ] **Step 2: Run the full test suite**
 
 Run: `flutter test`
-Expected: All tests pass.
+Expected: PASS (all tests green).
 
-- [ ] **Step 3: Commit any incidental fixes**
+- [ ] **Step 3: Run final analysis**
 
-If analyzer or tests surfaced issues, fix them and commit. Otherwise no commit needed.
+Run: `flutter analyze`
+Expected: 0 warnings, 0 infos.
+
+- [ ] **Step 4: Commit any remaining changes (if any)**
+
+```bash
+git status
+# If any unintended changes exist, review and commit or discard them.
+```
