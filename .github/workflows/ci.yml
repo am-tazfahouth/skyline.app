@@ -57,7 +57,9 @@ jobs:
         run: flutter pub get
 
       - name: Check signing secrets
-        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 == '' }}
+        if: env.KEYSTORE_BASE64 == ''
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
           echo "::error::Missing ANDROID_KEYSTORE_BASE64 secret. Configure the release signing secrets before pushing a version tag."
           exit 1
