@@ -10,7 +10,7 @@
 | **Réseau / API**           | `dio` 5.x                               | Client HTTP configuré de manière centralisée               |
 | **Base de Données**        | `objectbox` 5.x                         | Base locale NoSQL (Codegen: `dart run build_runner build`) |
 | **Graphiques**             | `fl_chart` 1.x                          | Visualisation des données météo et historiques             |
-| **Géolocalisation**        | `geolocator` 14.x, `geocoding` 4.x      | Localisation GPS de l'appareil et reverse geocoding        |
+| **Géolocalisation**        | `geolocator` 14.x                       | Localisation GPS de l'appareil ; reverse geocoding via API HTTP (Open-Meteo / BigDataCloud) |
 | **Design / Design System** | Fonts: SF Pro (400, 500, 900)           | Typographie Apple par défaut (`assets/fonts/SF_Pro/`)      |
 | **Qualité & Linter**       | `package:flutter_lints/flutter.yaml`    | Zéro warning toléré à l'analyse                            |
 | **Tests**                  | `flutter_test`, `mocktail`, `bloc_test` | TDD : Couverture unitaire et BLoC obligatoire              |

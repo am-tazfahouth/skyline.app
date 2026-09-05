@@ -98,7 +98,6 @@ Dependencies are wired centrally in `lib/injection_container.dart`, providing th
 | Networking            | `dio` 5.x                        | Centralized HTTP client (Open-Meteo)     |
 | Local Database        | `objectbox` 5.x                  | Offline NoSQL cache                      |
 | Geolocation           | `geolocator` 14.x                | GPS positioning                          |
-| Reverse Geocoding     | `geocoding` 4.x                  | Coordinates → place names                |
 | Localization          | `intl` + custom `AppLocalisation`| Multi-language (AR, EN, ES, FR)          |
 | Icons & Typography    | `weather_icons`, SF Pro          | Apple-inspired design system             |
 | Testing               | `flutter_test`, `mocktail`, `bloc_test` | Unit & BLoC tests                |
