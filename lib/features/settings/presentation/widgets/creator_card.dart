@@ -10,7 +10,7 @@ class CreatorCard extends StatelessWidget {
   const CreatorCard({super.key});
 
   static const String _githubUrl = 'https://github.com/am-tazfahouth';
-  static const String _emailAddress = 'am.tazfahouth@gmail.com';
+  static const String _emailAddress = 'dv.bugslayer@gmail.com';
 
   Future<void> _launchSafe(Uri uri) async {
     try {
