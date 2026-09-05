@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sky_line/core/enums/setting_lang.dart';
 import 'package:sky_line/core/enums/setting_theme.dart';
 
 class PlatformUtils {
@@ -21,7 +22,13 @@ class PlatformUtils {
   // Get time format of the devices
   static bool is24HourFormat() {
     return WidgetsBinding.instance.platformDispatcher.alwaysUse24HourFormat;
-  }  
+  }
+
+  // Resolve supported system language, fallback to en
+  static SettingLang getSystemLang() {
+    final locale = WidgetsBinding.instance.platformDispatcher.locale;
+    return getLangFromString(locale.languageCode);
+  }
 
   // Get screen orientation
   static Orientation getAppOrientation(){
