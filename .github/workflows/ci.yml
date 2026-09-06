@@ -71,7 +71,21 @@ jobs:
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          echo "$KEYSTORE_BASE64" | base64 -d > android/app/sky_line_upload.jks
+          KEYSTORE_B64="$(printf '%s' "$KEYSTORE_BASE64" | tr -d '[:space:]')"
+          echo "::notice::keystore base64 length: ${#KEYSTORE_B64}"
+          if [[ -z "$KEYSTORE_B64" ]]; then
+            echo "::error::ANDROID_KEYSTORE_BASE64 is empty after cleanup. Recreate it from: base64 -w0 android/app/sky_line_upload.jks"
+            exit 1
+          fi
+          if [[ ! "$KEYSTORE_B64" =~ ^[A-Za-z0-9+/=]+$ ]]; then
+            echo "::error::ANDROID_KEYSTORE_BASE64 contains non-base64 characters. Paste a single-line value from: base64 -w0 android/app/sky_line_upload.jks"
+            exit 1
+          fi
+          printf '%s' "$KEYSTORE_B64" | base64 -d > android/app/sky_line_upload.jks
+          test -s android/app/sky_line_upload.jks || {
+            echo "::error::decoded keystore is empty"
+            exit 1
+          }
           cat > android/key.properties <<EOF
           storePassword=$KEYSTORE_PASSWORD
           keyPassword=$KEY_PASSWORD
