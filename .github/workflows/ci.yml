@@ -96,10 +96,18 @@ jobs:
       - name: Build release APKs
         run: flutter build apk --release --split-per-abi
 
+      - name: Rename release APKs
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          dir="build/app/outputs/flutter-apk"
+          mv "$dir/app-arm64-v8a-release.apk" "$dir/SkyLine-${VERSION}-arm64-v8a.apk"
+          mv "$dir/app-armeabi-v7a-release.apk" "$dir/SkyLine-${VERSION}-armeabi-v7a.apk"
+          mv "$dir/app-x86_64-release.apk" "$dir/SkyLine-${VERSION}-x86_64.apk"
+
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
-          name: ${{ github.ref_name }}
+          name: SkyLine ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
           generate_release_notes: true
           files: build/app/outputs/flutter-apk/*.apk
