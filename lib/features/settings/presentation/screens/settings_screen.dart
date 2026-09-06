@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:sky_line/core/config/app_theme.dart';
+import 'package:sky_line/core/constants/app_links.dart';
 import 'package:sky_line/core/constants/app_spacing.dart';
 import 'package:sky_line/core/errors/app_error.dart';
 import 'package:sky_line/features/settings/presentation/blocs/settings_bloc.dart';
@@ -103,11 +105,13 @@ class SettingsScreen extends StatelessWidget {
                   SettingCard(
                     title: l10n.settingsSectionAbout,
                     options: [
-                      SettingItem(
-                        title: l10n.settingsShare,
-                        description: l10n.settingsShareDescription,
-                        icon: Icons.share,
-                        onClick: () {},
+                      Builder(
+                        builder: (tileContext) => SettingItem(
+                          title: l10n.settingsShare,
+                          description: l10n.settingsShareDescription,
+                          icon: Icons.share,
+                          onClick: () => _shareApp(tileContext, l10n),
+                        ),
                       ),
                       const SizedBox(height: AppSpacing.xs),
                       SettingItem(
@@ -135,6 +139,22 @@ class SettingsScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _shareApp(BuildContext context, AppLocalisation l10n) async {
+    try {
+      final box = context.findRenderObject() as RenderBox?;
+      final origin =
+          box == null ? null : box.localToGlobal(Offset.zero) & box.size;
+      await SharePlus.instance.share(
+        ShareParams(
+          text: '${l10n.settingsShareMessage} ${AppLinks.githubReleases}',
+          sharePositionOrigin: origin,
+        ),
+      );
+    } on Exception {
+      // Non-blocking failure; keep the settings screen usable.
+    }
   }
 
   void _showLicence(BuildContext context, String version) {

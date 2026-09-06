@@ -49,6 +49,10 @@
   "@settingsShareDescription": {
     "description": "Description of the share entry"
   },
+  "settingsShareMessage": "Discover SkyLine — the simple, professional weather app:",
+  "@settingsShareMessage": {
+    "description": "Invite text shared with the latest GitHub release link"
+  },
   "settingsLicenses": "Licenses",
   "@settingsLicenses": {
     "description": "Entry opening the open source licenses page"

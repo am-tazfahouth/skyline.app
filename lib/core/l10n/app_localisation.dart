@@ -186,6 +186,12 @@ abstract class AppLocalisation {
   /// **'Share with your friend'**
   String get settingsShareDescription;
 
+  /// Invite text shared with the latest GitHub release link
+  ///
+  /// In en, this message translates to:
+  /// **'Discover SkyLine — the simple, professional weather app:'**
+  String get settingsShareMessage;
+
   /// Entry opening the open source licenses page
   ///
   /// In en, this message translates to:

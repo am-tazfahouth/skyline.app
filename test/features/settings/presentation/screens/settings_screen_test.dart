@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:share_plus_platform_interface/share_plus_platform_interface.dart';
 import 'package:sky_line/core/config/app_theme.dart';
+import 'package:sky_line/core/constants/app_links.dart';
 import 'package:sky_line/core/enums/setting_heat_unit.dart';
 import 'package:sky_line/core/l10n/app_localisation.dart';
 import 'package:sky_line/core/services/logger_services.dart';
@@ -31,6 +34,18 @@ class MockAppLogger extends Mock implements AppLogger {}
 class MockWeatherRepository extends Mock implements WeatherRepository {}
 
 class MockGetSettingsUseCase extends Mock implements GetSettingsUseCase {}
+
+class MockSharePlatform extends Fake
+    with MockPlatformInterfaceMixin
+    implements SharePlatform {
+  ShareParams? lastParams;
+
+  @override
+  Future<ShareResult> share(ShareParams params) async {
+    lastParams = params;
+    return ShareResult.unavailable;
+  }
+}
 
 FutureOr<({double latitude, double longitude})?> _defaultLastLocation() =>
     (latitude: 0.0, longitude: 0.0);
@@ -105,6 +120,7 @@ WeatherResult _weatherResult({required bool cached}) {
 
 void main() {
   late MockSettingRepository mockRepository;
+  late MockSharePlatform mockSharePlatform;
 
   setUpAll(() {
     registerFallbackValue(const SettingEntity());
@@ -116,6 +132,8 @@ void main() {
       () => mockRepository.loadSettings(),
     ).thenAnswer((_) async => SettingEntity.defaults);
     when(() => mockRepository.saveSettings(any())).thenAnswer((_) async {});
+    mockSharePlatform = MockSharePlatform();
+    SharePlatform.instance = mockSharePlatform;
   });
 
   testWidgets('should display settings title', (tester) async {
@@ -210,5 +228,26 @@ void main() {
       (state as WeatherLoaded).settings.heatUnit,
       SettingHeatUnit.fahrenheit,
     );
+  });
+
+  testWidgets('should share the latest GitHub release link on share tile tap', (
+    tester,
+  ) async {
+    final bloc = SettingsBloc(
+      logger: MockAppLogger(),
+      repository: mockRepository,
+    );
+    bloc.add(const LoadSettingsEvent());
+    await tester.pumpWidget(createTestScreen(bloc, _buildWeatherBloc()));
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.text('Share'));
+    await tester.tap(find.text('Share'));
+    await tester.pumpAndSettle();
+
+    expect(mockSharePlatform.lastParams, isNotNull);
+    final sharedText = mockSharePlatform.lastParams!.text;
+    expect(sharedText, contains(AppLinks.githubReleases));
+    expect(sharedText, contains('Discover SkyLine'));
   });
 }

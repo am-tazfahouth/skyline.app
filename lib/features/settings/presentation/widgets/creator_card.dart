@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sky_line/core/config/app_theme.dart';
+import 'package:sky_line/core/constants/app_links.dart';
 import 'package:sky_line/core/constants/app_radius.dart';
 import 'package:sky_line/core/constants/app_spacing.dart';
 import 'package:sky_line/core/constants/app_text_styles.dart';
@@ -9,7 +10,6 @@ import 'package:url_launcher/url_launcher.dart';
 class CreatorCard extends StatelessWidget {
   const CreatorCard({super.key});
 
-  static const String _githubUrl = 'https://github.com/am-tazfahouth';
   static const String _emailAddress = 'dv.bugslayer@gmail.com';
 
   Future<void> _launchSafe(Uri uri) async {
@@ -84,7 +84,7 @@ class CreatorCard extends StatelessWidget {
                   _SocialLink(
                     icon: Icons.code_rounded,
                     label: l10n.settingsCreatorGithub,
-                    onTap: () => _launchSafe(Uri.parse(_githubUrl)),
+                    onTap: () => _launchSafe(Uri.parse(AppLinks.github)),
                     color: secondaryText,
                   ),
                   const SizedBox(width: AppSpacing.md),

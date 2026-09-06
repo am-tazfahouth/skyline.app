@@ -54,6 +54,10 @@ class AppLocalisationEn extends AppLocalisation {
   String get settingsShareDescription => 'Share with your friend';
 
   @override
+  String get settingsShareMessage =>
+      'Discover SkyLine — the simple, professional weather app:';
+
+  @override
   String get settingsLicenses => 'Licenses';
 
   @override

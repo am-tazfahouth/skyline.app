@@ -15,6 +15,7 @@
   "settingsTemperatureUnitDescription": "Choisissez l'unité de mesure de la température",
   "settingsShare": "Partager",
   "settingsShareDescription": "Partagez avec vos amis",
+  "settingsShareMessage": "Découvrez SkyLine — l'application météo simple et professionnelle :",
   "settingsLicenses": "Licences",
   "settingsAppVersion": "Version de l'application : {version}",
   "settingsCopyright": "© 2026 TzfLab",
